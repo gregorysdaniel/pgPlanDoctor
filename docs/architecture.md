@@ -1,35 +1,49 @@
-# Funcionamento da visualização
+# Arquitetura da aplicação
 
 ```text
-planData.ts
-      ↓
-   PlanNode
-      ↓
-D3 calcula x/y
-      ↓
-Vue desenha o SVG
-      ↓
-Element Plus organiza a interface
+EXPLAIN JSON → parser → PlanNode → heurísticas
+                              ↓
+                       tela de análise
+                              ↓
+                 D3 calcula a posição dos nós
 ```
 
-Os dados do plano ficam em `planData.ts`. O D3 não interpreta a saída do PostgreSQL: ele recebe uma árvore e calcula as posições dos nós.
-
-Quando um nó é clicado, `PlanTree.vue` envia o nó para `App.vue`. O Vue atualiza automaticamente o painel de detalhes. A saída textual de `EXPLAIN ANALYZE` permanece ao lado da árvore para permitir a comparação entre as duas representações.
-
-A cor de cada nó é calculada a partir de `tempo × loops`. O menor valor se aproxima do verde e o maior valor se aproxima do vermelho. A normalização usa o maior tempo acumulado presente na árvore carregada.
-
-As setas representam o fluxo dos dados, dos nós filhos para os nós pais. O texto sobre cada ligação informa quantas linhas o filho produziu considerando todos os loops. No plano atual, o `Seq Scan` entrega 87 linhas ao `Sort`, que entrega 10 ao `Limit`.
-
-## Dicas
-
-As regras ficam em `domain/heuristics.ts`. A regra atual identifica um `Seq Scan` que tenha descartado pelo menos 1.000 linhas e 80% do que foi lido. No plano atual, a tabela `orders` tem 5.000 linhas lidas e 4.913 descartadas pelo filtro `customer_id = 42`.
-
-A dica não afirma que um índice resolverá o problema. Ela é dividida em evidência, interpretação, sugestão e forma de validação. Termos técnicos possuem uma explicação curta por hover e um link para a documentação oficial.
-
-A entrada do PostgreSQL poderá ser adicionada depois sem alterar o fluxo de renderização:
+`App.vue` coordena dois momentos da experiência: entrada e análise. Ele mantém o texto original, solicita a conversão ao parser e entrega somente um `PlanNode` válido para a visualização.
 
 ```text
-EXPLAIN JSON → parser → PlanNode → árvore
+App.vue
+├── AppHeader.vue
+│   └── ThemeSwitcher.vue
+├── PlanInput.vue
+└── PlanAnalysis.vue
+    └── PlanTree.vue
 ```
+
+O tema fica em `composables/useTheme.ts`. A preferência aceita `light`, `dark` e `system`, é persistida no navegador e não pertence ao estado do plano.
+
+O exemplo de `planData.ts` percorre o mesmo parser usado pela entrada. O D3 não interpreta a saída do PostgreSQL: ele recebe uma árvore pronta e calcula somente as posições dos nós.
+
+## Fluxo do plano
+
+`PlanTree.vue` usa o D3 para distribuir verticalmente os nós e inverte a profundidade na coordenada horizontal. Assim, folhas aparecem à esquerda e o resultado fica à direita.
+
+As setas representam o fluxo dos filhos para os pais. O rótulo de cada ligação informa as linhas produzidas pelo filho considerando seus loops.
+
+Os nós usam superfície neutra. A barra inferior compara o tempo acumulado (`tempo × loops`) com o maior tempo presente no plano. `PlanAnalysis.vue` entrega separadamente os identificadores dos nós marcados pelas heurísticas, mantendo as regras fora do SVG.
+
+Quando um nó é selecionado, `PlanTree.vue` o envia para `PlanAnalysis.vue`. O Vue atualiza o inspetor sem recalcular o parser. O plano original pode ser consultado em um diálogo sem perder a análise.
+
+## Heurísticas
+
+As seis regras do MVP ficam em `domain/heuristics.ts` e percorrem a árvore recursivamente. Cada resultado mantém uma referência ao nó que produziu o sinal.
+
+Uma regra não afirma que determinada alteração resolverá o problema. O conteúdo é dividido em evidência, interpretação, próximo passo e forma de validação. Termos técnicos possuem explicação curta e link para a documentação oficial.
+
+## Limites atuais
+
+- não existe conexão direta com PostgreSQL;
+- não existe backend ou persistência;
+- o grafo usa rolagem quando excede a área; pan e zoom ainda podem ser adicionados;
+- apenas o formato JSON possui parser.
 
 Um backend só será adicionado quando houver um requisito que não possa ser atendido diretamente no navegador.

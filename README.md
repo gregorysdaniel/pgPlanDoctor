@@ -1,15 +1,14 @@
-# Árvore de plano de execução
+# PlanoClaro
 
-Aplicação frontend para carregar e visualizar uma árvore de plano de execução do PostgreSQL.
+Aplicação frontend didática para carregar e visualizar um plano de execução do PostgreSQL.
 
 ## Objetivo
 
-Receber uma saída de `EXPLAIN (ANALYZE, FORMAT JSON)` e renderizar a árvore correspondente no navegador. A interface permite selecionar os nós, mostra o fluxo de linhas entre eles, colore-os conforme o tempo acumulado e apresenta dicas produzidas por heurísticas.
+Receber uma saída de `EXPLAIN (ANALYZE, FORMAT JSON)` e renderizar seu fluxo no navegador. A experiência separa entrada e análise, permite selecionar operadores e apresenta sinais produzidos pelas seis heurísticas do MVP.
 
 Ainda não fazem parte desta etapa:
 
-- conjunto completo de heurísticas;
-- conexão com PostgreSQL;
+- conexão direta com PostgreSQL;
 - backend;
 - persistência.
 
@@ -17,29 +16,33 @@ Ainda não fazem parte desta etapa:
 
 | Tecnologia | Uso no projeto |
 |---|---|
-| Vue 3 | Componentes e atualização do nó selecionado |
-| TypeScript | Definição e validação do modelo `PlanNode` |
-| D3 Hierarchy | Cálculo das posições dos nós e ligações |
-| Element Plus | Cards, etiqueta e tabela de detalhes |
+| Vue 3 | Componentes e estado da interface |
+| TypeScript | Modelo, parser e validação |
+| D3 Hierarchy | Posicionamento dos nós e ligações |
+| Element Plus | Botões, diálogos, menus, collapses e popovers |
+| Poppins e JetBrains Mono | Tipografia da interface e dos dados técnicos |
 | Vite | Ambiente de desenvolvimento e build |
 
 ## Arquivos principais
 
 ```text
 src/
-├── App.vue                    # tela principal
-├── components/PlanTree.vue   # cálculo D3 e SVG da árvore
-├── data/explainAnalyzeExample.json # plano JSON usado como exemplo
-├── data/planData.ts          # exemplo convertido pelo parser
-├── domain/heuristics.ts      # regras que produzem dicas
-├── domain/plan.ts            # tipos TypeScript
-├── domain/planParser.ts      # validação e conversão do EXPLAIN JSON
-└── styles.css                # aparência da interface
+├── App.vue                       # entrada, análise e plano original
+├── components/AppHeader.vue     # marca e navegação
+├── components/ThemeSwitcher.vue # temas claro, escuro e sistema
+├── components/PlanInput.vue     # entrada do EXPLAIN JSON
+├── components/PlanAnalysis.vue  # resumo, grafo e inspetor
+├── components/PlanTree.vue      # layout D3 e SVG horizontal
+├── composables/useTheme.ts      # preferência e persistência do tema
+├── data/explainAnalyzeExample.json
+├── data/planData.ts
+├── domain/heuristics.ts         # seis regras do MVP
+├── domain/plan.ts               # tipos TypeScript
+├── domain/planParser.ts         # conversão recursiva do JSON
+└── styles.css                   # tokens e aparência dos dois temas
 ```
 
-Comece a leitura por `App.vue`. Depois veja `PlanTree.vue` e `planData.ts`.
-
-Antes de alterar a apresentação, consulte as [diretrizes de UI/UX](docs/ui-ux-guidelines.md).
+Consulte também a [arquitetura](docs/architecture.md) e as [diretrizes de UI/UX](docs/ui-ux-guidelines.md).
 
 ## Executar
 
@@ -58,17 +61,13 @@ npm run build
 
 ## Critérios de validação
 
-1. A árvore aparece corretamente.
-2. O JSON de `EXPLAIN ANALYZE` pode ser colado e carregado acima da árvore.
-3. Clicar em um nó atualiza o painel de detalhes.
-4. Os componentes do Element Plus funcionam.
-5. A escala de verde a vermelho evidencia os nós com maior tempo acumulado.
-6. O D3 posiciona uma árvore com diferentes níveis.
+1. A entrada e a análise aparecem como momentos separados.
+2. O JSON de `EXPLAIN ANALYZE` pode ser colado e analisado.
+3. O fluxo segue horizontalmente das folhas ao resultado.
+4. Selecionar um nó atualiza o inspetor.
+5. Pontos de atenção aparecem no nó correspondente.
+6. Temas claro, escuro e sistema preservam o plano selecionado.
 7. O TypeScript rejeita dados incompatíveis com `PlanNode`.
-8. As ligações indicam a direção do fluxo e a quantidade de linhas produzidas.
-9. As heurísticas exibem evidência, interpretação, sugestão, validação e documentação.
+8. As ligações mostram a direção do fluxo e as linhas produzidas.
+9. As heurísticas exibem evidência, interpretação, próximo passo e validação.
 10. O build funciona sem backend.
-
-## Próximas etapas
-
-Após validar a entrada de planos reais, poderão ser avaliadas novas heurísticas e a necessidade de backend.
