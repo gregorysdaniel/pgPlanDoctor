@@ -2,9 +2,11 @@
 import { computed, ref } from 'vue'
 import {
   ElAlert,
+  ElButton,
   ElCard,
   ElDescriptions,
   ElDescriptionsItem,
+  ElInput,
   ElLink,
   ElPopover,
   ElTag,
@@ -12,10 +14,14 @@ import {
 import PlanTree from './components/PlanTree.vue'
 import { explainAnalyzeOutput, planData } from './data/planData'
 import { evaluatePlan } from './domain/heuristics'
+import { parseExplainJson, PlanParseError } from './domain/planParser'
 import type { PlanNode } from './domain/plan'
 
-// Vue atualiza o painel quando outro nó é selecionado.
+const explainInput = ref(explainAnalyzeOutput)
+const loadedPlan = ref<PlanNode>(planData)
 const selectedNode = ref<PlanNode>(planData)
+const parseError = ref<string | null>(null)
+
 const selectedAccumulatedTime = computed(
   () => selectedNode.value.metrics.totalTimeMs * selectedNode.value.metrics.loops,
 )
@@ -33,23 +39,65 @@ const selectedExaminedRows = computed(() => {
 
   return selectedNode.value.metrics.actualRows + removedRows
 })
-const tips = computed(() => evaluatePlan(planData))
+const tips = computed(() => evaluatePlan(loadedPlan.value))
+
+function loadPlan(): void {
+  try {
+    const parsedPlan = parseExplainJson(explainInput.value)
+
+    loadedPlan.value = parsedPlan
+    selectedNode.value = parsedPlan
+    parseError.value = null
+  } catch (error) {
+    parseError.value =
+      error instanceof PlanParseError
+        ? error.message
+        : 'Não foi possível carregar o plano de execução.'
+  }
+}
 </script>
 
 <template>
   <main class="page">
     <header>
-      <h1>Árvore de plano de execução</h1>  
+      <h1>Árvore de plano de execução</h1>
       <p>Visualização interativa de um plano de execução do PostgreSQL.</p>
     </header>
 
     <section class="content">
       <ElCard class="explain-card" shadow="never">
         <template #header>
-          <strong>Saída do EXPLAIN ANALYZE</strong>
+          <strong>Entrada do EXPLAIN ANALYZE</strong>
         </template>
 
-        <pre><code>{{ explainAnalyzeOutput }}</code></pre>
+        <p class="explain-help">
+          Cole abaixo o resultado completo de
+          <code>EXPLAIN (ANALYZE, FORMAT JSON)</code>.
+        </p>
+
+        <ElInput
+          v-model="explainInput"
+          class="explain-input"
+          type="textarea"
+          :autosize="{ minRows: 10, maxRows: 20 }"
+          :spellcheck="false"
+          aria-label="Plano de execução em JSON"
+        />
+
+        <div class="explain-actions">
+          <ElButton type="primary" @click="loadPlan">
+            Carregar plano
+          </ElButton>
+        </div>
+
+        <ElAlert
+          v-if="parseError"
+          class="parse-error"
+          :closable="false"
+          :title="parseError"
+          type="error"
+          show-icon
+        />
       </ElCard>
 
       <ElCard class="tree-card" shadow="never">
@@ -58,7 +106,7 @@ const tips = computed(() => evaluatePlan(planData))
         </template>
 
         <PlanTree
-          :plan="planData"
+          :plan="loadedPlan"
           :selected-id="selectedNode.id"
           @select="selectedNode = $event"
         />
@@ -175,7 +223,6 @@ const tips = computed(() => evaluatePlan(planData))
           </ElAlert>
         </ElCard>
       </aside>
-
     </section>
   </main>
 </template>

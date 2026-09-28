@@ -1,14 +1,13 @@
 # Árvore de plano de execução
 
-Aplicação frontend para visualizar uma árvore de plano de execução e compará-la com a saída textual do PostgreSQL.
+Aplicação frontend para carregar e visualizar uma árvore de plano de execução do PostgreSQL.
 
 ## Objetivo
 
-Renderizar uma saída de `EXPLAIN ANALYZE` e a árvore correspondente no navegador. A interface permite selecionar os nós, mostra o fluxo de linhas entre eles, colore-os conforme o tempo acumulado e apresenta dicas produzidas por heurísticas.
+Receber uma saída de `EXPLAIN (ANALYZE, FORMAT JSON)` e renderizar a árvore correspondente no navegador. A interface permite selecionar os nós, mostra o fluxo de linhas entre eles, colore-os conforme o tempo acumulado e apresenta dicas produzidas por heurísticas.
 
 Ainda não fazem parte desta etapa:
 
-- parser de `EXPLAIN JSON`;
 - conjunto completo de heurísticas;
 - conexão com PostgreSQL;
 - backend;
@@ -30,9 +29,11 @@ Ainda não fazem parte desta etapa:
 src/
 ├── App.vue                    # tela principal
 ├── components/PlanTree.vue   # cálculo D3 e SVG da árvore
-├── data/planData.ts          # dados do plano e saída textual
+├── data/explainAnalyzeExample.json # plano JSON usado como exemplo
+├── data/planData.ts          # exemplo convertido pelo parser
 ├── domain/heuristics.ts      # regras que produzem dicas
 ├── domain/plan.ts            # tipos TypeScript
+├── domain/planParser.ts      # validação e conversão do EXPLAIN JSON
 └── styles.css                # aparência da interface
 ```
 
@@ -56,7 +57,7 @@ npm run build
 ## Critérios de validação
 
 1. A árvore aparece corretamente.
-2. A saída do `EXPLAIN ANALYZE` aparece acima da árvore.
+2. O JSON de `EXPLAIN ANALYZE` pode ser colado e carregado acima da árvore.
 3. Clicar em um nó atualiza o painel de detalhes.
 4. Os componentes do Element Plus funcionam.
 5. A escala de verde a vermelho evidencia os nós com maior tempo acumulado.
@@ -68,4 +69,4 @@ npm run build
 
 ## Próximas etapas
 
-Após validar a visualização, poderão ser avaliados o parser, as heurísticas e a necessidade de backend.
+Após validar a entrada de planos reais, poderão ser avaliadas novas heurísticas e a necessidade de backend.

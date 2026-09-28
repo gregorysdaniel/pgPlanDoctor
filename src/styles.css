@@ -73,6 +73,28 @@ header p,
   font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
+.explain-help {
+  margin: 0 0 12px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.explain-input textarea {
+  color: #e2e8f0;
+  background: #0f172a;
+  font: 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.explain-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.parse-error {
+  margin-top: 12px;
+}
+
 .plan-tree {
   display: block;
   width: 100%;
