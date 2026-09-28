@@ -39,6 +39,8 @@ src/
 
 Comece a leitura por `App.vue`. Depois veja `PlanTree.vue` e `planData.ts`.
 
+Antes de alterar a apresentação, consulte as [diretrizes de UI/UX](docs/ui-ux-guidelines.md).
+
 ## Executar
 
 Requisito: Node.js 22.12 ou superior. Recomenda-se Node.js 24 LTS.
