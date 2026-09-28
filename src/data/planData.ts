@@ -16,6 +16,7 @@ export const planData: PlanNode = {
       id: 'sort-1',
       type: 'Sort',
       kind: 'operation',
+      sortKeys: ['created_at DESC'],
       description: 'Ordena os pedidos mais recentes pela coluna created_at.',
       metrics: {
         estimatedRows: 87,
