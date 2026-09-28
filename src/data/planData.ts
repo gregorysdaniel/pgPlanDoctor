@@ -29,6 +29,7 @@ export const planData: PlanNode = {
           type: 'Seq Scan',
           kind: 'scan',
           relation: 'orders',
+          filter: 'customer_id = 42',
           description: 'Percorre a tabela orders e mantém apenas as linhas de customer_id = 42.',
           metrics: {
             estimatedRows: 87,

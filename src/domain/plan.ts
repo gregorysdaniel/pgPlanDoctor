@@ -13,6 +13,7 @@ export interface PlanNode {
   type: string
   kind: PlanNodeKind
   relation?: string
+  filter?: string
   description: string
   metrics: PlanMetrics
   children?: PlanNode[]
