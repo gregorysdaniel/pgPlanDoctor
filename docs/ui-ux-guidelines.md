@@ -573,6 +573,12 @@ O seletor permite `Sistema`, `Claro` e `Escuro`.
 
 ```text
 src/
+├── router/
+│   └── index.ts
+├── views/
+│   ├── PlanInputView.vue
+│   ├── PlanAnalysisView.vue
+│   └── LearningArticleView.vue
 ├── components/
 │   ├── AppHeader.vue
 │   ├── ThemeSwitcher.vue
@@ -585,6 +591,7 @@ src/
 ├── content/
 │   └── learningContent.ts
 ├── composables/
+│   ├── usePlanSession.ts
 │   └── useTheme.ts
 ├── domain/
 │   ├── plan.ts
@@ -596,6 +603,8 @@ src/
 Regras:
 
 - componentes não contêm regras de heurística;
+- o Vue Router controla as páginas; componentes não manipulam `location`, `history` ou hashes diretamente;
+- estado transitório do plano fica em `usePlanSession.ts`, não em componentes globais;
 - parser não conhece a interface;
 - `PlanTree.vue` recebe dados prontos;
 - cores ficam em tokens globais;

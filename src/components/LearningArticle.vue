@@ -30,10 +30,10 @@ function referenceNumber(reference: LearningReference): number {
   <main class="learning-article">
     <div class="learning-article__shell">
       <nav class="learning-breadcrumb" aria-label="Navegação estrutural">
-        <a href="#aprender">
+        <RouterLink :to="{ name: 'learning' }">
           <PhArrowLeft :size="17" weight="bold" aria-hidden="true" />
           Todos os conteúdos
-        </a>
+        </RouterLink>
       </nav>
 
       <div class="learning-article__layout">
@@ -107,37 +107,37 @@ function referenceNumber(reference: LearningReference): number {
           </section>
 
           <nav class="learning-pagination" aria-label="Navegação entre conteúdos">
-            <a
+            <RouterLink
               v-if="adjacentArticles.previous"
               class="learning-pagination__previous"
-              :href="`#aprender/${adjacentArticles.previous.slug}`"
+              :to="{ name: 'learning-article', params: { slug: adjacentArticles.previous.slug } }"
             >
               <PhArrowLeft :size="20" weight="bold" aria-hidden="true" />
               <span>
                 <small>Anterior</small>
                 <strong>{{ adjacentArticles.previous.title }}</strong>
               </span>
-            </a>
+            </RouterLink>
             <span v-else></span>
 
-            <a
+            <RouterLink
               v-if="adjacentArticles.next"
               class="learning-pagination__next"
-              :href="`#aprender/${adjacentArticles.next.slug}`"
+              :to="{ name: 'learning-article', params: { slug: adjacentArticles.next.slug } }"
             >
               <span>
                 <small>Próximo</small>
                 <strong>{{ adjacentArticles.next.title }}</strong>
               </span>
               <PhArrowRight :size="20" weight="bold" aria-hidden="true" />
-            </a>
-            <a v-else class="learning-pagination__next" href="#aprender">
+            </RouterLink>
+            <RouterLink v-else class="learning-pagination__next" :to="{ name: 'learning' }">
               <span>
                 <small>Concluir</small>
                 <strong>Voltar aos conteúdos</strong>
               </span>
               <PhArrowRight :size="20" weight="bold" aria-hidden="true" />
-            </a>
+            </RouterLink>
           </nav>
         </article>
 

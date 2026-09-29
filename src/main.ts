@@ -9,6 +9,7 @@ import '@fontsource/jetbrains-mono/latin-400.css'
 import '@fontsource/jetbrains-mono/latin-600.css'
 import '@fontsource/jetbrains-mono/latin-700.css'
 import App from './App.vue'
+import { router } from './router'
 import './styles.css'
 
-createApp(App).mount('#app')
+createApp(App).use(router).mount('#app')

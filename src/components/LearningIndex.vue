@@ -32,7 +32,7 @@ import { learningArticles } from '../content/learningContent'
 
       <ol>
         <li v-for="article in learningArticles" :key="article.slug">
-          <a :href="`#aprender/${article.slug}`">
+          <RouterLink :to="{ name: 'learning-article', params: { slug: article.slug } }">
             <span class="learning-path__article-icon" aria-hidden="true">
               <PhTreeStructure v-if="article.slug === 'da-consulta-ao-plano'" :size="30" weight="duotone" />
               <PhBookOpenText v-else-if="article.slug === 'como-gerar-e-percorrer-um-plano'" :size="30" weight="duotone" />
@@ -44,7 +44,7 @@ import { learningArticles } from '../content/learningContent'
               <span>{{ article.summary }}</span>
             </span>
             <PhArrowRight class="learning-path__arrow" :size="22" weight="bold" aria-hidden="true" />
-          </a>
+          </RouterLink>
         </li>
       </ol>
     </section>

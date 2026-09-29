@@ -8,17 +8,39 @@ EXPLAIN JSON → parser → PlanNode → heurísticas
                  D3 calcula a posição dos nós
 ```
 
-`App.vue` coordena três páginas da experiência: entrada, análise e informações do projeto. Ele mantém o texto original, solicita a conversão ao parser e entrega somente um `PlanNode` válido para a visualização.
+O Vue Router controla qual página está visível, o histórico de navegação, a posição da rolagem e o título da aba. `App.vue` mantém somente a estrutura compartilhada: cabeçalho, área da rota atual e diálogo do plano original.
 
 ```text
 App.vue
 ├── AppHeader.vue
 │   └── ThemeSwitcher.vue
-├── PlanInput.vue
-├── PlanAnalysis.vue
-│   └── PlanTree.vue
-└── ProjectInfo.vue
+└── RouterView
+    ├── PlanInputView.vue
+    │   └── PlanInput.vue
+    ├── PlanAnalysisView.vue
+    │   └── PlanAnalysis.vue
+    │       └── PlanTree.vue
+    ├── LearningIndex.vue
+    ├── LearningArticleView.vue
+    │   └── LearningArticle.vue
+    └── ProjectInfo.vue
 ```
+
+As rotas ficam em `router/index.ts`:
+
+- `#/`: entrada do plano;
+- `#/analise`: visualização e interpretação do plano carregado;
+- `#/aprender`: índice dos conteúdos;
+- `#/aprender/:slug`: conteúdo selecionado;
+- `#/sobre`: informações do projeto e feedback.
+
+O histórico por hash permite abrir e atualizar essas URLs sem exigir que o servidor seja configurado para responder a todas as rotas. Os componentes usam `RouterLink` ou a API do Vue Router e não manipulam `location`, `history` ou o hash diretamente.
+
+## Estado da sessão
+
+`composables/usePlanSession.ts` mantém o JSON informado, o plano convertido e a mensagem de erro enquanto a aplicação está aberta. Isso permite navegar entre entrada e análise sem colocar esses dados na URL e sem atribuir ao `App.vue` a responsabilidade pelo parser.
+
+`PlanInputView.vue` converte o JSON e abre a rota de análise somente depois de obter um `PlanNode` válido. A rota `#/analise` também possui uma guarda: quando nenhum plano foi carregado na sessão, o acesso direto volta para a entrada.
 
 O tema fica em `composables/useTheme.ts`. A preferência aceita `light`, `dark` e `system`, é persistida no navegador e não pertence ao estado do plano.
 
@@ -40,9 +62,13 @@ As seis regras do MVP ficam em `domain/heuristics.ts` e percorrem a árvore recu
 
 Uma regra não afirma que determinada alteração resolverá o problema. O conteúdo é dividido em evidência, interpretação, próximo passo e forma de validação. Termos técnicos possuem explicação curta e link para a documentação oficial.
 
+## Conteúdos
+
+`content/learningContent.ts` concentra o texto e as referências dos materiais introdutórios. `LearningIndex.vue` apresenta o índice, enquanto `LearningArticle.vue` é a estrutura reutilizada por cada conteúdo. O `slug` da URL identifica o artigo; valores inexistentes voltam ao índice.
+
 ## Informações e feedback
 
-`ProjectInfo.vue` documenta o propósito do PlanoClaro e resume qual comparação antes/depois foi realizada para cada heurística. Os scripts, planos e medições continuam na documentação própria do benchmark.
+`ProjectInfo.vue` documenta o propósito do PlanoClaro e a validação das heurísticas. Os scripts, planos e medições continuam na documentação própria do benchmark.
 
 O feedback é coletado em um Google Forms externo configurado por `VITE_FEEDBACK_FORM_URL`. A aplicação não recebe nem armazena as respostas. A documentação completa do benchmark é acessada por `VITE_BENCHMARK_GITHUB_URL`.
 
@@ -50,6 +76,7 @@ O feedback é coletado em um Google Forms externo configurado por `VITE_FEEDBACK
 
 - não existe conexão direta com PostgreSQL;
 - não existe backend ou persistência;
+- o estado do plano existe somente durante a sessão da página;
 - os links do Google Forms e do benchmark são configurações obrigatórias do ambiente;
 - o grafo usa rolagem quando excede a área; pan e zoom ainda podem ser adicionados;
 - apenas o formato JSON possui parser.

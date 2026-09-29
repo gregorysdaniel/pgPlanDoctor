@@ -118,9 +118,15 @@ function synchronizeScroll(event: Event): void {
             <strong>Comando no PostgreSQL</strong>
             <p>Adicione esta linha antes da consulta:</p>
             <code>EXPLAIN (ANALYZE, FORMAT JSON)</code>
-            <a class="plan-help-popover__link" href="#aprender/como-gerar-e-percorrer-um-plano">
+            <RouterLink
+              class="plan-help-popover__link"
+              :to="{
+                name: 'learning-article',
+                params: { slug: 'como-gerar-e-percorrer-um-plano' },
+              }"
+            >
               Ver explicação completa
-            </a>
+            </RouterLink>
           </ElPopover>
         </header>
 

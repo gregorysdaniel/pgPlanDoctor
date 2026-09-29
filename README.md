@@ -17,6 +17,7 @@ Ainda não fazem parte desta etapa:
 | Tecnologia | Uso no projeto |
 |---|---|
 | Vue 3 | Componentes e estado da interface |
+| Vue Router | Rotas, histórico de navegação e URLs diretas |
 | TypeScript | Modelo, parser e validação |
 | D3 Hierarchy | Posicionamento dos nós e ligações |
 | Element Plus | Botões, diálogos, menus, collapses e popovers |
@@ -28,7 +29,11 @@ Ainda não fazem parte desta etapa:
 
 ```text
 src/
-├── App.vue                       # navegação, entrada, análise e plano original
+├── App.vue                       # estrutura compartilhada e plano original
+├── router/index.ts               # rotas, guardas, rolagem e títulos
+├── views/PlanInputView.vue       # conversão da entrada e abertura da análise
+├── views/PlanAnalysisView.vue    # página da análise carregada
+├── views/LearningArticleView.vue # resolução do conteúdo pela URL
 ├── components/AppHeader.vue     # marca e navegação
 ├── components/LearningIndex.vue # índice dos conteúdos didáticos
 ├── components/LearningArticle.vue # página reutilizável de artigo
@@ -37,8 +42,9 @@ src/
 ├── components/PlanInput.vue     # entrada do EXPLAIN JSON
 ├── components/PlanAnalysis.vue  # resumo, grafo e inspetor
 ├── components/PlanTree.vue      # layout D3 e SVG horizontal
+├── composables/usePlanSession.ts # estado temporário do plano entre as rotas
 ├── composables/useTheme.ts      # preferência e persistência do tema
-├── content/learningContent.ts   # textos, ordem e referências da área Aprender
+├── content/learningContent.ts   # textos e referências da área Aprender
 ├── data/explainAnalyzeExample.json
 ├── data/planData.ts
 ├── domain/heuristics.ts         # seis regras do MVP
@@ -83,5 +89,6 @@ npm run build
 8. As ligações mostram a direção do fluxo e as linhas produzidas.
 9. As heurísticas exibem evidência, interpretação, próximo passo e validação.
 10. A página do projeto apresenta como as seis heurísticas foram avaliadas.
-11. A área Aprender apresenta os quatro conteúdos iniciais e pode ser acessada pelo contexto do analisador.
-12. O build funciona sem backend.
+11. A área Aprender apresenta os quatro conteúdos e pode ser acessada pelo contexto do analisador.
+12. Voltar, avançar e abrir diretamente uma URL preservam a página esperada.
+13. O build funciona sem backend.
