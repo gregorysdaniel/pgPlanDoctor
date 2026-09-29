@@ -39,8 +39,8 @@ O PlanoClaro não vende um serviço. A interface deve explicar uma tarefa técni
 | Exercism | PlanoClaro |
 |---|---|
 | Marca tipográfica no cabeçalho | Marca tipográfica `PlanoClaro`, sem caixa decorativa |
-| Navegação horizontal | `Analisar plano` e `Gerar no PostgreSQL` |
-| Hero educacional em duas colunas | Explicação objetiva à esquerda e editor JSON à direita |
+| Cabeçalho com hierarquia horizontal | Marca à esquerda; ações reais e tema à direita |
+| Hero educacional em duas colunas | Instruções objetivas à esquerda e editor JSON à direita |
 | Ilustração principal | Editor ou visualização do plano; nunca ilustração genérica |
 | Botão primário com contorno e profundidade | Ação `Analisar plano` |
 | Blocos de trilhas e exercícios | Operadores, métricas e regras de investigação |
@@ -57,7 +57,7 @@ A referência usa tipografia e controles em escala confortável. Não compacte a
 
 - corpo: 16–18 px;
 - texto auxiliar: mínimo de 14 px;
-- título principal: 44–60 px no desktop;
+- título principal: 38–48 px no desktop;
 - título de seção: 26–36 px;
 - título de componente: 18–22 px;
 - botões: 15–17 px, peso 600 ou 700;
@@ -96,6 +96,8 @@ Não use:
 - slogans sobre eficiência, inteligência ou clareza;
 - parágrafos institucionais sobre o PlanoClaro.
 
+Também não use rótulos soltos como `PostgreSQL · EXPLAIN ANALYZE` acima de um título. Um texto sem verbo ou explicação precisa deixar claro qual informação oferece ao aluno.
+
 ### 4.4 Profundidade controlada
 
 O Exercism usa contornos definidos, sombras curtas em ações e sombras difusas em superfícies importantes. O PlanoClaro deve fazer o mesmo.
@@ -109,7 +111,6 @@ O Exercism usa contornos definidos, sombras curtas em ações e sombras difusas 
 ### 4.5 Cor tem função
 
 - cor primária: ação, link e seleção;
-- amarelo: marca-texto editorial, nunca erro;
 - laranja: ponto de atenção;
 - vermelho: erro real;
 - verde: sucesso ou estado concluído;
@@ -238,7 +239,7 @@ O cabeçalho segue diretamente a composição do Exercism:
 
 ```text
 ┌────────────────────────────────────────────────────────────────────┐
-│ marca   Analisar plano   Gerar no PostgreSQL        ações   tema  │
+│ marca                                             ações reais  tema │
 └────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -247,12 +248,10 @@ Regras:
 - altura entre 72 e 80 px;
 - conteúdo interno centralizado na largura máxima da página;
 - marca tipográfica livre, sem quadrado ou card atrás dela;
-- navegação textual imediatamente depois da marca;
-- item atual marcado por cor, peso ou sublinhado inferior;
 - ações contextuais e tema à direita;
 - seletor de tema compacto em menu;
 - superfície sólida e borda inferior;
-- em telas pequenas, a navegação pode ocupar uma segunda linha.
+- não criar navegação quando existe apenas um fluxo de trabalho.
 
 Não adicionar:
 
@@ -260,19 +259,20 @@ Não adicionar:
 - subtítulo institucional;
 - descrição do produto;
 - barra de anúncio sem existir um anúncio real;
-- itens de navegação sem destino funcional.
+- itens diferentes que levam ao mesmo lugar;
+- nome da própria tela como item de navegação.
 
 ## 8. Tela de entrada
 
 ### 8.1 Composição
 
-A entrada corresponde ao hero educacional da referência, sem conteúdo comercial:
+A entrada usa a composição em duas colunas da referência, sem se comportar como um hero comercial:
 
 ```text
 ┌ informação necessária ────────────┬ editor JSON ────────────────────┐
 │                                   │                                 │
-│ Analise um plano de execução      │ EXPLAIN ANALYZE                 │
-│ Formato e escopo suportado        │                                 │
+│ Cole um plano de execução         │ Plano de execução               │
+│ Comando e formato aceitos         │ JSON                            │
 │                                   │ JSON                            │
 │ Métricas mostradas                │                                 │
 │ Aviso de execução                 │                                 │
@@ -283,10 +283,10 @@ A entrada corresponde ao hero educacional da referência, sem conteúdo comercia
 - largura entre 1360 e 1480 px;
 - duas colunas entre 42/58 e 50/50;
 - alinhamento pelo topo;
-- título de 44–60 px;
+- título de 38–48 px;
 - editor com pelo menos 680 px de largura e 500 px de altura;
 - fundo com padrão geométrico quase imperceptível;
-- destaque amarelo permitido em uma expressão curta do título.
+- título literal, sem slogan, eyebrow ou marca-texto decorativo.
 
 ### 8.2 Conteúdo permitido
 
@@ -294,9 +294,10 @@ A coluna esquerda pode informar:
 
 - o comando e formato aceitos;
 - métricas produzidas pela análise;
-- número e escopo das heurísticas;
+- categorias de informação mostradas no resultado;
 - risco de executar `EXPLAIN ANALYZE`;
-- comando para gerar o JSON.
+- comando para gerar o JSON;
+- informar que o processamento é local, enquanto isso for verdadeiro.
 
 Não inclua um roteiro “cole, visualize, investigue”. Essas ações já estão evidentes na interface.
 
@@ -306,13 +307,15 @@ Não inclua um roteiro “cole, visualize, investigue”. Essas ações já est�
 - fonte técnica entre 14 e 16 px;
 - numeração de linhas;
 - quebra de linha preservada;
-- barra inferior com estado e ações;
+- barra inferior com atalho e ações;
 - `Analisar plano` como ação primária;
-- `Usar plano demonstrativo` como ação secundária;
+- `Carregar exemplo` como ação secundária;
 - erro específico junto ao editor;
 - apenas `JSON` deve aparecer enquanto o parser textual não existir.
 
 O editor é uma superfície do produto, não um terminal cenográfico. Não force fundo escuro no tema claro.
+
+Não exiba estados derivados apenas da presença de texto, como `JSON pronto para análise` ou `Aguardando o plano`. Use mensagens de estado somente quando houver processamento, validação, sucesso ou erro reais.
 
 ## 9. Tela de análise
 

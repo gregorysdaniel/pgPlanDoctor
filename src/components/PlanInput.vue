@@ -32,31 +32,27 @@ function synchronizeScroll(event: Event): void {
   <main class="input-screen">
     <div class="input-hero">
       <section class="input-copy" aria-labelledby="input-title">
-        <p class="input-eyebrow">PostgreSQL · EXPLAIN ANALYZE</p>
-        <h1 id="input-title">Analise um <mark>plano de execução.</mark></h1>
+        <h1 id="input-title">Cole um plano de execução</h1>
         <p class="input-lead">
-          Cole a saída em JSON para visualizar os operadores, as linhas processadas e os pontos que merecem conferência.
+          Execute <code>EXPLAIN (ANALYZE, FORMAT JSON)</code> no PostgreSQL e cole o resultado abaixo. O plano é analisado localmente e não é enviado a um servidor.
         </p>
 
         <section class="analysis-scope" aria-labelledby="analysis-scope-title">
-          <h2 id="analysis-scope-title">A análise apresenta</h2>
+          <h2 id="analysis-scope-title">Informações exibidas</h2>
           <ul>
             <li>
-              <span class="analysis-scope__symbol" aria-hidden="true">↔</span>
               <div>
                 <strong>Fluxo de linhas</strong>
                 <span>Quantidade produzida e descartada em cada operador.</span>
               </div>
             </li>
             <li>
-              <span class="analysis-scope__symbol" aria-hidden="true">◷</span>
               <div>
                 <strong>Tempo acumulado</strong>
                 <span>Tempo por operador considerando o número de execuções.</span>
               </div>
             </li>
             <li>
-              <span class="analysis-scope__symbol" aria-hidden="true">◎</span>
               <div>
                 <strong>Pontos de atenção</strong>
                 <span>Evidência, interpretação e uma forma de conferir cada sinal.</span>
@@ -75,7 +71,7 @@ function synchronizeScroll(event: Event): void {
 
         <ElCollapse id="como-gerar" class="input-help">
           <ElCollapseItem name="postgresql">
-            <template #title>Gerar o JSON no PostgreSQL</template>
+            <template #title>Comando para obter o JSON</template>
             <p>Adicione o comando antes da consulta:</p>
             <code>EXPLAIN (ANALYZE, FORMAT JSON)</code>
           </ElCollapseItem>
@@ -87,11 +83,10 @@ function synchronizeScroll(event: Event): void {
           <div class="plan-editor__identity">
             <span aria-hidden="true">{ }</span>
             <div>
-              <strong>Plano em JSON</strong>
-              <small>EXPLAIN ANALYZE</small>
+              <strong>Plano de execução</strong>
+              <small>Formato JSON</small>
             </div>
           </div>
-          <span class="format-badge">PostgreSQL</span>
         </header>
 
         <div class="code-editor">
@@ -110,13 +105,10 @@ function synchronizeScroll(event: Event): void {
         </div>
 
         <footer class="plan-editor__footer">
-          <span class="editor-status" :class="{ 'editor-status--ready': hasContent }">
-            <span aria-hidden="true"></span>
-            {{ hasContent ? 'JSON pronto para análise' : 'Aguardando o plano em JSON' }}
-          </span>
+          <span class="editor-shortcut"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> para analisar</span>
 
           <div class="plan-editor__actions">
-            <ElButton @click="emit('useExample')">Usar exemplo</ElButton>
+            <ElButton @click="emit('useExample')">Carregar exemplo</ElButton>
             <ElButton
               type="primary"
               :disabled="!hasContent"

@@ -20,10 +20,6 @@ const emit = defineEmits<{
         <span class="brand__name">PlanoClaro</span>
       </button>
 
-      <nav class="app-navigation" aria-label="Navegação principal">
-        <slot name="navigation" />
-      </nav>
-
       <div class="app-header__actions">
         <slot />
       </div>

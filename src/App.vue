@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { ElButton, ElDialog } from 'element-plus'
 import AppHeader from './components/AppHeader.vue'
 import PlanAnalysis from './components/PlanAnalysis.vue'
@@ -47,30 +47,11 @@ function returnToInput(): void {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
-async function showPlanInstructions(): Promise<void> {
-  screen.value = 'input'
-  await nextTick()
-  document.getElementById('como-gerar')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-}
 </script>
 
 <template>
   <div class="planoclaro">
     <AppHeader @home="returnToInput">
-      <template #navigation>
-        <button
-          class="app-navigation__item"
-          :class="{ 'app-navigation__item--active': screen === 'input' }"
-          type="button"
-          @click="returnToInput"
-        >
-          Analisar plano
-        </button>
-        <button class="app-navigation__item" type="button" @click="showPlanInstructions">
-          Gerar no PostgreSQL
-        </button>
-      </template>
-
       <template v-if="screen === 'analysis'">
         <ElButton @click="originalPlanVisible = true">Ver JSON</ElButton>
         <ElButton type="primary" @click="returnToInput">Novo plano</ElButton>
