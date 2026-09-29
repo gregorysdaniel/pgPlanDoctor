@@ -262,9 +262,25 @@ Não adicionar:
 - itens diferentes que levam ao mesmo lugar;
 - nome da própria tela como item de navegação.
 
-## 8. Tela de entrada
+## 8. Ícones
 
-### 8.1 Composição
+O PlanoClaro usa **Phosphor Icons** por meio de `@phosphor-icons/vue`. Essa é a única família de ícones da interface.
+
+- importe cada componente pelo nome; não registre a biblioteca inteira globalmente;
+- use `duotone` em conceitos didáticos, avisos e elementos de identidade;
+- use `regular`, `bold` ou `fill` em controles e ações pequenas;
+- mantenha ícones informativos entre 24 e 32 px e ícones de ação entre 16 e 20 px;
+- deixe a cor ser herdada com `currentColor` e use os tokens semânticos existentes;
+- associe ícones de ação a um rótulo textual; o ícone não substitui o nome da ação;
+- escolha símbolos pelo significado, não para preencher espaços vazios;
+- não misture Phosphor com emoji, glifos de texto ou SVGs copiados de outras bibliotecas;
+- preserve SVG próprio somente quando ele representar dados do plano, como nós, conexões e legendas do grafo.
+
+Ícones podem tornar explicações mais fáceis de percorrer, mas não devem converter cada linha em um card decorativo. A organização do conteúdo continua vindo de tipografia, espaço e bordas.
+
+## 9. Tela de entrada
+
+### 9.1 Composição
 
 A entrada usa a composição em duas colunas da referência, sem se comportar como um hero comercial:
 
@@ -288,7 +304,7 @@ A entrada usa a composição em duas colunas da referência, sem se comportar co
 - fundo com padrão geométrico quase imperceptível;
 - título literal, sem slogan, eyebrow ou marca-texto decorativo.
 
-### 8.2 Conteúdo permitido
+### 9.2 Conteúdo permitido
 
 A coluna esquerda pode informar:
 
@@ -301,7 +317,7 @@ A coluna esquerda pode informar:
 
 Não inclua um roteiro “cole, visualize, investigue”. Essas ações já estão evidentes na interface.
 
-### 8.3 Editor
+### 9.3 Editor
 
 - aparência de editor claro no tema claro e escuro no tema escuro;
 - fonte técnica entre 14 e 16 px;
@@ -317,7 +333,7 @@ O editor é uma superfície do produto, não um terminal cenográfico. Não forc
 
 Não exiba estados derivados apenas da presença de texto, como `JSON pronto para análise` ou `Aguardando o plano`. Use mensagens de estado somente quando houver processamento, validação, sucesso ou erro reais.
 
-## 9. Tela de análise
+## 10. Tela de análise
 
 A tela de análise reaproveita a linguagem do Exercism em um ambiente de ferramenta:
 
@@ -331,7 +347,7 @@ A tela de análise reaproveita a linguagem do Exercism em um ambiente de ferrame
 └──────────────────────────────────────────────┴──────────────────────┘
 ```
 
-### 9.1 Resumo
+### 10.1 Resumo
 
 - altura entre 60 e 76 px;
 - pares claros de rótulo e valor;
@@ -340,7 +356,7 @@ A tela de análise reaproveita a linguagem do Exercism em um ambiente de ferrame
 - divisórias simples;
 - não usar uma coleção de pílulas coloridas.
 
-### 9.2 Grafo
+### 10.2 Grafo
 
 - fluxo horizontal: folhas à esquerda, resultado à direita;
 - superfície clara e ampla;
@@ -355,7 +371,7 @@ A tela de análise reaproveita a linguagem do Exercism em um ambiente de ferrame
 
 Não usar mapa de calor. Cor forte em todo o nó prejudica leitura e aproxima a interface de um monitor de infraestrutura.
 
-### 9.3 Inspetor
+### 10.3 Inspetor
 
 - largura entre 400 e 480 px;
 - superfície contínua, não pilha de cards;
@@ -365,9 +381,9 @@ Não usar mapa de calor. Cor forte em todo o nó prejudica leitura e aproxima a 
 - propriedades avançadas recolhidas;
 - corpo entre 14 e 16 px.
 
-## 10. Componentes
+## 11. Componentes
 
-### 10.1 Botões
+### 11.1 Botões
 
 - primário: cor sólida, texto claro, borda escura sutil e sombra curta;
 - secundário: superfície branca, borda primária e texto primário;
@@ -375,21 +391,21 @@ Não usar mapa de calor. Cor forte em todo o nó prejudica leitura e aproxima a 
 - altura mínima de 44 px;
 - rótulo descreve a ação: `Analisar plano`, `Ver JSON`, `Novo plano`.
 
-### 10.2 Cards e painéis
+### 11.2 Cards e painéis
 
 - usar card somente quando o conteúdo for uma unidade independente;
 - borda nítida e raio de 8–12 px;
 - sombra apenas em superfície prioritária;
 - não envolver cada parágrafo ou métrica em um card.
 
-### 10.3 Links
+### 11.3 Links
 
 - sublinhado visível ou indicação inequívoca;
 - cor primária;
 - texto informa o destino;
 - documentação externa abre em nova aba.
 
-### 10.4 Element Plus
+### 11.4 Element Plus
 
 O Element Plus fornece comportamento, não identidade visual.
 
@@ -409,7 +425,7 @@ Evite usar automaticamente:
 - `ElAlert` para dicas e heurísticas;
 - estilos padrão sem mapear os tokens dos dois temas.
 
-## 11. Linguagem
+## 12. Linguagem
 
 Termos do PostgreSQL permanecem em inglês e recebem explicação em português quando necessário.
 
@@ -433,7 +449,7 @@ Evite:
 - `problema detectado` quando a regra apenas sugere investigação;
 - adjetivos promocionais como “poderoso”, “inteligente” ou “inovador”.
 
-## 12. Formatação dos dados
+## 13. Formatação dos dados
 
 Use locale `pt-BR`:
 
@@ -444,7 +460,7 @@ Use locale `pt-BR`:
 
 Considere `loops` em valores acumulados e deixe claro quando um valor é por execução.
 
-## 13. Tema
+## 14. Tema
 
 O seletor permite `Sistema`, `Claro` e `Escuro`.
 
@@ -455,7 +471,7 @@ O seletor permite `Sistema`, `Claro` e `Escuro`.
 - diálogos, popovers, editor e SVG respeitam o tema;
 - nenhuma informação depende apenas de cor.
 
-## 14. Responsividade
+## 15. Responsividade
 
 ### Desktop amplo
 
@@ -479,18 +495,18 @@ O seletor permite `Sistema`, `Claro` e `Escuro`.
 - análise alterna entre fluxo e detalhes;
 - alvos de toque de pelo menos 44 × 44 px.
 
-## 15. Acessibilidade
+## 16. Acessibilidade
 
 - WCAG AA nos dois temas;
 - foco visível;
 - ordem de foco coerente;
 - nós selecionáveis por teclado;
 - erros anunciados com `aria-live`;
-- ícones com nome acessível;
+- ícones isolados com nome acessível; ícones ao lado de texto podem ser decorativos;
 - respeito a `prefers-reduced-motion`;
 - zoom do navegador em 200% sem perda de ações essenciais.
 
-## 16. Organização no repositório
+## 17. Organização no repositório
 
 ```text
 src/
@@ -518,7 +534,7 @@ Regras:
 - estado do tema não se mistura ao estado do plano;
 - SVG usa variáveis CSS sempre que possível.
 
-## 17. Processo de implementação
+## 18. Processo de implementação
 
 Para cada região:
 
@@ -531,7 +547,7 @@ Para cada região:
 
 Não faça ajustes incrementais em uma região cuja estrutura ainda pertence à direção antiga. Substitua a composição inteira.
 
-## 18. Critérios de aceite
+## 19. Critérios de aceite
 
 Uma alteração visual só está concluída quando:
 
@@ -556,7 +572,7 @@ Valide pelo menos em:
 - temas claro e escuro;
 - plano linear e plano ramificado.
 
-## 19. Proibições
+## 20. Proibições
 
 - reutilizar metáforas visuais da direção anterior;
 - aparência de terminal como identidade geral;

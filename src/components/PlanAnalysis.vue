@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { PhWarningCircle } from '@phosphor-icons/vue'
 import { computed, ref, watch } from 'vue'
 import { ElCollapse, ElCollapseItem, ElLink, ElPopover } from 'element-plus'
 import PlanTree from './PlanTree.vue'
@@ -165,7 +166,9 @@ function formatTime(value: number): string {
 
         <section v-if="selectedTip" class="attention-panel">
           <div class="attention-panel__heading">
-            <span aria-hidden="true">!</span>
+            <span aria-hidden="true">
+              <PhWarningCircle :size="31" weight="duotone" />
+            </span>
             <div>
               <p class="inspector-label">Ponto de atenção</p>
               <h3>{{ selectedTip.title }}</h3>

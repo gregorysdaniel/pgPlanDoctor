@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { ElAlert, ElButton, ElCollapse, ElCollapseItem } from 'element-plus'
+import {
+  PhArrowsLeftRight,
+  PhBracketsCurly,
+  PhClockCounterClockwise,
+  PhFileCode,
+  PhMagnifyingGlass,
+  PhPlay,
+  PhWarningCircle,
+} from '@phosphor-icons/vue'
 
 defineProps<{
   error: string | null
@@ -41,18 +50,27 @@ function synchronizeScroll(event: Event): void {
           <h2 id="analysis-scope-title">Informações exibidas</h2>
           <ul>
             <li>
+              <span class="analysis-scope__icon" aria-hidden="true">
+                <PhArrowsLeftRight :size="28" weight="duotone" />
+              </span>
               <div>
                 <strong>Fluxo de linhas</strong>
                 <span>Quantidade produzida e descartada em cada operador.</span>
               </div>
             </li>
             <li>
+              <span class="analysis-scope__icon" aria-hidden="true">
+                <PhClockCounterClockwise :size="28" weight="duotone" />
+              </span>
               <div>
                 <strong>Tempo acumulado</strong>
                 <span>Tempo por operador considerando o número de execuções.</span>
               </div>
             </li>
             <li>
+              <span class="analysis-scope__icon" aria-hidden="true">
+                <PhMagnifyingGlass :size="28" weight="duotone" />
+              </span>
               <div>
                 <strong>Pontos de atenção</strong>
                 <span>Evidência, interpretação e uma forma de conferir cada sinal.</span>
@@ -62,7 +80,9 @@ function synchronizeScroll(event: Event): void {
         </section>
 
         <div class="safety-note">
-          <span class="safety-note__icon" aria-hidden="true">!</span>
+          <span class="safety-note__icon" aria-hidden="true">
+            <PhWarningCircle :size="30" weight="duotone" />
+          </span>
           <p>
             <strong>EXPLAIN ANALYZE executa a consulta.</strong>
             Revise comandos que alteram dados antes de gerar o plano.
@@ -81,7 +101,7 @@ function synchronizeScroll(event: Event): void {
       <section class="plan-editor" aria-label="Editor do plano de execução">
         <header class="plan-editor__header">
           <div class="plan-editor__identity">
-            <span aria-hidden="true">{ }</span>
+            <span aria-hidden="true"><PhBracketsCurly :size="24" weight="bold" /></span>
             <div>
               <strong>Plano de execução</strong>
               <small>Formato JSON</small>
@@ -108,13 +128,17 @@ function synchronizeScroll(event: Event): void {
           <span class="editor-shortcut"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> para analisar</span>
 
           <div class="plan-editor__actions">
-            <ElButton @click="emit('useExample')">Carregar exemplo</ElButton>
+            <ElButton @click="emit('useExample')">
+              <PhFileCode :size="18" weight="duotone" aria-hidden="true" />
+              Carregar exemplo
+            </ElButton>
             <ElButton
               type="primary"
               :disabled="!hasContent"
               :loading="loading"
               @click="emit('analyze')"
             >
+              <PhPlay :size="18" weight="fill" aria-hidden="true" />
               Analisar plano
             </ElButton>
           </div>

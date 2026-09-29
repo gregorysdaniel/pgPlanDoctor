@@ -20,6 +20,7 @@ Ainda não fazem parte desta etapa:
 | TypeScript | Modelo, parser e validação |
 | D3 Hierarchy | Posicionamento dos nós e ligações |
 | Element Plus | Botões, diálogos, menus, collapses e popovers |
+| Phosphor Icons | Ícones da interface e das explicações didáticas |
 | Poppins e JetBrains Mono | Tipografia da interface e dos dados técnicos |
 | Vite | Ambiente de desenvolvimento e build |
 

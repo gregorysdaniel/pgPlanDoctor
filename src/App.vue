@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { ElButton, ElDialog } from 'element-plus'
+import { PhBracketsCurly, PhPlusCircle } from '@phosphor-icons/vue'
 import AppHeader from './components/AppHeader.vue'
 import PlanAnalysis from './components/PlanAnalysis.vue'
 import PlanInput from './components/PlanInput.vue'
@@ -53,8 +54,14 @@ function returnToInput(): void {
   <div class="planoclaro">
     <AppHeader @home="returnToInput">
       <template v-if="screen === 'analysis'">
-        <ElButton @click="originalPlanVisible = true">Ver JSON</ElButton>
-        <ElButton type="primary" @click="returnToInput">Novo plano</ElButton>
+        <ElButton @click="originalPlanVisible = true">
+          <PhBracketsCurly :size="18" weight="bold" aria-hidden="true" />
+          Ver JSON
+        </ElButton>
+        <ElButton type="primary" @click="returnToInput">
+          <PhPlusCircle :size="18" weight="bold" aria-hidden="true" />
+          Novo plano
+        </ElButton>
       </template>
 
       <ThemeSwitcher />

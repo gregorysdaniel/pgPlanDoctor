@@ -149,6 +149,18 @@ pre {
   font-weight: 700;
 }
 
+.planoclaro .el-button > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1;
+}
+
+.planoclaro .el-button > span > svg {
+  flex: 0 0 auto;
+}
+
 .planoclaro .el-button--primary:not(.is-disabled) {
   border-color: color-mix(in srgb, var(--primary) 75%, var(--ink));
   box-shadow: var(--shadow-button);
@@ -192,19 +204,15 @@ pre {
 
 .brand__symbol {
   display: inline-flex;
-  width: 47px;
+  width: 38px;
   height: 34px;
   align-items: center;
+  justify-content: center;
+  color: var(--primary);
 }
 
 .brand__symbol svg {
-  width: 45px;
-  height: 32px;
-  fill: var(--surface);
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2;
+  flex: 0 0 auto;
 }
 
 .brand__name {
@@ -241,18 +249,11 @@ pre {
   color: var(--primary);
 }
 
-.theme-menu-button svg {
-  width: 17px;
-  height: 17px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.7;
+.theme-menu-button > svg {
+  flex: 0 0 auto;
 }
 
 .theme-menu-button .theme-menu-button__chevron {
-  width: 14px;
   color: var(--ink-muted);
 }
 
@@ -262,9 +263,12 @@ pre {
 
 .theme-menu .el-dropdown-menu__item {
   display: flex;
-  justify-content: space-between;
-  gap: 24px;
+  gap: 9px;
   font-size: 14px;
+}
+
+.theme-menu__check {
+  margin-left: auto;
 }
 
 .theme-menu .theme-menu__item--active {
@@ -350,8 +354,19 @@ pre {
 }
 
 .analysis-scope li {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  align-items: start;
+  gap: 13px;
   padding: 12px 0;
   border-bottom: 1px solid var(--border);
+}
+
+.analysis-scope__icon {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  color: var(--primary);
 }
 
 .analysis-scope li > div {
@@ -383,14 +398,12 @@ pre {
 }
 
 .safety-note__icon {
-  display: grid;
+  display: inline-flex;
   width: 30px;
   height: 30px;
-  place-items: center;
-  border: 2px solid var(--attention);
-  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
   color: var(--attention);
-  font-weight: 700;
 }
 
 .safety-note p {
@@ -931,14 +944,12 @@ pre {
 }
 
 .attention-panel__heading > span {
-  display: grid;
+  display: inline-flex;
   width: 31px;
   height: 31px;
-  place-items: center;
-  border: 2px solid var(--attention);
-  border-radius: 7px;
+  align-items: center;
+  justify-content: center;
   color: var(--attention);
-  font-weight: 700;
 }
 
 .attention-panel .inspector-label {

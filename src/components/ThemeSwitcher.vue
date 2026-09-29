@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { ElDropdown, ElDropdownItem, ElDropdownMenu } from 'element-plus'
+import { PhCaretDown, PhCheck, PhMonitor, PhMoon, PhSun } from '@phosphor-icons/vue'
 import { useTheme, type ThemePreference } from '../composables/useTheme'
 
-const { preference, resolvedTheme, setThemePreference } = useTheme()
+const { preference, setThemePreference } = useTheme()
 
 const options: Array<{ value: ThemePreference; label: string }> = [
   { value: 'system', label: 'Sistema' },
@@ -30,17 +31,11 @@ function selectTheme(command: string | number | object): void {
       :aria-label="`Tema: ${currentLabel}`"
       aria-haspopup="menu"
     >
-      <svg v-if="resolvedTheme === 'dark'" viewBox="0 0 20 20" aria-hidden="true">
-        <path d="M16.5 12.7A7 7 0 0 1 7.3 3.5 7 7 0 1 0 16.5 12.7Z" />
-      </svg>
-      <svg v-else viewBox="0 0 20 20" aria-hidden="true">
-        <circle cx="10" cy="10" r="3.25" />
-        <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.35 4.35l1.4 1.4M14.25 14.25l1.4 1.4M15.65 4.35l-1.4 1.4M5.75 14.25l-1.4 1.4" />
-      </svg>
+      <PhMonitor v-if="preference === 'system'" :size="18" weight="duotone" aria-hidden="true" />
+      <PhSun v-else-if="preference === 'light'" :size="18" weight="duotone" aria-hidden="true" />
+      <PhMoon v-else :size="18" weight="duotone" aria-hidden="true" />
       <span>{{ currentLabel }}</span>
-      <svg class="theme-menu-button__chevron" viewBox="0 0 20 20" aria-hidden="true">
-        <path d="m6 8 4 4 4-4" />
-      </svg>
+      <PhCaretDown class="theme-menu-button__chevron" :size="14" weight="bold" aria-hidden="true" />
     </button>
 
     <template #dropdown>
@@ -51,8 +46,17 @@ function selectTheme(command: string | number | object): void {
           :command="option.value"
           :class="{ 'theme-menu__item--active': preference === option.value }"
         >
+          <PhMonitor v-if="option.value === 'system'" :size="18" weight="duotone" aria-hidden="true" />
+          <PhSun v-else-if="option.value === 'light'" :size="18" weight="duotone" aria-hidden="true" />
+          <PhMoon v-else :size="18" weight="duotone" aria-hidden="true" />
           <span>{{ option.label }}</span>
-          <span v-if="preference === option.value" aria-hidden="true">✓</span>
+          <PhCheck
+            v-if="preference === option.value"
+            class="theme-menu__check"
+            :size="16"
+            weight="bold"
+            aria-hidden="true"
+          />
         </ElDropdownItem>
       </ElDropdownMenu>
     </template>
