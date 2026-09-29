@@ -313,16 +313,16 @@ A entrada usa a composição em duas colunas da referência, sem se comportar co
 ```text
 ┌ informação necessária ────────────┬ editor JSON ────────────────────┐
 │                                   │                                 │
-│ Cole um plano de execução         │ Plano de execução               │
-│ Comando e formato aceitos         │ JSON                            │
+│ Visualize seu plano de execução   │ Plano de execução               │
+│ Formato, finalidade e privacidade │ JSON                            │
 │                                   │ JSON                            │
-│ Informações exibidas              │                                 │
+│ O que pode ser examinado          │                                 │
 │ Aviso de execução                 │                                 │
 │                                   │ ajuda  exemplo       analisar  │
 └───────────────────────────────────┴─────────────────────────────────┘
 ```
 
-- largura entre 1360 e 1480 px;
+- largura máxima de 1360 px, compartilhada com as demais páginas;
 - duas colunas entre 42/58 e 50/50;
 - conteúdo principal centralizado verticalmente no espaço disponível;
 - título de 38–48 px;
@@ -420,7 +420,10 @@ A página de informações existe para documentar o projeto, não para promovê-
 - use uma estrutura documental simples, sem hero comercial, CTA interno ou coleção de cards;
 - direcione o feedback para um Google Forms externo claramente identificado.
 - ofereça um link direto para o repositório do benchmark no GitHub.
-- apresente o convite ao feedback antes dos detalhes do benchmark e explique como a resposta será usada.
+- apresente o convite ao feedback como uma frase curta na introdução;
+- use um link textual, sem título próprio, card ou chamada promocional.
+- mantenha introdução, convite e seções na mesma escala de texto corrido;
+- separe o conjunto introdutório das demais seções com a borda padrão.
 
 A página é secundária e pouco acessada. Texto corrido, seções e uma tabela resumida são suficientes.
 

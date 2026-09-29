@@ -48,42 +48,30 @@ const heuristicValidations: HeuristicValidation[] = [
       <header class="project-info__header">
         <h1>Sobre o PlanoClaro</h1>
         <p>
-          O PlanoClaro é uma ferramenta didática para visualizar a saída de
-          <code>EXPLAIN (ANALYZE, FORMAT JSON)</code> e investigar pontos de atenção em planos de
-          execução do PostgreSQL.
+          O PlanoClaro é uma ferramenta didática para apoiar estudantes e desenvolvedores
+          iniciantes na interpretação de planos de execução do PostgreSQL. A saída de
+          <code>EXPLAIN (ANALYZE, FORMAT JSON)</code> é organizada como uma árvore interativa,
+          permitindo acompanhar o caminho dos dados e consultar as métricas de cada operador.
+        </p>
+        <p class="project-info__feedback-prompt">
+          Encontrou algo confuso, uma informação incorreta ou uma dificuldade de uso?
+          <a :href="feedbackFormUrl" target="_blank" rel="noopener noreferrer">
+            Envie um feedback.
+          </a>
         </p>
       </header>
 
       <section>
         <h2>Como a análise funciona</h2>
         <p>
-          O plano é interpretado no navegador e apresentado como um fluxo de operadores. As regras
-          usam informações do próprio plano, como linhas estimadas, linhas produzidas, descartes,
+          O JSON é processado localmente no navegador e não é enviado a um servidor. A visualização
+          relaciona os operadores e apresenta linhas estimadas, linhas produzidas, descartes,
           repetições e tempo acumulado.
         </p>
         <p>
           Um ponto de atenção indica onde vale investigar. Ele não comprova sozinho a causa de um
           problema nem garante que a alteração sugerida será melhor.
         </p>
-      </section>
-
-      <section id="feedback" class="project-info__feedback">
-        <div>
-          <h2>Ajude a melhorar o PlanoClaro</h2>
-          <p>
-            Se encontrou algo confuso, teve dificuldade para usar a ferramenta ou tem alguma
-            informação que possa ajudar, compartilhe sua experiência. Comentários sobre o conteúdo,
-            a interface e o funcionamento ajudam a orientar as próximas melhorias.
-          </p>
-        </div>
-        <a
-          class="project-info__feedback-action"
-          :href="feedbackFormUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Enviar feedback
-        </a>
       </section>
 
       <section>

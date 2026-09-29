@@ -42,21 +42,25 @@ function synchronizeScroll(event: Event): void {
   <main class="input-screen">
     <div class="input-hero">
       <section class="input-copy" aria-labelledby="input-title">
-        <h1 id="input-title">Cole um plano de execução</h1>
+        <h1 id="input-title">Visualize seu plano de execução</h1>
         <p class="input-lead">
-          Execute <code>EXPLAIN (ANALYZE, FORMAT JSON)</code> no PostgreSQL e cole o resultado abaixo. O plano é analisado localmente e não é enviado a um servidor.
+          Transforme a saída de <code>EXPLAIN (ANALYZE, FORMAT JSON)</code> em uma árvore interativa.
+          Compare o fluxo de linhas, os tempos e as estimativas para localizar pontos que merecem
+          investigação. O processamento ocorre no navegador e o plano não é enviado a um servidor.
         </p>
 
         <section class="analysis-scope" aria-labelledby="analysis-scope-title">
-          <h2 id="analysis-scope-title">Informações exibidas</h2>
+          <h2 id="analysis-scope-title">O que você pode examinar</h2>
           <ul>
             <li>
               <span class="analysis-scope__icon" aria-hidden="true">
                 <PhArrowsLeftRight :size="28" weight="duotone" />
               </span>
               <div>
-                <strong>Fluxo de linhas</strong>
-                <span>Quantidade produzida e descartada em cada operador.</span>
+                <strong>Estrutura da execução</strong>
+                <span>
+                  Veja como leituras, junções, ordenações e outros operadores formam o resultado.
+                </span>
               </div>
             </li>
             <li>
@@ -64,8 +68,11 @@ function synchronizeScroll(event: Event): void {
                 <PhClockCounterClockwise :size="28" weight="duotone" />
               </span>
               <div>
-                <strong>Tempo acumulado</strong>
-                <span>Tempo por operador considerando o número de execuções.</span>
+                <strong>Linhas, repetições e tempo</strong>
+                <span>
+                  Compare estimativas e valores observados, incluindo descartes e execuções
+                  repetidas.
+                </span>
               </div>
             </li>
             <li>
@@ -73,8 +80,8 @@ function synchronizeScroll(event: Event): void {
                 <PhMagnifyingGlass :size="28" weight="duotone" />
               </span>
               <div>
-                <strong>Pontos de atenção</strong>
-                <span>Evidência, interpretação e uma forma de conferir cada sinal.</span>
+                <strong>Sinais para investigar</strong>
+                <span>Consulte a evidência, uma interpretação possível e como conferir cada sinal.</span>
               </div>
             </li>
           </ul>
@@ -89,7 +96,6 @@ function synchronizeScroll(event: Event): void {
             Revise comandos que alteram dados antes de gerar o plano.
           </p>
         </div>
-
       </section>
 
       <section class="plan-editor" aria-label="Editor do plano de execução">
