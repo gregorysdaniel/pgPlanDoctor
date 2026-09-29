@@ -68,8 +68,10 @@ Nenhum texto necessário à tarefa pode usar 9, 10 ou 11 px.
 
 ### 4.2 Conteúdo largo
 
-- cabeçalho e páginas usam largura máxima entre 1360 e 1480 px;
-- margens laterais do desktop ficam entre 32 e 52 px;
+- cabeçalho, entrada e páginas informativas compartilham um contêiner externo de até 1360 px;
+- o contêiner mantém 32 px de margem lateral no desktop, 20 px em notebooks e 16 px no celular;
+- limites de leitura pertencem às colunas internas, não criam uma margem externa diferente em cada página;
+- a tela de análise é a exceção: resumo, grafo e inspetor usam a largura total disponível;
 - a entrada usa duas colunas de proporções próximas;
 - componentes importantes ocupam espaço proporcional à sua função;
 - não centralize uma coluna estreita em um monitor amplo.
@@ -538,7 +540,7 @@ O seletor permite `Sistema`, `Claro` e `Escuro`.
 
 ### Desktop amplo
 
-- largura útil entre 1360 e 1480 px;
+- contêiner externo de até 1360 px, alinhado entre cabeçalho e páginas;
 - entrada em duas colunas;
 - grafo e inspetor lado a lado;
 - componentes não diminuem porque existe mais espaço.
