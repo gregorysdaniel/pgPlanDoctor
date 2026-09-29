@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { ElAlert, ElButton, ElCollapse, ElCollapseItem } from 'element-plus'
+import { ElAlert, ElButton, ElPopover } from 'element-plus'
 import {
   PhArrowsLeftRight,
   PhBracketsCurly,
@@ -8,6 +8,7 @@ import {
   PhFileCode,
   PhMagnifyingGlass,
   PhPlay,
+  PhQuestion,
   PhWarningCircle,
 } from '@phosphor-icons/vue'
 
@@ -89,13 +90,6 @@ function synchronizeScroll(event: Event): void {
           </p>
         </div>
 
-        <ElCollapse id="como-gerar" class="input-help">
-          <ElCollapseItem name="postgresql">
-            <template #title>Comando para obter o JSON</template>
-            <p>Adicione o comando antes da consulta:</p>
-            <code>EXPLAIN (ANALYZE, FORMAT JSON)</code>
-          </ElCollapseItem>
-        </ElCollapse>
       </section>
 
       <section class="plan-editor" aria-label="Editor do plano de execução">
@@ -107,6 +101,24 @@ function synchronizeScroll(event: Event): void {
               <small>Formato JSON</small>
             </div>
           </div>
+
+          <ElPopover
+            placement="bottom-end"
+            trigger="click"
+            :teleported="false"
+            :width="360"
+            popper-class="plan-help-popover"
+          >
+            <template #reference>
+              <ElButton class="plan-editor__help">
+                <PhQuestion :size="18" weight="bold" aria-hidden="true" />
+                Como obter o JSON
+              </ElButton>
+            </template>
+            <strong>Comando no PostgreSQL</strong>
+            <p>Adicione esta linha antes da consulta:</p>
+            <code>EXPLAIN (ANALYZE, FORMAT JSON)</code>
+          </ElPopover>
         </header>
 
         <div class="code-editor">

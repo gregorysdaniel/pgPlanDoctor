@@ -118,6 +118,19 @@ O Exercism usa contornos definidos, sombras curtas em ações e sombras difusas 
 
 Não use uma escala verde–amarelo–vermelho para classificar o plano.
 
+### 4.6 Primeiro viewport
+
+Em telas desktop, a tarefa principal deve aparecer inteira sem rolagem vertical.
+
+- na entrada, mostre título, instrução, informações exibidas, aviso, acesso à ajuda, editor e ações no primeiro viewport;
+- na análise, mantenha resumo, grafo, legenda e início do inspetor visíveis;
+- adapte a altura das áreas de trabalho com `dvh`, `minmax()` e `clamp()`;
+- somente conteúdo realmente adicional, um painel expandido ou uma mensagem de erro pode continuar abaixo da dobra;
+- painéis extensos, como o inspetor, podem ter rolagem própria;
+- em tablets, celulares ou janelas muito baixas, preserve o tamanho legível e aceite a rolagem da página.
+
+Não reduza tipografia ou alvos de toque apenas para eliminar a rolagem.
+
 ## 5. Tipografia
 
 A família principal é **Poppins**, com fallback para fonte geométrica do sistema. A família técnica é **JetBrains Mono**, com fallback monoespaçado.
@@ -290,17 +303,17 @@ A entrada usa a composição em duas colunas da referência, sem se comportar co
 │ Cole um plano de execução         │ Plano de execução               │
 │ Comando e formato aceitos         │ JSON                            │
 │                                   │ JSON                            │
-│ Métricas mostradas                │                                 │
+│ Informações exibidas              │                                 │
 │ Aviso de execução                 │                                 │
-│ Como gerar no PostgreSQL          │ exemplo              analisar  │
+│                                   │ ajuda  exemplo       analisar  │
 └───────────────────────────────────┴─────────────────────────────────┘
 ```
 
 - largura entre 1360 e 1480 px;
 - duas colunas entre 42/58 e 50/50;
-- alinhamento pelo topo;
+- conteúdo principal centralizado verticalmente no espaço disponível;
 - título de 38–48 px;
-- editor com pelo menos 680 px de largura e 500 px de altura;
+- editor com pelo menos 680 px de largura; sua altura acompanha o viewport;
 - fundo com padrão geométrico quase imperceptível;
 - título literal, sem slogan, eyebrow ou marca-texto decorativo.
 
@@ -324,6 +337,7 @@ Não inclua um roteiro “cole, visualize, investigue”. Essas ações já est�
 - numeração de linhas;
 - quebra de linha preservada;
 - barra inferior com atalho e ações;
+- ajuda para obter o JSON em popover no cabeçalho, sem alterar a altura da página;
 - `Analisar plano` como ação primária;
 - `Carregar exemplo` como ação secundária;
 - erro específico junto ao editor;
@@ -379,6 +393,7 @@ Não usar mapa de calor. Cor forte em todo o nó prejudica leitura e aproxima a 
 - métricas principais em duas colunas;
 - evidência, interpretação e validação em blocos separados;
 - propriedades avançadas recolhidas;
+- rolagem própria quando o conteúdo ultrapassar a altura disponível;
 - corpo entre 14 e 16 px.
 
 ## 11. Componentes

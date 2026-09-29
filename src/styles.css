@@ -301,11 +301,12 @@ pre {
   z-index: 1;
   display: grid;
   width: min(1440px, calc(100% - 80px));
+  min-height: calc(100dvh - 78px);
   margin: 0 auto;
-  padding: 72px 0 82px;
+  padding: clamp(26px, 3.5vh, 44px) 0;
   grid-template-columns: minmax(400px, 0.84fr) minmax(680px, 1.16fr);
   gap: clamp(56px, 6vw, 96px);
-  align-items: start;
+  align-items: center;
 }
 
 .input-copy {
@@ -337,17 +338,17 @@ pre {
 }
 
 .analysis-scope {
-  margin-top: 38px;
+  margin: clamp(18px, 2.5vh, 28px) 0 0;
 }
 
 .analysis-scope h2 {
-  margin: 0 0 16px;
+  margin: 0 0 12px;
   font-size: 17px;
 }
 
 .analysis-scope ul {
   display: grid;
-  gap: 10px;
+  gap: 6px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -358,7 +359,7 @@ pre {
   grid-template-columns: 36px 1fr;
   align-items: start;
   gap: 13px;
-  padding: 12px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--border);
 }
 
@@ -386,10 +387,10 @@ pre {
 
 .safety-note {
   display: grid;
-  margin-top: 30px;
+  margin-top: clamp(16px, 2.5vh, 26px);
   grid-template-columns: 34px 1fr;
   gap: 13px;
-  padding: 17px 19px;
+  padding: 14px 17px;
   border: 1px solid color-mix(in srgb, var(--attention) 40%, var(--border));
   border-left: 5px solid var(--attention);
   border-radius: 8px;
@@ -416,41 +417,6 @@ pre {
   display: block;
   color: var(--ink);
   font-size: 14px;
-}
-
-.input-help {
-  margin-top: 18px;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-
-.input-help .el-collapse-item__header {
-  min-height: 54px;
-  color: var(--ink);
-  background: transparent;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.input-help .el-collapse-item__wrap,
-.input-help .el-collapse-item__content {
-  color: var(--ink-muted);
-  background: transparent;
-}
-
-.input-help p {
-  margin: 0 0 9px;
-}
-
-.input-help code {
-  display: block;
-  overflow-x: auto;
-  padding: 11px 13px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--ink);
-  background: var(--code-surface);
-  font-size: 13px;
 }
 
 .plan-editor {
@@ -506,9 +472,42 @@ pre {
   font-weight: 500;
 }
 
+.plan-editor__help {
+  flex: 0 0 auto;
+}
+
+.plan-help-popover strong {
+  display: block;
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.plan-help-popover {
+  max-width: calc(100vw - 32px);
+}
+
+.plan-help-popover p {
+  margin: 8px 0 12px;
+  color: var(--ink-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.plan-help-popover code {
+  display: block;
+  overflow-x: auto;
+  padding: 11px 13px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--ink);
+  background: var(--code-surface);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 .code-editor {
   display: grid;
-  height: 560px;
+  height: clamp(410px, calc(100dvh - 340px), 560px);
   grid-template-columns: 58px minmax(0, 1fr);
   background: var(--code-surface);
 }
@@ -1064,6 +1063,90 @@ pre {
   line-height: 1.65;
 }
 
+@media (min-width: 1025px) {
+  .analysis-screen {
+    display: grid;
+    height: calc(100dvh - 78px);
+    min-height: 0;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+  }
+
+  .analysis-workspace,
+  .graph-pane {
+    min-height: 0;
+  }
+
+  .analysis-workspace {
+    overflow: hidden;
+  }
+
+  .graph-canvas {
+    min-height: 0;
+  }
+
+  .node-inspector {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+@media (min-width: 1025px) and (max-height: 800px) {
+  .input-hero {
+    padding-block: 20px;
+  }
+
+  .input-copy {
+    padding-top: 0;
+  }
+
+  .input-copy h1 {
+    font-size: 38px;
+  }
+
+  .input-lead {
+    margin-top: 14px;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .analysis-scope {
+    margin-top: 16px;
+  }
+
+  .analysis-scope h2 {
+    margin-bottom: 8px;
+  }
+
+  .analysis-scope ul {
+    gap: 2px;
+  }
+
+  .analysis-scope li {
+    padding-block: 6px;
+  }
+
+  .analysis-scope__icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .analysis-scope li span:last-child {
+    line-height: 1.35;
+  }
+
+  .safety-note {
+    margin-top: 14px;
+    padding-block: 11px;
+  }
+
+  .safety-note p {
+    line-height: 1.45;
+  }
+
+}
+
 @media (max-width: 1240px) {
   .app-header__inner {
     width: calc(100% - 40px);
@@ -1084,6 +1167,7 @@ pre {
 @media (max-width: 1024px) {
   .input-hero {
     width: min(840px, calc(100% - 48px));
+    min-height: 0;
     padding-top: 52px;
     grid-template-columns: 1fr;
   }
@@ -1168,6 +1252,10 @@ pre {
   .plan-editor__footer {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .plan-editor__help {
+    margin-left: 55px;
   }
 
   .plan-editor__actions {
