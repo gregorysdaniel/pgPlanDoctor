@@ -176,9 +176,13 @@ As cores podem diferir do Exercism, mas contraste, distribuição e hierarquia d
   --border-strong: #aeb6cf;
   --pattern: #e9ecf5;
 
-  --primary: #5146d8;
-  --primary-hover: #4035bd;
-  --primary-soft: #eeecff;
+  --primary: #5276bd;
+  --primary-hover: #3f609f;
+  --primary-soft: #edf2fb;
+  --button-primary: #4969aa;
+  --button-primary-hover: #3f5d98;
+  --button-primary-active: #354f83;
+  --button-primary-text: #ffffff;
   --highlight: #ffef70;
 
   --attention: #b85c18;
@@ -193,43 +197,50 @@ As cores podem diferir do Exercism, mas contraste, distribuição e hierarquia d
 
 ### 6.2 Tema escuro
 
-O tema escuro adapta a mesma interface. Ele não cria outra direção visual.
+O tema escuro adapta a mesma interface. Ele não cria outra direção visual nem usa cores mais saturadas para parecer gamificado. As superfícies são grafite e o azul fica reservado para ações, foco e informação selecionada.
 
 ```css
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --page: #111226;
-  --surface: #191b33;
-  --surface-subtle: #22253f;
-  --surface-raised: #1d2039;
+  --page: #121417;
+  --surface: #191c21;
+  --surface-subtle: #22262d;
+  --surface-raised: #1d2026;
+  --code-surface: #15181d;
 
-  --ink: #f6f5ff;
-  --ink-muted: #c0c3d9;
-  --ink-faint: #8f95af;
+  --ink: #f1f3f5;
+  --ink-muted: #b3b9c3;
+  --ink-faint: #858d99;
 
-  --border: #373b59;
-  --border-strong: #626986;
-  --pattern: #2a2e49;
+  --border: #30353d;
+  --border-strong: #49515d;
+  --pattern: #24282e;
 
-  --primary: #9a8cff;
-  --primary-hover: #b3a8ff;
-  --primary-soft: #302b61;
-  --highlight: #5f541d;
+  --primary: #7796d8;
+  --primary-hover: #91abe2;
+  --primary-soft: #253049;
+  --button-primary: #506da6;
+  --button-primary-hover: #5d7dbb;
+  --button-primary-active: #466092;
+  --button-primary-text: #ffffff;
 
-  --attention: #f2a25c;
-  --attention-soft: #38281e;
-  --danger: #ff7f8b;
-  --success: #5fd0a4;
+  --attention: #e3a064;
+  --attention-soft: #33261d;
+  --danger: #ed7d86;
+  --success: #62ba94;
 
-  --shadow-button: 0 4px 0 rgba(0, 0, 0, 0.42);
-  --shadow-raised: 0 16px 38px rgba(0, 0, 0, 0.28);
+  --shadow-button: 0 2px 0 rgba(0, 0, 0, 0.38);
+  --shadow-raised: 0 12px 28px rgba(0, 0, 0, 0.24);
 }
 ```
 
 Regras:
 
 - componentes usam tokens, nunca cores de tema codificadas localmente;
+- azul de destaque e azul de botão pertencem à mesma família, mas o botão usa um tom mais profundo para manter contraste com texto branco;
+- botões secundários permanecem neutros e recebem azul apenas no `hover` ou no foco;
+- botões desabilitados usam superfície e texto neutros; não use um azul claro que possa ser confundido com uma ação disponível;
 - não inverta a página com `filter`;
 - evite preto e branco puros em superfícies grandes;
 - o tema deve ser aplicado antes da primeira pintura;

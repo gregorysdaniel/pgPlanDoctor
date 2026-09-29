@@ -24,9 +24,13 @@
   --border-strong: #aeb6cf;
   --pattern: #e9ecf5;
 
-  --primary: #5146d8;
-  --primary-hover: #4035bd;
-  --primary-soft: #eeecff;
+  --primary: #5276bd;
+  --primary-hover: #3f609f;
+  --primary-soft: #edf2fb;
+  --button-primary: #4969aa;
+  --button-primary-hover: #3f5d98;
+  --button-primary-active: #354f83;
+  --button-primary-text: #ffffff;
   --attention: #b85c18;
   --attention-soft: #fff3e5;
   --danger: #c93645;
@@ -38,33 +42,37 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  color: #f6f5ff;
-  background: #111226;
+  color: #f1f3f5;
+  background: #121417;
 
-  --page: #111226;
-  --surface: #191b33;
-  --surface-subtle: #22253f;
-  --surface-raised: #1d2039;
-  --code-surface: #15172c;
+  --page: #121417;
+  --surface: #191c21;
+  --surface-subtle: #22262d;
+  --surface-raised: #1d2026;
+  --code-surface: #15181d;
 
-  --ink: #f6f5ff;
-  --ink-muted: #c0c3d9;
-  --ink-faint: #8f95af;
+  --ink: #f1f3f5;
+  --ink-muted: #b3b9c3;
+  --ink-faint: #858d99;
 
-  --border: #373b59;
-  --border-strong: #626986;
-  --pattern: #2a2e49;
+  --border: #30353d;
+  --border-strong: #49515d;
+  --pattern: #24282e;
 
-  --primary: #9a8cff;
-  --primary-hover: #b3a8ff;
-  --primary-soft: #302b61;
-  --attention: #f2a25c;
-  --attention-soft: #38281e;
-  --danger: #ff7f8b;
-  --success: #5fd0a4;
+  --primary: #7796d8;
+  --primary-hover: #91abe2;
+  --primary-soft: #253049;
+  --button-primary: #506da6;
+  --button-primary-hover: #5d7dbb;
+  --button-primary-active: #466092;
+  --button-primary-text: #ffffff;
+  --attention: #e3a064;
+  --attention-soft: #33261d;
+  --danger: #ed7d86;
+  --success: #62ba94;
 
-  --shadow-button: 0 4px 0 rgba(0, 0, 0, 0.42);
-  --shadow-raised: 0 16px 38px rgba(0, 0, 0, 0.28);
+  --shadow-button: 0 2px 0 rgba(0, 0, 0, 0.38);
+  --shadow-raised: 0 12px 28px rgba(0, 0, 0, 0.24);
 }
 
 * {
@@ -165,14 +173,44 @@ pre {
 }
 
 .planoclaro .el-button--primary:not(.is-disabled) {
-  border-color: color-mix(in srgb, var(--primary) 75%, var(--ink));
+  border-color: var(--button-primary);
+  color: var(--button-primary-text);
+  background: var(--button-primary);
   box-shadow: var(--shadow-button);
+}
+
+.planoclaro .el-button--primary:not(.is-disabled):hover,
+.planoclaro .el-button--primary:not(.is-disabled):focus-visible {
+  border-color: var(--button-primary-hover);
+  color: var(--button-primary-text);
+  background: var(--button-primary-hover);
+}
+
+.planoclaro .el-button--primary:not(.is-disabled):active {
+  border-color: var(--button-primary-active);
+  color: var(--button-primary-text);
+  background: var(--button-primary-active);
+  box-shadow: none;
+}
+
+.planoclaro .el-button--primary.is-disabled {
+  border-color: var(--border);
+  color: var(--ink-faint);
+  background: var(--surface-subtle);
+  box-shadow: none;
 }
 
 .planoclaro .el-button--default {
   border-color: var(--border-strong);
-  color: var(--primary);
+  color: var(--ink);
   background: var(--surface);
+}
+
+.planoclaro .el-button--default:not(.is-disabled):hover,
+.planoclaro .el-button--default:not(.is-disabled):focus-visible {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-soft);
 }
 
 /* Cabeçalho */
@@ -321,6 +359,10 @@ pre {
   background-size: 34px 34px;
   mask-image: linear-gradient(to bottom, black 0%, black 76%, transparent 100%);
   pointer-events: none;
+}
+
+:root[data-theme="dark"] .input-screen::before {
+  opacity: 0.38;
 }
 
 .input-hero {
