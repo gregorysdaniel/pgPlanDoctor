@@ -396,9 +396,24 @@ Não usar mapa de calor. Cor forte em todo o nó prejudica leitura e aproxima a 
 - rolagem própria quando o conteúdo ultrapassar a altura disponível;
 - corpo entre 14 e 16 px.
 
-## 11. Componentes
+## 11. Página de informações
 
-### 11.1 Botões
+A página de informações existe para documentar o projeto, não para promovê-lo.
+
+- explique o propósito da ferramenta em termos concretos;
+- resuma a comparação antes/depois usada para avaliar cada heurística;
+- encaminhe scripts, planos, medições e protocolo detalhado para a documentação do benchmark;
+- deixe explícito que um cenário controlado não garante benefício em toda consulta;
+- use uma estrutura documental simples, sem hero comercial, CTA interno ou coleção de cards;
+- direcione o feedback para um Google Forms externo claramente identificado.
+- ofereça um link direto para o repositório do benchmark no GitHub.
+- apresente o convite ao feedback antes dos detalhes do benchmark e explique como a resposta será usada.
+
+A página é secundária e pouco acessada. Texto corrido, seções e uma tabela resumida são suficientes.
+
+## 12. Componentes
+
+### 12.1 Botões
 
 - primário: cor sólida, texto claro, borda escura sutil e sombra curta;
 - secundário: superfície branca, borda primária e texto primário;
@@ -406,21 +421,21 @@ Não usar mapa de calor. Cor forte em todo o nó prejudica leitura e aproxima a 
 - altura mínima de 44 px;
 - rótulo descreve a ação: `Analisar plano`, `Ver JSON`, `Novo plano`.
 
-### 11.2 Cards e painéis
+### 12.2 Cards e painéis
 
 - usar card somente quando o conteúdo for uma unidade independente;
 - borda nítida e raio de 8–12 px;
 - sombra apenas em superfície prioritária;
 - não envolver cada parágrafo ou métrica em um card.
 
-### 11.3 Links
+### 12.3 Links
 
 - sublinhado visível ou indicação inequívoca;
 - cor primária;
 - texto informa o destino;
 - documentação externa abre em nova aba.
 
-### 11.4 Element Plus
+### 12.4 Element Plus
 
 O Element Plus fornece comportamento, não identidade visual.
 
@@ -440,7 +455,7 @@ Evite usar automaticamente:
 - `ElAlert` para dicas e heurísticas;
 - estilos padrão sem mapear os tokens dos dois temas.
 
-## 12. Linguagem
+## 13. Linguagem
 
 Termos do PostgreSQL permanecem em inglês e recebem explicação em português quando necessário.
 
@@ -464,7 +479,7 @@ Evite:
 - `problema detectado` quando a regra apenas sugere investigação;
 - adjetivos promocionais como “poderoso”, “inteligente” ou “inovador”.
 
-## 13. Formatação dos dados
+## 14. Formatação dos dados
 
 Use locale `pt-BR`:
 
@@ -475,7 +490,7 @@ Use locale `pt-BR`:
 
 Considere `loops` em valores acumulados e deixe claro quando um valor é por execução.
 
-## 14. Tema
+## 15. Tema
 
 O seletor permite `Sistema`, `Claro` e `Escuro`.
 
@@ -486,7 +501,7 @@ O seletor permite `Sistema`, `Claro` e `Escuro`.
 - diálogos, popovers, editor e SVG respeitam o tema;
 - nenhuma informação depende apenas de cor.
 
-## 15. Responsividade
+## 16. Responsividade
 
 ### Desktop amplo
 
@@ -510,7 +525,7 @@ O seletor permite `Sistema`, `Claro` e `Escuro`.
 - análise alterna entre fluxo e detalhes;
 - alvos de toque de pelo menos 44 × 44 px.
 
-## 16. Acessibilidade
+## 17. Acessibilidade
 
 - WCAG AA nos dois temas;
 - foco visível;
@@ -521,7 +536,7 @@ O seletor permite `Sistema`, `Claro` e `Escuro`.
 - respeito a `prefers-reduced-motion`;
 - zoom do navegador em 200% sem perda de ações essenciais.
 
-## 17. Organização no repositório
+## 18. Organização no repositório
 
 ```text
 src/
@@ -530,7 +545,8 @@ src/
 │   ├── ThemeSwitcher.vue
 │   ├── PlanInput.vue
 │   ├── PlanAnalysis.vue
-│   └── PlanTree.vue
+│   ├── PlanTree.vue
+│   └── ProjectInfo.vue
 ├── composables/
 │   └── useTheme.ts
 ├── domain/
@@ -549,7 +565,7 @@ Regras:
 - estado do tema não se mistura ao estado do plano;
 - SVG usa variáveis CSS sempre que possível.
 
-## 18. Processo de implementação
+## 19. Processo de implementação
 
 Para cada região:
 
@@ -562,7 +578,7 @@ Para cada região:
 
 Não faça ajustes incrementais em uma região cuja estrutura ainda pertence à direção antiga. Substitua a composição inteira.
 
-## 19. Critérios de aceite
+## 20. Critérios de aceite
 
 Uma alteração visual só está concluída quando:
 
@@ -587,7 +603,7 @@ Valide pelo menos em:
 - temas claro e escuro;
 - plano linear e plano ramificado.
 
-## 20. Proibições
+## 21. Proibições
 
 - reutilizar metáforas visuais da direção anterior;
 - aparência de terminal como identidade geral;

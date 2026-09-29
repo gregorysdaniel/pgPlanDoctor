@@ -1,26 +1,48 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { ElButton, ElDialog } from 'element-plus'
-import { PhBracketsCurly, PhPlusCircle } from '@phosphor-icons/vue'
+import { PhBracketsCurly, PhInfo, PhPlusCircle } from '@phosphor-icons/vue'
 import AppHeader from './components/AppHeader.vue'
 import PlanAnalysis from './components/PlanAnalysis.vue'
 import PlanInput from './components/PlanInput.vue'
+import ProjectInfo from './components/ProjectInfo.vue'
 import ThemeSwitcher from './components/ThemeSwitcher.vue'
 import { explainAnalyzeOutput } from './data/planData'
 import { parseExplainJson, PlanParseError } from './domain/planParser'
 import type { PlanNode } from './domain/plan'
 import { useTheme } from './composables/useTheme'
 
-type AppScreen = 'input' | 'analysis'
+type AppScreen = 'input' | 'analysis' | 'info'
 
 const { initializeTheme } = useTheme()
-const screen = ref<AppScreen>('input')
+const screen = ref<AppScreen>(window.location.hash === '#sobre' ? 'info' : 'input')
+const screenBeforeInfo = ref<AppScreen>('input')
 const explainInput = ref('')
 const loadedPlan = ref<PlanNode | null>(null)
 const parseError = ref<string | null>(null)
 const originalPlanVisible = ref(false)
 
-onMounted(initializeTheme)
+onMounted(() => {
+  initializeTheme()
+  window.addEventListener('popstate', synchronizeScreenWithLocation)
+  window.addEventListener('hashchange', synchronizeScreenWithLocation)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('popstate', synchronizeScreenWithLocation)
+  window.removeEventListener('hashchange', synchronizeScreenWithLocation)
+})
+
+function synchronizeScreenWithLocation(): void {
+  if (window.location.hash === '#sobre') {
+    if (screen.value !== 'info') screenBeforeInfo.value = screen.value
+    screen.value = 'info'
+  } else if (screen.value === 'info') {
+    screen.value = screenBeforeInfo.value
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 
 function useExample(): void {
   explainInput.value = explainAnalyzeOutput
@@ -44,21 +66,52 @@ function analyzePlan(): void {
 }
 
 function returnToInput(): void {
+  if (window.location.hash === '#sobre') {
+    window.history.pushState(null, '', `${window.location.pathname}${window.location.search}`)
+  }
+
   screen.value = 'input'
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
+function openProjectInfo(): void {
+  if (screen.value !== 'info') screenBeforeInfo.value = screen.value
+  window.history.pushState(null, '', '#sobre')
+  screen.value = 'info'
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 </script>
 
 <template>
   <div class="planoclaro">
     <AppHeader @home="returnToInput">
+      <template #nav>
+        <button
+          v-if="screen !== 'info'"
+          class="header-nav__link"
+          type="button"
+          @click="openProjectInfo"
+        >
+          <PhInfo :size="19" weight="bold" aria-hidden="true" />
+          Sobre o projeto
+        </button>
+      </template>
+
       <template v-if="screen === 'analysis'">
-        <ElButton @click="originalPlanVisible = true">
+        <ElButton
+          aria-label="Ver JSON original"
+          title="Ver JSON original"
+          @click="originalPlanVisible = true"
+        >
           <PhBracketsCurly :size="18" weight="bold" aria-hidden="true" />
           Ver JSON
         </ElButton>
-        <ElButton type="primary" @click="returnToInput">
+        <ElButton
+          type="primary"
+          aria-label="Analisar outro plano"
+          title="Analisar outro plano"
+          @click="returnToInput"
+        >
           <PhPlusCircle :size="18" weight="bold" aria-hidden="true" />
           Novo plano
         </ElButton>
@@ -75,7 +128,9 @@ function returnToInput(): void {
       @use-example="useExample"
     />
 
-    <PlanAnalysis v-else-if="loadedPlan" :plan="loadedPlan" />
+    <PlanAnalysis v-else-if="screen === 'analysis' && loadedPlan" :plan="loadedPlan" />
+
+    <ProjectInfo v-else-if="screen === 'info'" />
 
     <ElDialog
       v-model="originalPlanVisible"

@@ -8,15 +8,16 @@ EXPLAIN JSON → parser → PlanNode → heurísticas
                  D3 calcula a posição dos nós
 ```
 
-`App.vue` coordena dois momentos da experiência: entrada e análise. Ele mantém o texto original, solicita a conversão ao parser e entrega somente um `PlanNode` válido para a visualização.
+`App.vue` coordena três páginas da experiência: entrada, análise e informações do projeto. Ele mantém o texto original, solicita a conversão ao parser e entrega somente um `PlanNode` válido para a visualização.
 
 ```text
 App.vue
 ├── AppHeader.vue
 │   └── ThemeSwitcher.vue
 ├── PlanInput.vue
-└── PlanAnalysis.vue
-    └── PlanTree.vue
+├── PlanAnalysis.vue
+│   └── PlanTree.vue
+└── ProjectInfo.vue
 ```
 
 O tema fica em `composables/useTheme.ts`. A preferência aceita `light`, `dark` e `system`, é persistida no navegador e não pertence ao estado do plano.
@@ -39,10 +40,17 @@ As seis regras do MVP ficam em `domain/heuristics.ts` e percorrem a árvore recu
 
 Uma regra não afirma que determinada alteração resolverá o problema. O conteúdo é dividido em evidência, interpretação, próximo passo e forma de validação. Termos técnicos possuem explicação curta e link para a documentação oficial.
 
+## Informações e feedback
+
+`ProjectInfo.vue` documenta o propósito do PlanoClaro e resume qual comparação antes/depois foi realizada para cada heurística. Os scripts, planos e medições continuam na documentação própria do benchmark.
+
+O feedback é coletado em um Google Forms externo configurado por `VITE_FEEDBACK_FORM_URL`. A aplicação não recebe nem armazena as respostas. A documentação completa do benchmark é acessada por `VITE_BENCHMARK_GITHUB_URL`.
+
 ## Limites atuais
 
 - não existe conexão direta com PostgreSQL;
 - não existe backend ou persistência;
+- os links do Google Forms e do benchmark são configurações obrigatórias do ambiente;
 - o grafo usa rolagem quando excede a área; pan e zoom ainda podem ser adicionados;
 - apenas o formato JSON possui parser.
 

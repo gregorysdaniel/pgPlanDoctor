@@ -4,7 +4,7 @@ Aplicação frontend didática para carregar e visualizar um plano de execução
 
 ## Objetivo
 
-Receber uma saída de `EXPLAIN (ANALYZE, FORMAT JSON)` e renderizar seu fluxo no navegador. A experiência separa entrada e análise, permite selecionar operadores e apresenta sinais produzidos pelas seis heurísticas do MVP.
+Receber uma saída de `EXPLAIN (ANALYZE, FORMAT JSON)` e renderizar seu fluxo no navegador. A experiência separa entrada e análise, permite selecionar operadores, apresenta sinais produzidos pelas seis heurísticas do MVP e documenta como elas foram avaliadas.
 
 Ainda não fazem parte desta etapa:
 
@@ -28,8 +28,9 @@ Ainda não fazem parte desta etapa:
 
 ```text
 src/
-├── App.vue                       # entrada, análise e plano original
+├── App.vue                       # navegação, entrada, análise e plano original
 ├── components/AppHeader.vue     # marca e navegação
+├── components/ProjectInfo.vue   # projeto, validações e feedback
 ├── components/ThemeSwitcher.vue # temas claro, escuro e sistema
 ├── components/PlanInput.vue     # entrada do EXPLAIN JSON
 ├── components/PlanAnalysis.vue  # resumo, grafo e inspetor
@@ -54,6 +55,13 @@ npm install
 npm run dev
 ```
 
+Copie `.env.example` para `.env` e configure os endereços públicos do formulário e do benchmark:
+
+```text
+VITE_FEEDBACK_FORM_URL=https://docs.google.com/forms/d/e/.../viewform
+VITE_BENCHMARK_GITHUB_URL=https://github.com/usuario/repositorio/tree/main/benchmark
+```
+
 Para validar o build:
 
 ```bash
@@ -71,4 +79,5 @@ npm run build
 7. O TypeScript rejeita dados incompatíveis com `PlanNode`.
 8. As ligações mostram a direção do fluxo e as linhas produzidas.
 9. As heurísticas exibem evidência, interpretação, próximo passo e validação.
-10. O build funciona sem backend.
+10. A página do projeto apresenta como as seis heurísticas foram avaliadas.
+11. O build funciona sem backend.
