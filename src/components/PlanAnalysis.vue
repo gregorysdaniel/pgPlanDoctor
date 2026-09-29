@@ -135,7 +135,10 @@ function formatTime(value: number): string {
         </section>
 
         <section class="inspector-section">
-          <h3>Métricas da execução</h3>
+          <div class="inspector-section__heading">
+            <h3>Métricas da execução</h3>
+            <a href="#aprender/metricas-essenciais">Como ler</a>
+          </div>
           <dl class="metrics-grid">
             <div v-if="selectedExaminedRows !== null">
               <dt>Examinadas</dt>
@@ -212,6 +215,9 @@ function formatTime(value: number): string {
           <p class="heuristic-limit">
             Este sinal indica onde investigar; ele não determina sozinho qual alteração será melhor.
           </p>
+          <a class="heuristic-learning-link" href="#aprender/heuristicas-nao-sao-diagnosticos">
+            Entenda como interpretar uma heurística
+          </a>
           <ElLink
             :href="selectedTip.documentation.url"
             target="_blank"

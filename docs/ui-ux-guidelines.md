@@ -422,6 +422,28 @@ A página de informações existe para documentar o projeto, não para promovê-
 
 A página é secundária e pouco acessada. Texto corrido, seções e uma tabela resumida são suficientes.
 
+### 11.1 Área de aprendizagem
+
+A área `Aprender` ensina a interpretar planos de execução; ela não é um curso geral de banco de dados.
+
+- organize os conteúdos em uma sequência didática única, sem numeração, categorias visuais ou indicação de progresso;
+- o índice apresenta título, resumo e ícone de cada conteúdo;
+- artigos usam uma coluna de leitura confortável e um sumário lateral no desktop;
+- cada artigo começa com uma introdução curta e termina com `Conteúdos recomendados`;
+- cada seção técnica usa apenas um marcador numérico discreto, ligado à referência completa no final do artigo;
+- título, descrição e link de uma referência aparecem uma única vez;
+- exemplos técnicos usam a fonte de código e explicam somente os campos necessários;
+- avisos servem para riscos reais, como a execução causada por `EXPLAIN ANALYZE`;
+- forneça navegação anterior e próxima;
+- conecte editor, métricas e heurísticas diretamente aos conteúdos relacionados;
+- não adicione gamificação, progresso fictício, certificado ou linguagem promocional.
+
+O conteúdo deve funcionar sem depender da ferramenta. Não escreva instruções sobre onde clicar, como navegar pela interface ou como o PlanoClaro apresenta determinada informação.
+
+A área funciona como curadoria introdutória, não como referência autoral. Use a documentação do PostgreSQL 17 como fonte técnica principal. Antes do link, apresente uma síntese em português e, quando útil, um exemplo pequeno; depois encaminhe o aprofundamento para a fonte oficial.
+
+O texto separa evidência, interpretação e hipótese. Uma alteração possível nunca deve ser apresentada como resultado garantido.
+
 ## 12. Componentes
 
 ### 12.1 Botões
@@ -557,7 +579,11 @@ src/
 │   ├── PlanInput.vue
 │   ├── PlanAnalysis.vue
 │   ├── PlanTree.vue
+│   ├── LearningIndex.vue
+│   ├── LearningArticle.vue
 │   └── ProjectInfo.vue
+├── content/
+│   └── learningContent.ts
 ├── composables/
 │   └── useTheme.ts
 ├── domain/

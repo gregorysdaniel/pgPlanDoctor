@@ -1,26 +1,54 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { ElButton, ElDialog } from 'element-plus'
-import { PhBracketsCurly, PhInfo, PhPlusCircle } from '@phosphor-icons/vue'
+import { PhBookOpenText, PhBracketsCurly, PhInfo, PhPlusCircle } from '@phosphor-icons/vue'
 import AppHeader from './components/AppHeader.vue'
+import LearningArticle from './components/LearningArticle.vue'
+import LearningIndex from './components/LearningIndex.vue'
 import PlanAnalysis from './components/PlanAnalysis.vue'
 import PlanInput from './components/PlanInput.vue'
 import ProjectInfo from './components/ProjectInfo.vue'
 import ThemeSwitcher from './components/ThemeSwitcher.vue'
+import { findLearningArticle } from './content/learningContent'
 import { explainAnalyzeOutput } from './data/planData'
 import { parseExplainJson, PlanParseError } from './domain/planParser'
 import type { PlanNode } from './domain/plan'
 import { useTheme } from './composables/useTheme'
 
-type AppScreen = 'input' | 'analysis' | 'info'
+type AppScreen = 'input' | 'analysis' | 'info' | 'learning'
+type WorkspaceScreen = 'input' | 'analysis'
+
+interface ContentLocation {
+  screen: 'input' | 'info' | 'learning'
+  learningSlug: string | null
+}
+
+function readContentLocation(): ContentLocation {
+  if (window.location.hash === '#sobre') {
+    return { screen: 'info', learningSlug: null }
+  }
+
+  const learningMatch = window.location.hash.match(/^#aprender(?:\/([^/?#]+))?$/)
+  if (learningMatch) {
+    return {
+      screen: 'learning',
+      learningSlug: learningMatch[1] ? decodeURIComponent(learningMatch[1]) : null,
+    }
+  }
+
+  return { screen: 'input', learningSlug: null }
+}
 
 const { initializeTheme } = useTheme()
-const screen = ref<AppScreen>(window.location.hash === '#sobre' ? 'info' : 'input')
-const screenBeforeInfo = ref<AppScreen>('input')
+const initialLocation = readContentLocation()
+const screen = ref<AppScreen>(initialLocation.screen)
+const learningSlug = ref<string | null>(initialLocation.learningSlug)
+const screenBeforeContent = ref<WorkspaceScreen>('input')
 const explainInput = ref('')
 const loadedPlan = ref<PlanNode | null>(null)
 const parseError = ref<string | null>(null)
 const originalPlanVisible = ref(false)
+const currentLearningArticle = computed(() => findLearningArticle(learningSlug.value))
 
 onMounted(() => {
   initializeTheme()
@@ -34,11 +62,18 @@ onBeforeUnmount(() => {
 })
 
 function synchronizeScreenWithLocation(): void {
-  if (window.location.hash === '#sobre') {
-    if (screen.value !== 'info') screenBeforeInfo.value = screen.value
-    screen.value = 'info'
-  } else if (screen.value === 'info') {
-    screen.value = screenBeforeInfo.value
+  const location = readContentLocation()
+
+  if (location.screen === 'info' || location.screen === 'learning') {
+    if (screen.value === 'input' || screen.value === 'analysis') {
+      screenBeforeContent.value = screen.value
+    }
+
+    screen.value = location.screen
+    learningSlug.value = location.learningSlug
+  } else if (screen.value === 'info' || screen.value === 'learning') {
+    screen.value = screenBeforeContent.value
+    learningSlug.value = null
   }
 
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -66,18 +101,34 @@ function analyzePlan(): void {
 }
 
 function returnToInput(): void {
-  if (window.location.hash === '#sobre') {
+  if (screen.value === 'info' || screen.value === 'learning') {
     window.history.pushState(null, '', `${window.location.pathname}${window.location.search}`)
   }
 
   screen.value = 'input'
+  learningSlug.value = null
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 function openProjectInfo(): void {
-  if (screen.value !== 'info') screenBeforeInfo.value = screen.value
+  if (screen.value === 'input' || screen.value === 'analysis') {
+    screenBeforeContent.value = screen.value
+  }
+
   window.history.pushState(null, '', '#sobre')
   screen.value = 'info'
+  learningSlug.value = null
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function openLearning(): void {
+  if (screen.value === 'input' || screen.value === 'analysis') {
+    screenBeforeContent.value = screen.value
+  }
+
+  window.history.pushState(null, '', '#aprender')
+  screen.value = 'learning'
+  learningSlug.value = null
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
@@ -87,9 +138,20 @@ function openProjectInfo(): void {
     <AppHeader @home="returnToInput">
       <template #nav>
         <button
-          v-if="screen !== 'info'"
           class="header-nav__link"
+          :class="{ 'header-nav__link--active': screen === 'learning' }"
           type="button"
+          :aria-current="screen === 'learning' ? 'page' : undefined"
+          @click="openLearning"
+        >
+          <PhBookOpenText :size="19" weight="bold" aria-hidden="true" />
+          Aprender
+        </button>
+        <button
+          class="header-nav__link"
+          :class="{ 'header-nav__link--active': screen === 'info' }"
+          type="button"
+          :aria-current="screen === 'info' ? 'page' : undefined"
           @click="openProjectInfo"
         >
           <PhInfo :size="19" weight="bold" aria-hidden="true" />
@@ -131,6 +193,13 @@ function openProjectInfo(): void {
     <PlanAnalysis v-else-if="screen === 'analysis' && loadedPlan" :plan="loadedPlan" />
 
     <ProjectInfo v-else-if="screen === 'info'" />
+
+    <LearningArticle
+      v-else-if="screen === 'learning' && currentLearningArticle"
+      :article="currentLearningArticle"
+    />
+
+    <LearningIndex v-else-if="screen === 'learning'" />
 
     <ElDialog
       v-model="originalPlanVisible"

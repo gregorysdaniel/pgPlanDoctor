@@ -4,7 +4,7 @@ Aplicação frontend didática para carregar e visualizar um plano de execução
 
 ## Objetivo
 
-Receber uma saída de `EXPLAIN (ANALYZE, FORMAT JSON)` e renderizar seu fluxo no navegador. A experiência separa entrada e análise, permite selecionar operadores, apresenta sinais produzidos pelas seis heurísticas do MVP e documenta como elas foram avaliadas.
+Receber uma saída de `EXPLAIN (ANALYZE, FORMAT JSON)` e renderizar seu fluxo no navegador. A experiência separa entrada e análise, permite selecionar operadores, apresenta sinais produzidos pelas seis heurísticas do MVP e oferece uma introdução à interpretação de planos.
 
 Ainda não fazem parte desta etapa:
 
@@ -30,12 +30,15 @@ Ainda não fazem parte desta etapa:
 src/
 ├── App.vue                       # navegação, entrada, análise e plano original
 ├── components/AppHeader.vue     # marca e navegação
+├── components/LearningIndex.vue # índice dos conteúdos didáticos
+├── components/LearningArticle.vue # página reutilizável de artigo
 ├── components/ProjectInfo.vue   # projeto, validações e feedback
 ├── components/ThemeSwitcher.vue # temas claro, escuro e sistema
 ├── components/PlanInput.vue     # entrada do EXPLAIN JSON
 ├── components/PlanAnalysis.vue  # resumo, grafo e inspetor
 ├── components/PlanTree.vue      # layout D3 e SVG horizontal
 ├── composables/useTheme.ts      # preferência e persistência do tema
+├── content/learningContent.ts   # textos, ordem e referências da área Aprender
 ├── data/explainAnalyzeExample.json
 ├── data/planData.ts
 ├── domain/heuristics.ts         # seis regras do MVP
@@ -80,4 +83,5 @@ npm run build
 8. As ligações mostram a direção do fluxo e as linhas produzidas.
 9. As heurísticas exibem evidência, interpretação, próximo passo e validação.
 10. A página do projeto apresenta como as seis heurísticas foram avaliadas.
-11. O build funciona sem backend.
+11. A área Aprender apresenta os quatro conteúdos iniciais e pode ser acessada pelo contexto do analisador.
+12. O build funciona sem backend.
