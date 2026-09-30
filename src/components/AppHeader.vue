@@ -7,7 +7,7 @@ import { PhTreeStructure } from '@phosphor-icons/vue'
     <div class="app-header__inner">
       <RouterLink class="brand" :to="{ name: 'input' }" aria-label="Ir para a entrada do PlanoClaro">
         <span class="brand__symbol" aria-hidden="true">
-          <PhTreeStructure :size="34" weight="duotone" />
+          <PhTreeStructure :size="30" weight="duotone" />
         </span>
         <span class="brand__name">PlanoClaro</span>
       </RouterLink>

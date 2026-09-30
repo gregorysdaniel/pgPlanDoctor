@@ -128,6 +128,7 @@ pre {
 
   /* Mesmo trilho externo para as páginas; a análise usa a largura total para o grafo. */
   --page-container: min(1360px, calc(100% - 64px));
+  --header-height: 66px;
 
   /* Escala tipográfica compartilhada pelas páginas. */
   --text-page-title: clamp(32px, 3vw, 42px);
@@ -238,31 +239,31 @@ pre {
 .app-header__inner {
   display: grid;
   width: var(--page-container);
-  min-height: 78px;
+  min-height: var(--header-height);
   margin: 0 auto;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 42px;
+  gap: 32px;
 }
 
 .app-header__nav {
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 
 .header-nav__link {
   display: inline-flex;
-  min-height: 44px;
+  min-height: 38px;
   align-items: center;
   gap: 8px;
   padding: 0 4px;
   border: 0;
   color: var(--ink-muted);
   background: transparent;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   text-decoration: none;
   cursor: pointer;
 }
@@ -273,6 +274,7 @@ pre {
 
 .header-nav__link--active {
   color: var(--primary);
+  font-weight: 600;
 }
 
 .brand {
@@ -289,8 +291,8 @@ pre {
 
 .brand__symbol {
   display: inline-flex;
-  width: 38px;
-  height: 34px;
+  width: 32px;
+  height: 30px;
   align-items: center;
   justify-content: center;
   color: var(--primary);
@@ -301,8 +303,8 @@ pre {
 }
 
 .brand__name {
-  font-size: 22px;
-  font-weight: 800;
+  font-size: 19px;
+  font-weight: 700;
   letter-spacing: -0.04em;
 }
 
@@ -311,21 +313,33 @@ pre {
   min-width: 0;
   align-items: center;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 8px;
+}
+
+.app-header__actions .el-button {
+  min-height: 38px;
+  padding-inline: 14px;
+  border-width: 1px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.app-header__actions .el-button--primary:not(.is-disabled) {
+  box-shadow: none;
 }
 
 .theme-menu-button {
   display: inline-flex;
-  min-height: 44px;
+  min-height: 38px;
   align-items: center;
-  gap: 9px;
-  padding: 0 13px;
+  gap: 7px;
+  padding: 0 11px;
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--ink);
   background: var(--surface);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
 }
 
@@ -364,13 +378,13 @@ pre {
 /* Entrada */
 
 .input-screen {
-  min-height: calc(100vh - 78px);
+  min-height: calc(100vh - var(--header-height));
   background: var(--page);
 }
 
 .input-workspace {
   width: var(--page-container);
-  min-height: calc(100dvh - 78px);
+  min-height: calc(100dvh - var(--header-height));
   margin: 0 auto;
   padding: clamp(28px, 4vh, 42px) 0 36px;
 }
@@ -736,7 +750,7 @@ pre {
 /* Análise */
 
 .analysis-screen {
-  min-height: calc(100vh - 78px);
+  min-height: calc(100vh - var(--header-height));
   background: var(--page);
 }
 
@@ -1376,7 +1390,7 @@ pre {
 
 .learning-index,
 .learning-article {
-  min-height: calc(100dvh - 78px);
+  min-height: calc(100dvh - var(--header-height));
   background: var(--page);
 }
 
@@ -1825,7 +1839,7 @@ pre {
 /* Sobre o projeto */
 
 .project-info {
-  min-height: calc(100dvh - 78px);
+  min-height: calc(100dvh - var(--header-height));
   padding: 52px 0 80px;
   background: var(--page);
 }
@@ -1979,7 +1993,7 @@ pre {
 @media (min-width: 1025px) {
   .analysis-screen {
     display: grid;
-    height: calc(100dvh - 78px);
+    height: calc(100dvh - var(--header-height));
     min-height: 0;
     grid-template-rows: auto minmax(0, 1fr);
     overflow: hidden;
@@ -2073,13 +2087,14 @@ pre {
 @media (max-width: 760px) {
   .planoclaro {
     --page-container: calc(100% - 32px);
+    --header-height: 94px;
   }
 
   .app-header__inner {
     min-height: auto;
-    padding: 10px 0;
+    padding: 8px 0;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 8px 14px;
+    gap: 6px 12px;
   }
 
   .app-header__nav {
@@ -2101,26 +2116,26 @@ pre {
   }
 
   .app-header__actions .el-button {
-    width: 44px;
-    min-width: 44px;
+    width: 40px;
+    min-width: 40px;
     padding-inline: 0;
     font-size: 0;
   }
 
   .brand__symbol {
-    width: 41px;
+    width: 32px;
   }
 
   .brand__symbol svg {
-    width: 39px;
+    width: 30px;
   }
 
   .brand__name {
-    font-size: 20px;
+    font-size: 18px;
   }
 
   .theme-menu-button {
-    min-width: 44px;
+    min-width: 40px;
     justify-content: center;
     padding-inline: 10px;
   }

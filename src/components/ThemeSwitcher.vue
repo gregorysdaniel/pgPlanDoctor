@@ -31,9 +31,9 @@ function selectTheme(command: string | number | object): void {
       :aria-label="`Tema: ${currentLabel}`"
       aria-haspopup="menu"
     >
-      <PhMonitor v-if="preference === 'system'" :size="18" weight="duotone" aria-hidden="true" />
-      <PhSun v-else-if="preference === 'light'" :size="18" weight="duotone" aria-hidden="true" />
-      <PhMoon v-else :size="18" weight="duotone" aria-hidden="true" />
+      <PhMonitor v-if="preference === 'system'" :size="16" weight="duotone" aria-hidden="true" />
+      <PhSun v-else-if="preference === 'light'" :size="16" weight="duotone" aria-hidden="true" />
+      <PhMoon v-else :size="16" weight="duotone" aria-hidden="true" />
       <span>{{ currentLabel }}</span>
       <PhCaretDown class="theme-menu-button__chevron" :size="14" weight="bold" aria-hidden="true" />
     </button>

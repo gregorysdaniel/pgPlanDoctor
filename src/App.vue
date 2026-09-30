@@ -30,7 +30,7 @@ function openInput(): void {
           :to="{ name: 'learning' }"
           :aria-current="navigationSection === 'learning' ? 'page' : undefined"
         >
-          <PhBookOpenText :size="19" weight="bold" aria-hidden="true" />
+          <PhBookOpenText :size="17" weight="bold" aria-hidden="true" />
           Aprender
         </RouterLink>
         <RouterLink
@@ -39,7 +39,7 @@ function openInput(): void {
           :to="{ name: 'about' }"
           :aria-current="navigationSection === 'about' ? 'page' : undefined"
         >
-          <PhInfo :size="19" weight="bold" aria-hidden="true" />
+          <PhInfo :size="17" weight="bold" aria-hidden="true" />
           Sobre o projeto
         </RouterLink>
       </template>
@@ -50,7 +50,7 @@ function openInput(): void {
           title="Ver JSON original"
           @click="originalPlanVisible = true"
         >
-          <PhBracketsCurly :size="18" weight="bold" aria-hidden="true" />
+          <PhBracketsCurly :size="16" weight="bold" aria-hidden="true" />
           Ver JSON
         </ElButton>
         <ElButton
@@ -59,7 +59,7 @@ function openInput(): void {
           title="Analisar outro plano"
           @click="openInput"
         >
-          <PhPlusCircle :size="18" weight="bold" aria-hidden="true" />
+          <PhPlusCircle :size="16" weight="bold" aria-hidden="true" />
           Novo plano
         </ElButton>
       </template>
