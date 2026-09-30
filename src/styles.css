@@ -295,11 +295,15 @@ pre {
   height: 30px;
   align-items: center;
   justify-content: center;
-  color: var(--primary);
+  overflow: hidden;
 }
 
-.brand__symbol svg {
+.brand__symbol img {
   flex: 0 0 auto;
+  width: 68px;
+  max-width: none;
+  height: auto;
+  object-fit: contain;
 }
 
 .brand__name {
@@ -2124,10 +2128,6 @@ pre {
 
   .brand__symbol {
     width: 32px;
-  }
-
-  .brand__symbol svg {
-    width: 30px;
   }
 
   .brand__name {

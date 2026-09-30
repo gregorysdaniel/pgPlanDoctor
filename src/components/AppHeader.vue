@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PhTreeStructure } from '@phosphor-icons/vue'
+import postgresqlLogo from '../PostgreSQL-Logo.wine.png'
 </script>
 
 <template>
@@ -7,7 +7,7 @@ import { PhTreeStructure } from '@phosphor-icons/vue'
     <div class="app-header__inner">
       <RouterLink class="brand" :to="{ name: 'input' }" aria-label="Ir para a entrada do pgPlanDoctor">
         <span class="brand__symbol" aria-hidden="true">
-          <PhTreeStructure :size="30" weight="duotone" />
+          <img :src="postgresqlLogo" alt="" />
         </span>
         <span class="brand__name">pgPlanDoctor</span>
       </RouterLink>
