@@ -42,7 +42,7 @@ src/
 ├── components/ThemeSwitcher.vue # temas claro, escuro e sistema
 ├── components/PlanInput.vue     # entrada do EXPLAIN JSON
 ├── components/PlanAnalysis.vue  # resumo, grafo e inspetor
-├── components/PlanTree.vue      # layout D3 e SVG horizontal
+├── components/PlanTree.vue      # árvore SVG vertical, expansão e zoom
 ├── composables/useRecentPlans.ts # histórico local dos planos analisados
 ├── composables/usePlanSession.ts # estado temporário do plano entre as rotas
 ├── composables/useTheme.ts      # preferência e persistência do tema
@@ -85,7 +85,7 @@ npm run build
 
 1. A entrada e a análise aparecem como momentos separados.
 2. O JSON de `EXPLAIN ANALYZE` pode ser colado e analisado.
-3. O fluxo segue horizontalmente das folhas ao resultado.
+3. O fluxo segue da esquerda para a direita, das folhas ao resultado.
 4. Selecionar um nó atualiza o inspetor.
 5. Pontos de atenção aparecem no nó correspondente.
 6. Temas claro, escuro e sistema preservam o plano selecionado.
@@ -98,3 +98,6 @@ npm run build
 13. O build funciona sem backend.
 14. Planos analisados recentemente podem ser reabertos após recarregar a aplicação.
 15. Cada cenário da aba Exemplos carrega e analisa seu próprio plano.
+16. Cada nó apresenta um resumo compacto e pode ser expandido no próprio grafo.
+17. O grafo permite zoom, pan, ajuste à tela e retorno a 100%.
+18. O resumo apresenta métricas globais disponíveis no documento do `EXPLAIN`.

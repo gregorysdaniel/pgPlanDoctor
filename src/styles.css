@@ -777,6 +777,10 @@ pre {
   flex: 1;
 }
 
+.summary-metric--buffers {
+  min-width: 280px;
+}
+
 .summary-metric--relations > div {
   display: flex;
   flex-wrap: wrap;
@@ -838,9 +842,10 @@ pre {
 }
 
 .graph-canvas {
+  position: relative;
   min-height: 620px;
-  overflow: auto;
-  padding: 24px;
+  overflow: hidden;
+  padding: 0;
   background-color: var(--page);
   background-image: radial-gradient(circle, var(--pattern) 1.1px, transparent 1.1px);
   background-size: 24px 24px;
@@ -889,12 +894,86 @@ pre {
 /* Grafo */
 
 .plan-tree-container {
-  min-width: 920px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 620px;
+  overflow: hidden;
 }
 
 .plan-tree {
   display: block;
-  max-width: none;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.plan-tree--panning {
+  cursor: grabbing;
+}
+
+.plan-tree-toolbar {
+  position: absolute;
+  z-index: 5;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-raised);
+}
+
+.plan-tree-toolbar button {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  color: var(--ink-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.plan-tree-toolbar button:hover,
+.plan-tree-toolbar button:focus-visible {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.plan-tree-toolbar output {
+  min-width: 54px;
+  color: var(--ink);
+  font-family: var(--font-code);
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.plan-tree-toolbar > span {
+  width: 1px;
+  height: 24px;
+  background: var(--border);
+}
+
+.plan-tree-hint {
+  position: absolute;
+  z-index: 4;
+  right: 17px;
+  bottom: 12px;
+  margin: 0;
+  padding: 6px 9px;
+  border-radius: 5px;
+  color: var(--ink-muted);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  font-size: 11px;
+  pointer-events: none;
 }
 
 .plan-link {
@@ -922,6 +1001,7 @@ pre {
 
 .plan-node {
   cursor: pointer;
+  outline: none;
 }
 
 .plan-node__surface {
@@ -941,6 +1021,11 @@ pre {
 }
 
 .plan-node--selected .plan-node__surface {
+  stroke: var(--primary);
+  stroke-width: 3;
+}
+
+.plan-node:focus-visible .plan-node__surface {
   stroke: var(--primary);
   stroke-width: 3;
 }
@@ -994,6 +1079,58 @@ pre {
 
 .plan-node__time-value {
   fill: var(--primary);
+}
+
+.plan-node__expand circle {
+  fill: var(--surface-subtle);
+  stroke: var(--border);
+  stroke-width: 1;
+}
+
+.plan-node__expand {
+  color: var(--ink-muted);
+  cursor: pointer;
+  outline: none;
+}
+
+.plan-node__expand:hover circle,
+.plan-node__expand:focus-visible circle {
+  fill: var(--primary-soft);
+  stroke: var(--primary);
+}
+
+.plan-node__expand:hover,
+.plan-node__expand:focus-visible {
+  color: var(--primary);
+}
+
+.plan-node__details {
+  pointer-events: none;
+}
+
+.plan-node__detail-label,
+.plan-node__detail-value,
+.plan-node__condition {
+  font-family: var(--font-code);
+}
+
+.plan-node__detail-label {
+  fill: var(--ink-faint);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+}
+
+.plan-node__detail-value {
+  fill: var(--ink);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.plan-node__condition {
+  fill: var(--primary);
+  font-size: 9px;
+  font-weight: 600;
 }
 
 .plan-node__selected-label {
@@ -2093,7 +2230,20 @@ pre {
   }
 
   .graph-canvas {
-    padding: 14px;
+    padding: 0;
+  }
+
+  .plan-tree-container {
+    min-height: 540px;
+  }
+
+  .plan-tree-toolbar {
+    top: 10px;
+    right: 10px;
+  }
+
+  .plan-tree-hint {
+    display: none;
   }
 
   .graph-legend {

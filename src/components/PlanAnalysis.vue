@@ -4,10 +4,10 @@ import { computed, ref, watch } from 'vue'
 import { ElCollapse, ElCollapseItem, ElLink, ElPopover } from 'element-plus'
 import PlanTree from './PlanTree.vue'
 import { evaluatePlan } from '../domain/heuristics'
-import type { PlanNode } from '../domain/plan'
+import type { ExplainPlan, PlanNode } from '../domain/plan'
 
 const props = defineProps<{
-  plan: PlanNode
+  plan: ExplainPlan
 }>()
 
 const integerFormatter = new Intl.NumberFormat('pt-BR')
@@ -16,20 +16,23 @@ const timeFormatter = new Intl.NumberFormat('pt-BR', {
   maximumFractionDigits: 2,
 })
 
-const tips = computed(() => evaluatePlan(props.plan))
+const root = computed(() => props.plan.root)
+const tips = computed(() => evaluatePlan(root.value))
 const attentionNodeIds = computed(() => [...new Set(tips.value.map((tip) => tip.node.id))])
-const selectedNode = ref<PlanNode>(tips.value[0]?.node ?? props.plan)
+const selectedNode = ref<PlanNode>(tips.value[0]?.node ?? root.value)
 const selectedTip = computed(() => tips.value.find((tip) => tip.node.id === selectedNode.value.id))
 
 watch(
-  () => props.plan,
+  root,
   (plan) => {
     selectedNode.value = evaluatePlan(plan)[0]?.node ?? plan
   },
 )
 
-const planTime = computed(() => accumulatedTime(props.plan))
-const resultRows = computed(() => accumulatedRows(props.plan))
+const executionTime = computed(() => props.plan.executionTimeMs ?? accumulatedTime(root.value))
+const resultRows = computed(() => accumulatedRows(root.value))
+const nodeCount = computed(() => countNodes(root.value))
+const planDepth = computed(() => calculateDepth(root.value))
 const relationNames = computed(() => {
   const relations = new Set<string>()
 
@@ -38,8 +41,19 @@ const relationNames = computed(() => {
     node.children?.forEach(visit)
   }
 
-  visit(props.plan)
+  visit(root.value)
   return [...relations]
+})
+const rootBuffers = computed(() => root.value.metrics.buffers)
+const bufferSummary = computed(() => {
+  const buffers = rootBuffers.value
+  if (!buffers) return null
+
+  const shared = buffers.sharedHit + buffers.sharedRead
+  const temporary = buffers.tempRead + buffers.tempWritten
+  const parts = [`${formatInteger(shared)} compartilhados`]
+  if (temporary > 0) parts.push(`${formatInteger(temporary)} temporários`)
+  return parts.join(' · ')
 })
 
 const selectedAccumulatedTime = computed(() => accumulatedTime(selectedNode.value))
@@ -64,6 +78,15 @@ function accumulatedTime(node: PlanNode): number {
   return node.metrics.totalTimeMs * node.metrics.loops
 }
 
+function countNodes(node: PlanNode): number {
+  return 1 + (node.children?.reduce((total, child) => total + countNodes(child), 0) ?? 0)
+}
+
+function calculateDepth(node: PlanNode): number {
+  if (!node.children?.length) return 1
+  return 1 + Math.max(...node.children.map(calculateDepth))
+}
+
 function formatInteger(value: number): string {
   return integerFormatter.format(value)
 }
@@ -79,12 +102,24 @@ function formatTime(value: number): string {
   <main class="analysis-screen">
     <section class="analysis-summary" aria-label="Resumo da execução">
       <div class="summary-metric">
-        <span>Tempo do plano</span>
-        <strong>{{ formatTime(planTime) }}</strong>
+        <span>Execução</span>
+        <strong>{{ formatTime(executionTime) }}</strong>
+      </div>
+      <div v-if="plan.planningTimeMs !== undefined" class="summary-metric">
+        <span>Planejamento</span>
+        <strong>{{ formatTime(plan.planningTimeMs) }}</strong>
       </div>
       <div class="summary-metric">
         <span>Resultado</span>
         <strong>{{ formatInteger(resultRows) }} {{ resultRows === 1 ? 'linha' : 'linhas' }}</strong>
+      </div>
+      <div class="summary-metric">
+        <span>Estrutura</span>
+        <strong>{{ nodeCount }} nós · {{ planDepth }} níveis</strong>
+      </div>
+      <div v-if="bufferSummary" class="summary-metric summary-metric--buffers">
+        <span>Buffers</span>
+        <strong>{{ bufferSummary }}</strong>
       </div>
       <div class="summary-metric" :class="{ 'summary-metric--attention': tips.length > 0 }">
         <span>Pontos de atenção</span>
@@ -103,14 +138,14 @@ function formatTime(value: number): string {
         <header class="graph-pane__header">
           <div>
             <h1 id="graph-title">Fluxo de execução</h1>
-            <p>As linhas seguem das operações à esquerda até o resultado à direita.</p>
+            <p>Os dados partem das folhas à esquerda e seguem até o resultado. Expanda um nó para ver mais.</p>
           </div>
           <span class="graph-direction">dados → resultado</span>
         </header>
 
         <div class="graph-canvas">
           <PlanTree
-            :plan="plan"
+            :plan="root"
             :selected-id="selectedNode.id"
             :attention-node-ids="attentionNodeIds"
             @select="selectedNode = $event"
@@ -118,7 +153,7 @@ function formatTime(value: number): string {
         </div>
 
         <footer class="graph-legend" aria-label="Legenda do fluxo">
-          <span><i class="legend-time"></i> tempo acumulado relativo</span>
+          <span><i class="legend-time"></i> tempo inclusivo relativo</span>
           <span><i class="legend-attention"></i> ponto de atenção</span>
           <span><i class="legend-selected"></i> operador selecionado</span>
         </footer>

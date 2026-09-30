@@ -50,11 +50,13 @@ O tema fica em `composables/useTheme.ts`. A preferência aceita `light`, `dark` 
 
 ## Fluxo do plano
 
-`PlanTree.vue` usa o D3 para distribuir verticalmente os nós e inverte a profundidade na coordenada horizontal. Assim, folhas aparecem à esquerda e o resultado fica à direita.
+`PlanTree.vue` usa o D3 para distribuir os nós em níveis horizontais. As folhas ficam à esquerda e o nó raiz, que representa o resultado final, fica à direita.
 
 As setas representam o fluxo dos filhos para os pais. O rótulo de cada ligação informa as linhas produzidas pelo filho considerando seus loops.
 
-Os nós usam superfície neutra. A barra inferior compara o tempo acumulado (`tempo × loops`) com o maior tempo presente no plano. `PlanAnalysis.vue` entrega separadamente os identificadores dos nós marcados pelas heurísticas, mantendo as regras fora do SVG.
+Os nós começam compactos, com operador, relação, linhas e tempo inclusivo. A expansão acontece no próprio nó e revela estimativas, valores observados, loops, descartes ou custo e a condição principal. A barra inferior compara o tempo acumulado (`tempo × loops`) com o tempo do plano raiz. `PlanAnalysis.vue` entrega separadamente os identificadores dos nós marcados pelas heurísticas, mantendo as regras fora do SVG.
+
+O SVG mantém uma transformação de viewport independente do layout. Roda do mouse e botões controlam o zoom, o arraste do fundo move a árvore e o ajuste à tela recalcula escala e translação. Ao expandir um nó, a árvore é reenquadrada para que os detalhes permaneçam visíveis.
 
 Quando um nó é selecionado, `PlanTree.vue` o envia para `PlanAnalysis.vue`. O Vue atualiza o inspetor sem recalcular o parser. O plano original pode ser consultado em um diálogo sem perder a análise.
 
@@ -80,7 +82,7 @@ O feedback é coletado em um Google Forms externo configurado por `VITE_FEEDBACK
 - não existe backend ou sincronização do histórico entre navegadores e dispositivos;
 - a análise carregada existe somente durante a sessão; apenas os dez planos recentes ficam no armazenamento local;
 - os links do Google Forms e do benchmark são configurações obrigatórias do ambiente;
-- o grafo usa rolagem quando excede a área; pan e zoom ainda podem ser adicionados;
+- planos muito grandes ainda podem exigir bastante navegação mesmo com pan, zoom e ajuste à tela;
 - apenas o formato JSON possui parser.
 
 Um backend só será adicionado quando houver um requisito que não possa ser atendido diretamente no navegador.

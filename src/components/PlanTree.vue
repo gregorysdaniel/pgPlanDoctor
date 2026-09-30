@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { hierarchy, tree, type HierarchyPointNode } from 'd3-hierarchy'
+import {
+  PhArrowCounterClockwise,
+  PhCaretDown,
+  PhCaretUp,
+  PhCornersOut,
+  PhMagnifyingGlassMinus,
+  PhMagnifyingGlassPlus,
+} from '@phosphor-icons/vue'
 import type { PlanNode } from '../domain/plan'
 
 const props = withDefaults(
@@ -19,67 +27,113 @@ const emit = defineEmits<{
 }>()
 
 const container = ref<HTMLElement | null>(null)
-const containerWidth = ref(0)
-const nodeWidth = 224
-const nodeHeight = 112
-const horizontalGap = 112
-const verticalGap = 58
-const paddingX = 52
-const paddingY = 50
-const minimumWidth = 920
-const minimumHeight = 570
+const viewport = ref<SVGSVGElement | null>(null)
+const viewportWidth = ref(0)
+const viewportHeight = ref(0)
+const expandedIds = ref<Set<string>>(new Set())
+const zoom = ref(1)
+const translateX = ref(0)
+const translateY = ref(0)
+const isPanning = ref(false)
+
+const nodeWidth = 272
+const compactNodeHeight = 126
+const expandedNodeHeight = 260
+const horizontalGap = 116
+const verticalGap = 38
+const paddingX = 64
+const paddingY = 64
+const minimumScale = 0.18
+const maximumScale = 2.4
 
 const rowFormatter = new Intl.NumberFormat('pt-BR')
+const decimalFormatter = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 })
 const timeFormatter = new Intl.NumberFormat('pt-BR', {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 })
 
 let resizeObserver: ResizeObserver | null = null
+let dragOrigin: { clientX: number; clientY: number; x: number; y: number } | null = null
+let hasInitialFit = false
 
 onMounted(() => {
   if (!container.value) return
 
   resizeObserver = new ResizeObserver(([entry]) => {
-    containerWidth.value = entry?.contentRect.width ?? 0
+    viewportWidth.value = entry?.contentRect.width ?? 0
+    viewportHeight.value = entry?.contentRect.height ?? 0
+
+    if (!hasInitialFit && viewportWidth.value > 0 && viewportHeight.value > 0) {
+      hasInitialFit = true
+      void nextTick(fitToView)
+    }
   })
   resizeObserver.observe(container.value)
 })
 
 onBeforeUnmount(() => resizeObserver?.disconnect())
 
+watch(
+  () => props.plan,
+  () => {
+    expandedIds.value = new Set()
+    hasInitialFit = false
+    void nextTick(() => {
+      hasInitialFit = true
+      fitToView()
+    })
+  },
+)
+
 const attentionIds = computed(() => new Set(props.attentionNodeIds))
+
+function nodeHeight(node: PlanNode): number {
+  return expandedIds.value.has(node.id) ? expandedNodeHeight : compactNodeHeight
+}
 
 const layout = computed(() => {
   const root = hierarchy(props.plan, (node) => node.children)
-  const positionedRoot = tree<PlanNode>().nodeSize([nodeHeight + verticalGap, 1])(root)
+  const positionedRoot = tree<PlanNode>()
+    .nodeSize([1, 1])
+    .separation(
+      (first, second) =>
+        (nodeHeight(first.data) + nodeHeight(second.data)) / 2 +
+        (first.parent === second.parent ? verticalGap : verticalGap * 1.35),
+    )(root)
   const positionedNodes = positionedRoot.descendants()
-  const minimumTreeX = Math.min(...positionedNodes.map((node) => node.x))
-  const maximumTreeX = Math.max(...positionedNodes.map((node) => node.x))
   const maximumDepth = Math.max(...positionedNodes.map((node) => node.depth))
-  const naturalWidth =
-    paddingX * 2 +
-    (maximumDepth + 1) * nodeWidth +
-    maximumDepth * horizontalGap
-  const width = Math.max(minimumWidth, naturalWidth, containerWidth.value)
-  const contentHeight = maximumTreeX - minimumTreeX + nodeHeight
-  const height = Math.max(minimumHeight, contentHeight + paddingY * 2)
-  const verticalOffset = (height - contentHeight) / 2 + nodeHeight / 2
-  const depthStep = maximumDepth === 0
-    ? 0
-    : (width - paddingX * 2 - nodeWidth) / maximumDepth
+  const minimumTreeY = Math.min(
+    ...positionedNodes.map((node) => node.x - nodeHeight(node.data) / 2),
+  )
+  const maximumTreeY = Math.max(
+    ...positionedNodes.map((node) => node.x + nodeHeight(node.data) / 2),
+  )
+  const width =
+    (maximumDepth + 1) * nodeWidth + maximumDepth * horizontalGap + paddingX * 2
+  const height = maximumTreeY - minimumTreeY + paddingY * 2
+  const numberById = new Map(
+    positionedNodes.map((node, index) => [node.data.id, index + 1]),
+  )
 
   function point(node: HierarchyPointNode<PlanNode>) {
     return {
-      x: paddingX + nodeWidth / 2 + (maximumDepth - node.depth) * depthStep,
-      y: verticalOffset + node.x - minimumTreeX,
+      x:
+        paddingX +
+        nodeWidth / 2 +
+        (maximumDepth - node.depth) * (nodeWidth + horizontalGap),
+      y: node.x - minimumTreeY + paddingY,
     }
   }
 
   return {
     width,
     height,
-    nodes: positionedNodes.map((node) => ({ node, ...point(node) })),
+    nodes: positionedNodes.map((node) => ({
+      node,
+      number: numberById.get(node.data.id) ?? 0,
+      ...point(node),
+    })),
     links: positionedRoot.links().map((link) => ({
       parent: { node: link.source, ...point(link.source) },
       child: { node: link.target, ...point(link.target) },
@@ -87,12 +141,11 @@ const layout = computed(() => {
   }
 })
 
-const maximumAccumulatedTime = computed(() =>
-  Math.max(
-    0,
-    ...layout.value.nodes.map(({ node }) => accumulatedTime(node.data)),
-  ),
+const viewportTransform = computed(
+  () => `translate(${translateX.value} ${translateY.value}) scale(${zoom.value})`,
 )
+const zoomLabel = computed(() => `${Math.round(zoom.value * 100)}%`)
+const planTime = computed(() => accumulatedTime(props.plan))
 
 function accumulatedTime(node: PlanNode): number {
   return node.metrics.totalTimeMs * node.metrics.loops
@@ -102,21 +155,40 @@ function accumulatedRows(node: PlanNode): number {
   return node.metrics.actualRows * node.metrics.loops
 }
 
-function timeRatio(node: PlanNode): number {
-  if (maximumAccumulatedTime.value === 0) return 0
-  return accumulatedTime(node) / maximumAccumulatedTime.value
+function discardedRows(node: PlanNode): number | null {
+  if (node.metrics.rowsRemovedByFilter === undefined) return null
+  return node.metrics.rowsRemovedByFilter * node.metrics.loops
 }
 
-function formatTime(node: PlanNode): string {
-  const value = accumulatedTime(node)
+function timeRatio(node: PlanNode): number {
+  if (planTime.value === 0) return 0
+  return Math.min(1, accumulatedTime(node) / planTime.value)
+}
+
+function formatTimeValue(value: number): string {
   return value >= 1_000
     ? `${timeFormatter.format(value / 1_000)} s`
     : `${timeFormatter.format(value)} ms`
 }
 
+function formatTime(node: PlanNode): string {
+  return formatTimeValue(accumulatedTime(node))
+}
+
+function formatTimeShare(node: PlanNode): string {
+  if (planTime.value === 0) return '0%'
+  return `${decimalFormatter.format((accumulatedTime(node) / planTime.value) * 100)}%`
+}
+
 function formatRows(node: PlanNode): string {
   const rows = accumulatedRows(node)
   return `${rowFormatter.format(rows)} ${rows === 1 ? 'linha' : 'linhas'}`
+}
+
+function formatCost(node: PlanNode): string {
+  return node.metrics.totalCost === undefined
+    ? 'não informado'
+    : decimalFormatter.format(node.metrics.totalCost)
 }
 
 function category(node: PlanNode): string {
@@ -131,8 +203,9 @@ function category(node: PlanNode): string {
 }
 
 function subtitle(node: PlanNode): string {
-  if (node.relation) return node.relation
+  if (node.relation) return node.indexName ? `${node.relation} · ${node.indexName}` : node.relation
   if (node.indexName) return node.indexName
+  if (node.joinType) return `${node.joinType} join`
 
   const descriptions: Record<string, string> = {
     Aggregate: 'resume as linhas recebidas',
@@ -145,6 +218,33 @@ function subtitle(node: PlanNode): string {
   }
 
   return descriptions[node.type] ?? 'processa as linhas recebidas'
+}
+
+function primaryCondition(node: PlanNode): string | null {
+  const condition =
+    node.indexCondition ??
+    node.hashCondition ??
+    node.mergeCondition ??
+    node.recheckCondition ??
+    node.joinFilter ??
+    node.filter ??
+    node.sortKeys?.join(', ')
+
+  return condition ? truncate(condition, 44) : null
+}
+
+function truncate(value: string, maximumLength: number): string {
+  return value.length <= maximumLength
+    ? value
+    : `${value.slice(0, maximumLength - 1)}…`
+}
+
+function topOf(node: PlanNode): number {
+  return -nodeHeight(node) / 2
+}
+
+function compactBottom(node: PlanNode): number {
+  return topOf(node) + compactNodeHeight
 }
 
 function linkPath(
@@ -163,19 +263,127 @@ function select(node: PlanNode): void {
   emit('select', node)
 }
 
+function toggleExpanded(node: PlanNode): void {
+  const next = new Set(expandedIds.value)
+  if (next.has(node.id)) next.delete(node.id)
+  else next.add(node.id)
+  expandedIds.value = next
+  select(node)
+  void nextTick(fitToView)
+}
+
 function accessibleLabel(node: PlanNode): string {
   return `${node.type}, ${subtitle(node)}, ${formatRows(node)}, ${formatTime(node)}`
+}
+
+function clampScale(value: number): number {
+  return Math.min(maximumScale, Math.max(minimumScale, value))
+}
+
+function fitToView(): void {
+  if (viewportWidth.value <= 0 || viewportHeight.value <= 0) return
+
+  const availableWidth = Math.max(1, viewportWidth.value - 80)
+  const availableHeight = Math.max(1, viewportHeight.value - 80)
+  const nextZoom = clampScale(
+    Math.min(availableWidth / layout.value.width, availableHeight / layout.value.height, 1.25),
+  )
+
+  zoom.value = nextZoom
+  translateX.value = (viewportWidth.value - layout.value.width * nextZoom) / 2
+  translateY.value = (viewportHeight.value - layout.value.height * nextZoom) / 2
+}
+
+function resetZoom(): void {
+  zoom.value = 1
+  translateX.value = (viewportWidth.value - layout.value.width) / 2
+  translateY.value = 32
+}
+
+function zoomBy(factor: number, originX = viewportWidth.value / 2, originY = viewportHeight.value / 2): void {
+  const nextZoom = clampScale(zoom.value * factor)
+  const worldX = (originX - translateX.value) / zoom.value
+  const worldY = (originY - translateY.value) / zoom.value
+
+  translateX.value = originX - worldX * nextZoom
+  translateY.value = originY - worldY * nextZoom
+  zoom.value = nextZoom
+}
+
+function onWheel(event: WheelEvent): void {
+  const bounds = viewport.value?.getBoundingClientRect()
+  if (!bounds) return
+
+  zoomBy(
+    event.deltaY < 0 ? 1.12 : 1 / 1.12,
+    event.clientX - bounds.left,
+    event.clientY - bounds.top,
+  )
+}
+
+function onPointerDown(event: PointerEvent): void {
+  if (event.button !== 0) return
+  const target = event.target as Element
+  if (target.closest('.plan-node')) return
+
+  dragOrigin = {
+    clientX: event.clientX,
+    clientY: event.clientY,
+    x: translateX.value,
+    y: translateY.value,
+  }
+  isPanning.value = true
+  viewport.value?.setPointerCapture(event.pointerId)
+}
+
+function onPointerMove(event: PointerEvent): void {
+  if (!dragOrigin) return
+  translateX.value = dragOrigin.x + event.clientX - dragOrigin.clientX
+  translateY.value = dragOrigin.y + event.clientY - dragOrigin.clientY
+}
+
+function endPan(event: PointerEvent): void {
+  dragOrigin = null
+  isPanning.value = false
+  if (viewport.value?.hasPointerCapture(event.pointerId)) {
+    viewport.value.releasePointerCapture(event.pointerId)
+  }
 }
 </script>
 
 <template>
   <div ref="container" class="plan-tree-container">
+    <div class="plan-tree-toolbar" role="group" aria-label="Controles de visualização">
+      <button type="button" aria-label="Diminuir zoom" title="Diminuir zoom" @click="zoomBy(1 / 1.2)">
+        <PhMagnifyingGlassMinus :size="18" weight="bold" aria-hidden="true" />
+      </button>
+      <output aria-live="polite">{{ zoomLabel }}</output>
+      <button type="button" aria-label="Aumentar zoom" title="Aumentar zoom" @click="zoomBy(1.2)">
+        <PhMagnifyingGlassPlus :size="18" weight="bold" aria-hidden="true" />
+      </button>
+      <span aria-hidden="true"></span>
+      <button type="button" aria-label="Ajustar plano à tela" title="Ajustar plano à tela" @click="fitToView">
+        <PhCornersOut :size="18" weight="bold" aria-hidden="true" />
+      </button>
+      <button type="button" aria-label="Restaurar zoom para 100%" title="Restaurar zoom para 100%" @click="resetZoom">
+        <PhArrowCounterClockwise :size="18" weight="bold" aria-hidden="true" />
+      </button>
+    </div>
+
+    <p class="plan-tree-hint">Arraste para mover · use a roda para ampliar</p>
+
     <svg
+      ref="viewport"
       class="plan-tree"
-      :width="layout.width"
-      :height="layout.height"
-      :viewBox="`0 0 ${layout.width} ${layout.height}`"
-      aria-label="Fluxo do plano de execução"
+      :class="{ 'plan-tree--panning': isPanning }"
+      :viewBox="`0 0 ${Math.max(viewportWidth, 1)} ${Math.max(viewportHeight, 1)}`"
+      aria-label="Fluxo horizontal do plano de execução"
+      @wheel.prevent="onWheel"
+      @pointerdown="onPointerDown"
+      @pointermove="onPointerMove"
+      @pointerup="endPan"
+      @pointercancel="endPan"
+      @dblclick.self="fitToView"
     >
       <defs>
         <marker
@@ -191,111 +399,160 @@ function accessibleLabel(node: PlanNode): string {
         </marker>
       </defs>
 
-      <g class="plan-links">
-        <path
-          v-for="link in layout.links"
-          :key="`${link.child.node.data.id}-${link.parent.node.data.id}`"
-          class="plan-link"
-          marker-end="url(#plan-flow-arrow)"
-          :d="linkPath(link.child.x, link.child.y, link.parent.x, link.parent.y)"
-        />
+      <g :transform="viewportTransform">
+        <g class="plan-links">
+          <path
+            v-for="link in layout.links"
+            :key="`${link.child.node.data.id}-${link.parent.node.data.id}`"
+            class="plan-link"
+            marker-end="url(#plan-flow-arrow)"
+            :d="linkPath(
+              link.child.x,
+              link.child.y,
+              link.parent.x,
+              link.parent.y,
+            )"
+          />
+
+          <g
+            v-for="link in layout.links"
+            :key="`label-${link.child.node.data.id}-${link.parent.node.data.id}`"
+            class="flow-label"
+            :transform="`translate(${(link.child.x + link.parent.x) / 2}, ${(link.child.y + link.parent.y) / 2})`"
+          >
+            <rect x="-50" y="-12" width="100" height="24" rx="12" />
+            <text text-anchor="middle" dominant-baseline="middle">
+              {{ rowFormatter.format(accumulatedRows(link.child.node.data)) }} linhas
+            </text>
+          </g>
+        </g>
 
         <g
-          v-for="link in layout.links"
-          :key="`label-${link.child.node.data.id}-${link.parent.node.data.id}`"
-          class="flow-label"
-          :transform="`translate(${(link.child.x + link.parent.x) / 2}, ${(link.child.y + link.parent.y) / 2})`"
+          v-for="item in layout.nodes"
+          :key="item.node.data.id"
+          class="plan-node"
+          :class="{
+            'plan-node--selected': selectedId === item.node.data.id,
+            'plan-node--attention': attentionIds.has(item.node.data.id),
+            'plan-node--expanded': expandedIds.has(item.node.data.id),
+          }"
+          :transform="`translate(${item.x}, ${item.y})`"
+          role="button"
+          tabindex="0"
+          :aria-label="accessibleLabel(item.node.data)"
+          :aria-pressed="selectedId === item.node.data.id"
+          :aria-expanded="expandedIds.has(item.node.data.id)"
+          @click.stop="select(item.node.data)"
+          @dblclick.stop="toggleExpanded(item.node.data)"
+          @keydown.enter="select(item.node.data)"
+          @keydown.space.prevent="select(item.node.data)"
         >
-          <rect x="-50" y="-13" width="100" height="26" rx="13" />
-          <text text-anchor="middle" dominant-baseline="middle">
-            {{ rowFormatter.format(accumulatedRows(link.child.node.data)) }} linhas
+          <rect
+            class="plan-node__surface"
+            :x="-nodeWidth / 2"
+            :y="topOf(item.node.data)"
+            :width="nodeWidth"
+            :height="nodeHeight(item.node.data)"
+            rx="9"
+          />
+          <rect
+            v-if="attentionIds.has(item.node.data.id)"
+            class="plan-node__attention-rail"
+            :x="-nodeWidth / 2"
+            :y="topOf(item.node.data)"
+            width="5"
+            :height="nodeHeight(item.node.data)"
+            rx="2.5"
+          />
+
+          <text class="plan-node__category" :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 21">
+            #{{ item.number }} · {{ category(item.node.data) }}
           </text>
+          <text
+            v-if="attentionIds.has(item.node.data.id)"
+            class="plan-node__attention-label"
+            :x="nodeWidth / 2 - 43"
+            :y="topOf(item.node.data) + 21"
+            text-anchor="end"
+          >
+            ! ATENÇÃO
+          </text>
+          <text class="plan-node__title" :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 49">
+            {{ item.node.data.type }}
+          </text>
+          <text class="plan-node__subtitle" :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 72">
+            {{ truncate(subtitle(item.node.data), 34) }}
+          </text>
+          <text class="plan-node__rows" :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 101">
+            {{ formatRows(item.node.data) }}
+          </text>
+          <text class="plan-node__time" :x="nodeWidth / 2 - 16" :y="topOf(item.node.data) + 101" text-anchor="end">
+            {{ formatTime(item.node.data) }} · {{ formatTimeShare(item.node.data) }}
+          </text>
+
+          <rect
+            class="plan-node__time-track"
+            :x="-nodeWidth / 2"
+            :y="compactBottom(item.node.data) - 5"
+            :width="nodeWidth"
+            height="5"
+          />
+          <rect
+            class="plan-node__time-value"
+            :x="-nodeWidth / 2"
+            :y="compactBottom(item.node.data) - 5"
+            :width="Math.max(4, nodeWidth * timeRatio(item.node.data))"
+            height="5"
+          />
+
+          <g
+            class="plan-node__expand"
+            role="button"
+            tabindex="0"
+            :aria-label="expandedIds.has(item.node.data.id) ? 'Recolher métricas do nó' : 'Expandir métricas do nó'"
+            :transform="`translate(${nodeWidth / 2 - 22}, ${topOf(item.node.data) + 43})`"
+            @click.stop="toggleExpanded(item.node.data)"
+            @keydown.enter.stop="toggleExpanded(item.node.data)"
+            @keydown.space.prevent.stop="toggleExpanded(item.node.data)"
+          >
+            <circle r="14" />
+            <PhCaretUp v-if="expandedIds.has(item.node.data.id)" :size="14" weight="bold" x="-7" y="-7" aria-hidden="true" />
+            <PhCaretDown v-else :size="14" weight="bold" x="-7" y="-7" aria-hidden="true" />
+          </g>
+
+          <g v-if="expandedIds.has(item.node.data.id)" class="plan-node__details">
+            <text :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 151" class="plan-node__detail-label">ESTIMADAS / EXECUÇÃO</text>
+            <text :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 170" class="plan-node__detail-value">
+              {{ rowFormatter.format(item.node.data.metrics.estimatedRows) }} linhas
+            </text>
+            <text x="8" :y="topOf(item.node.data) + 151" class="plan-node__detail-label">OBSERVADAS / EXECUÇÃO</text>
+            <text x="8" :y="topOf(item.node.data) + 170" class="plan-node__detail-value">
+              {{ rowFormatter.format(item.node.data.metrics.actualRows) }} linhas
+            </text>
+
+            <text :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 198" class="plan-node__detail-label">LOOPS</text>
+            <text :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 217" class="plan-node__detail-value">
+              {{ rowFormatter.format(item.node.data.metrics.loops) }}
+            </text>
+            <text x="8" :y="topOf(item.node.data) + 198" class="plan-node__detail-label">
+              {{ discardedRows(item.node.data) === null ? 'CUSTO TOTAL' : 'DESCARTADAS' }}
+            </text>
+            <text x="8" :y="topOf(item.node.data) + 217" class="plan-node__detail-value">
+              {{ discardedRows(item.node.data) === null
+                ? formatCost(item.node.data)
+                : rowFormatter.format(discardedRows(item.node.data) ?? 0) }}
+            </text>
+
+            <text
+              v-if="primaryCondition(item.node.data)"
+              :x="-nodeWidth / 2 + 16"
+              :y="topOf(item.node.data) + 241"
+              class="plan-node__condition"
+            >
+              {{ primaryCondition(item.node.data) }}
+            </text>
+          </g>
         </g>
-      </g>
-
-      <g
-        v-for="item in layout.nodes"
-        :key="item.node.data.id"
-        class="plan-node"
-        :class="{
-          'plan-node--selected': selectedId === item.node.data.id,
-          'plan-node--attention': attentionIds.has(item.node.data.id),
-        }"
-        :transform="`translate(${item.x}, ${item.y})`"
-        role="button"
-        tabindex="0"
-        :aria-label="accessibleLabel(item.node.data)"
-        :aria-pressed="selectedId === item.node.data.id"
-        @click="select(item.node.data)"
-        @keydown.enter="select(item.node.data)"
-        @keydown.space.prevent="select(item.node.data)"
-      >
-        <rect
-          class="plan-node__surface"
-          :x="-nodeWidth / 2"
-          :y="-nodeHeight / 2"
-          :width="nodeWidth"
-          :height="nodeHeight"
-          rx="9"
-        />
-        <rect
-          v-if="attentionIds.has(item.node.data.id)"
-          class="plan-node__attention-rail"
-          :x="-nodeWidth / 2"
-          :y="-nodeHeight / 2"
-          width="5"
-          :height="nodeHeight"
-          rx="2.5"
-        />
-
-        <text class="plan-node__category" :x="-nodeWidth / 2 + 16" y="-35">
-          {{ category(item.node.data) }}
-        </text>
-        <text
-          v-if="attentionIds.has(item.node.data.id)"
-          class="plan-node__attention-label"
-          :x="nodeWidth / 2 - 16"
-          y="-35"
-          text-anchor="end"
-        >
-          ! ATENÇÃO
-        </text>
-        <text class="plan-node__title" :x="-nodeWidth / 2 + 16" y="-8">
-          {{ item.node.data.type }}
-        </text>
-        <text class="plan-node__subtitle" :x="-nodeWidth / 2 + 16" y="14">
-          {{ subtitle(item.node.data) }}
-        </text>
-        <text class="plan-node__rows" :x="-nodeWidth / 2 + 16" y="41">
-          {{ formatRows(item.node.data) }}
-        </text>
-        <text class="plan-node__time" :x="nodeWidth / 2 - 16" y="41" text-anchor="end">
-          {{ formatTime(item.node.data) }}
-        </text>
-
-        <rect
-          class="plan-node__time-track"
-          :x="-nodeWidth / 2"
-          :y="nodeHeight / 2 - 5"
-          :width="nodeWidth"
-          height="5"
-        />
-        <rect
-          class="plan-node__time-value"
-          :x="-nodeWidth / 2"
-          :y="nodeHeight / 2 - 5"
-          :width="Math.max(4, nodeWidth * timeRatio(item.node.data))"
-          height="5"
-        />
-
-        <text
-          v-if="selectedId === item.node.data.id"
-          class="plan-node__selected-label"
-          y="76"
-          text-anchor="middle"
-        >
-          EM INSPEÇÃO
-        </text>
       </g>
     </svg>
   </div>

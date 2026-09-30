@@ -1,4 +1,4 @@
-import type { PlanNode, PlanNodeKind } from './plan'
+import type { ExplainPlan, PlanBuffers, PlanNode, PlanNodeKind } from './plan'
 
 type JsonObject = Record<string, unknown>
 
@@ -10,7 +10,7 @@ export class PlanParseError extends Error {
 }
 
 // Converte o texto completo produzido por EXPLAIN (ANALYZE, FORMAT JSON).
-export function parseExplainJson(source: string): PlanNode {
+export function parseExplainJson(source: string): ExplainPlan {
   let parsed: unknown
 
   try {
@@ -23,14 +23,24 @@ export function parseExplainJson(source: string): PlanNode {
 }
 
 // Aceita tanto o documento completo do EXPLAIN quanto o objeto interno de Plan.
-export function parseExplainPlan(input: unknown): PlanNode {
-  const root = unwrapPlan(input)
+export function parseExplainPlan(input: unknown): ExplainPlan {
+  const document = unwrapPlan(input)
   const identifiers = new Map<string, number>()
 
-  return parseNode(root, 'Plan', identifiers)
+  const plan: ExplainPlan = {
+    root: parseNode(document.root, 'Plan', identifiers),
+  }
+
+  const planningTimeMs = optionalNumber(document.metadata, 'Planning Time', 'Plano')
+  const executionTimeMs = optionalNumber(document.metadata, 'Execution Time', 'Plano')
+
+  if (planningTimeMs !== undefined) plan.planningTimeMs = planningTimeMs
+  if (executionTimeMs !== undefined) plan.executionTimeMs = executionTimeMs
+
+  return plan
 }
 
-function unwrapPlan(input: unknown): JsonObject {
+function unwrapPlan(input: unknown): { root: JsonObject; metadata: JsonObject } {
   if (Array.isArray(input)) {
     if (input.length !== 1) {
       throw new PlanParseError('O JSON deve conter exatamente um plano de execução.')
@@ -41,11 +51,9 @@ function unwrapPlan(input: unknown): JsonObject {
 
   const object = requireObject(input, 'Plano')
 
-  if ('Plan' in object) {
-    return requireObject(object.Plan, 'Plan')
-  }
+  if ('Plan' in object) return { root: requireObject(object.Plan, 'Plan'), metadata: object }
 
-  if ('Node Type' in object) return object
+  if ('Node Type' in object) return { root: object, metadata: {} }
 
   throw new PlanParseError('O JSON não contém as propriedades "Plan" ou "Node Type".')
 }
@@ -60,7 +68,13 @@ function parseNode(
   const indexName = optionalString(rawNode, 'Index Name', path)
   const filter = optionalString(rawNode, 'Filter', path)
   const indexCondition = optionalString(rawNode, 'Index Cond', path)
+  const recheckCondition = optionalString(rawNode, 'Recheck Cond', path)
+  const hashCondition = optionalString(rawNode, 'Hash Cond', path)
+  const mergeCondition = optionalString(rawNode, 'Merge Cond', path)
+  const joinFilter = optionalString(rawNode, 'Join Filter', path)
+  const joinType = optionalString(rawNode, 'Join Type', path)
   const sortKeys = optionalStringArray(rawNode, 'Sort Key', path)
+  const output = optionalStringArray(rawNode, 'Output', path)
   const rawChildren = optionalObjectArray(rawNode, 'Plans', path)
 
   const node: PlanNode = {
@@ -80,7 +94,21 @@ function parseNode(
   if (indexName !== undefined) node.indexName = indexName
   if (filter !== undefined) node.filter = filter
   if (indexCondition !== undefined) node.indexCondition = indexCondition
+  if (recheckCondition !== undefined) node.recheckCondition = recheckCondition
+  if (hashCondition !== undefined) node.hashCondition = hashCondition
+  if (mergeCondition !== undefined) node.mergeCondition = mergeCondition
+  if (joinFilter !== undefined) node.joinFilter = joinFilter
+  if (joinType !== undefined) node.joinType = joinType
   if (sortKeys !== undefined) node.sortKeys = sortKeys
+  if (output !== undefined) node.output = output
+
+  assignOptionalMetric(node.metrics, 'startupTimeMs', rawNode, 'Actual Startup Time', path)
+  assignOptionalMetric(node.metrics, 'startupCost', rawNode, 'Startup Cost', path)
+  assignOptionalMetric(node.metrics, 'totalCost', rawNode, 'Total Cost', path)
+  assignOptionalMetric(node.metrics, 'planWidth', rawNode, 'Plan Width', path)
+
+  const buffers = parseBuffers(rawNode, path)
+  if (buffers !== undefined) node.metrics.buffers = buffers
 
   const rowsRemovedByFilter = optionalNumber(rawNode, 'Rows Removed by Filter', path)
   if (rowsRemovedByFilter !== undefined) {
@@ -94,6 +122,30 @@ function parseNode(
   }
 
   return node
+}
+
+function assignOptionalMetric(
+  metrics: PlanNode['metrics'],
+  key: 'startupTimeMs' | 'startupCost' | 'totalCost' | 'planWidth',
+  object: JsonObject,
+  sourceKey: string,
+  path: string,
+): void {
+  const value = optionalNumber(object, sourceKey, path)
+  if (value !== undefined) metrics[key] = value
+}
+
+function parseBuffers(object: JsonObject, path: string): PlanBuffers | undefined {
+  const values = {
+    sharedHit: optionalNumber(object, 'Shared Hit Blocks', path) ?? 0,
+    sharedRead: optionalNumber(object, 'Shared Read Blocks', path) ?? 0,
+    sharedDirtied: optionalNumber(object, 'Shared Dirtied Blocks', path) ?? 0,
+    sharedWritten: optionalNumber(object, 'Shared Written Blocks', path) ?? 0,
+    tempRead: optionalNumber(object, 'Temp Read Blocks', path) ?? 0,
+    tempWritten: optionalNumber(object, 'Temp Written Blocks', path) ?? 0,
+  }
+
+  return Object.values(values).some((value) => value > 0) ? values : undefined
 }
 
 function classifyNode(type: string): PlanNodeKind {

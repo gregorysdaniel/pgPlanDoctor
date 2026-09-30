@@ -22,7 +22,7 @@ async function analyzePlan(): Promise<void> {
     const plan = parseExplainJson(explainInput.value)
     loadedPlan.value = plan
     parseError.value = null
-    addRecentPlan(explainInput.value, plan)
+    addRecentPlan(explainInput.value, plan.root)
     await router.push({ name: 'analysis' })
   } catch (error) {
     parseError.value =

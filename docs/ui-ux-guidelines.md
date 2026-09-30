@@ -388,16 +388,18 @@ A tela de análise reaproveita a linguagem do Exercism em um ambiente de ferrame
 
 ### 10.2 Grafo
 
-- fluxo horizontal: folhas à esquerda, resultado à direita;
+- fluxo horizontal da esquerda para a direita: folhas no início e resultado no fim;
 - superfície clara e ampla;
 - padrão geométrico sutil;
-- nós entre 200 e 240 px de largura;
+- nós compactos com expansão local para métricas adicionais;
+- largura próxima de 272 px para preservar a leitura dos valores;
 - título do operador entre 16 e 18 px;
 - relação e métricas entre 13 e 15 px;
 - barra inferior para tempo relativo;
 - marcador laranja para ponto de atenção;
 - borda primária para seleção;
-- pan, zoom e ajuste à tela quando necessários.
+- pan, zoom, retorno a 100% e ajuste à tela;
+- reenquadramento após expandir ou recolher um nó.
 
 Não usar mapa de calor. Cor forte em todo o nó prejudica leitura e aproxima a interface de um monitor de infraestrutura.
 

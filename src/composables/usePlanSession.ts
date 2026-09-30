@@ -1,8 +1,8 @@
 import { ref } from 'vue'
-import type { PlanNode } from '../domain/plan'
+import type { ExplainPlan } from '../domain/plan'
 
 const explainInput = ref('')
-const loadedPlan = ref<PlanNode | null>(null)
+const loadedPlan = ref<ExplainPlan | null>(null)
 const parseError = ref<string | null>(null)
 
 export function usePlanSession() {
