@@ -4,7 +4,7 @@ Aplicação frontend didática para carregar e visualizar um plano de execução
 
 ## Objetivo
 
-Receber uma saída de `EXPLAIN (ANALYZE, FORMAT JSON)` e renderizar seu fluxo no navegador. A experiência separa entrada e análise, permite selecionar operadores, apresenta sinais produzidos pelas seis heurísticas do MVP e oferece uma introdução à interpretação de planos.
+Receber uma saída de `EXPLAIN (ANALYZE, FORMAT JSON)` e renderizar seu fluxo no navegador. A experiência separa entrada e análise, permite selecionar operadores, apresenta sinais produzidos pelas seis heurísticas do MVP e oferece conteúdos introdutórios e um glossário para apoiar a interpretação de planos.
 
 Ainda não fazem parte desta etapa:
 
@@ -39,6 +39,7 @@ src/
 ├── components/AppHeader.vue     # marca e navegação
 ├── components/LearningIndex.vue # índice dos conteúdos didáticos
 ├── components/LearningArticle.vue # página reutilizável de artigo
+├── components/Glossary.vue       # busca e categorias do glossário
 ├── components/ProjectInfo.vue   # projeto, validações e feedback
 ├── components/LanguageSwitcher.vue # idiomas português e inglês
 ├── components/PlanInput.vue     # entrada do EXPLAIN JSON
@@ -47,6 +48,7 @@ src/
 ├── composables/useRecentPlans.ts # histórico local dos planos analisados
 ├── composables/usePlanSession.ts # estado temporário do plano entre as rotas
 ├── content/learningContent.ts   # textos e referências da área Aprender
+├── content/glossaryContent.ts   # termos do glossário em português e inglês
 ├── data/explainAnalyzeExample.json # filtro seletivo, ordenação e limite
 ├── data/rowEstimateExample.json # estimativa de linhas divergente
 ├── data/repeatedWorkExample.json # trabalho interno repetido
@@ -104,3 +106,4 @@ npm run build
 18. O resumo apresenta métricas globais disponíveis no documento do `EXPLAIN`.
 19. Português e inglês atualizam interface, análise, heurísticas, conteúdos e formatos regionais sem recarregar a página.
 20. O idioma escolhido persiste no navegador e atualiza `lang`, título e descrição do documento.
+21. O glossário permite buscar termos em português e inglês e pode ser aberto pelo contexto das heurísticas.

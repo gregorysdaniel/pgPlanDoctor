@@ -21,6 +21,7 @@ App.vue
     │   └── PlanAnalysis.vue
     │       └── PlanTree.vue
     ├── LearningIndex.vue
+    ├── Glossary.vue
     ├── LearningArticleView.vue
     │   └── LearningArticle.vue
     └── ProjectInfo.vue
@@ -31,6 +32,7 @@ As rotas ficam em `router/index.ts`:
 - `#/`: entrada do plano;
 - `#/analise`: visualização e interpretação do plano carregado;
 - `#/aprender`: índice dos conteúdos;
+- `#/aprender/glossario`: glossário pesquisável;
 - `#/aprender/:slug`: conteúdo selecionado;
 - `#/sobre`: informações do projeto e feedback.
 
@@ -73,6 +75,8 @@ Uma regra não afirma que determinada alteração resolverá o problema. O conte
 ## Conteúdos
 
 `content/learningContent.ts` concentra as versões em português e inglês dos materiais introdutórios e suas referências. `LearningIndex.vue` apresenta o índice, enquanto `LearningArticle.vue` é a estrutura reutilizada por cada conteúdo. O mesmo `slug` identifica o artigo nos dois idiomas; valores inexistentes voltam ao índice.
+
+`content/glossaryContent.ts` mantém os identificadores estáveis, categorias, termos, aliases e definições bilíngues do glossário. `Glossary.vue` resolve a busca localmente e organiza os termos por categoria. Heurísticas podem apontar para um identificador do glossário sem duplicar sua definição.
 
 ## Informações e feedback
 

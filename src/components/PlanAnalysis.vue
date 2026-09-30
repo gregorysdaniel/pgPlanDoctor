@@ -256,6 +256,15 @@ function formatTime(value: number): string {
                   </template>
                   <strong>{{ selectedTip.suggestion.technicalTerm }}</strong>
                   <p>{{ selectedTip.suggestion.explanation }}</p>
+                  <RouterLink
+                    class="technical-term-glossary-link"
+                    :to="{
+                      name: 'glossary',
+                      hash: `#${selectedTip.suggestion.glossaryId}`,
+                    }"
+                  >
+                    {{ t('glossary.viewTerm') }}
+                  </RouterLink>
                 </ElPopover>{{ selectedTip.suggestion.suffix }}
               </dd>
             </div>

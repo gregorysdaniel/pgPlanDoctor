@@ -12,6 +12,7 @@ export interface HeuristicTip {
     technicalTerm: string
     suffix: string
     explanation: string
+    glossaryId: string
   }
   validation: string
   documentation: {
@@ -86,6 +87,7 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
           technicalTerm: translate('heuristic.r01.term'),
           suffix: translate('heuristic.r01.suffix'),
           explanation: translate('heuristic.r01.explanation'),
+          glossaryId: 'statistics',
         },
         validation: translate('heuristic.r01.validation'),
         documentation: {
@@ -120,6 +122,7 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
           technicalTerm: translate('heuristic.r02.term'),
           suffix: translate('heuristic.r02.suffix'),
           explanation: translate('heuristic.r02.explanation'),
+          glossaryId: 'index',
         },
         validation: translate('heuristic.r02.validation'),
         documentation: {
@@ -153,6 +156,7 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
           technicalTerm: translate('heuristic.r03.term'),
           suffix: translate('heuristic.r03.suffix'),
           explanation: translate('heuristic.r03.explanation'),
+          glossaryId: 'index',
         },
         validation: translate('heuristic.r03.validation'),
         documentation: {
@@ -187,6 +191,7 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
           technicalTerm: translate('heuristic.r04.term'),
           suffix: translate('heuristic.r04.suffix', { function: filterFunction }),
           explanation: translate('heuristic.r04.explanation'),
+          glossaryId: 'index',
         },
         validation: translate('heuristic.r04.validation'),
         documentation: {
@@ -224,6 +229,7 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
             technicalTerm: translate('heuristic.r05.term'),
             suffix: translate('heuristic.r05.suffix'),
             explanation: translate('heuristic.r05.explanation'),
+            glossaryId: 'index',
           },
           validation: translate('heuristic.r05.validation'),
           documentation: {
@@ -257,6 +263,7 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
             technicalTerm: translate('heuristic.r06.term'),
             suffix: translate('heuristic.r06.suffix'),
             explanation: translate('heuristic.r06.explanation'),
+            glossaryId: 'index',
           },
           validation: translate('heuristic.r06.validation'),
           documentation: {

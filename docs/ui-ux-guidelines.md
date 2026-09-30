@@ -552,9 +552,11 @@ src/
 │   ├── PlanTree.vue
 │   ├── LearningIndex.vue
 │   ├── LearningArticle.vue
+│   ├── Glossary.vue
 │   └── ProjectInfo.vue
 ├── content/
-│   └── learningContent.ts
+│   ├── learningContent.ts
+│   └── glossaryContent.ts
 ├── composables/
 │   ├── useRecentPlans.ts
 │   └── usePlanSession.ts

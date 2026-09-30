@@ -1267,6 +1267,15 @@ pre {
   cursor: help;
 }
 
+.technical-term-glossary-link {
+  display: inline-flex;
+  margin-top: 8px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+
 .heuristic-limit {
   margin: 20px 0;
   padding-top: 18px;
@@ -1345,7 +1354,8 @@ pre {
 /* Conteúdo didático */
 
 .learning-index,
-.learning-article {
+.learning-article,
+.glossary-page {
   min-height: calc(100dvh - var(--header-height));
   background: var(--page);
 }
@@ -1465,6 +1475,53 @@ pre {
 
 .learning-path li a:hover .learning-path__arrow {
   color: var(--primary);
+}
+
+.learning-glossary {
+  display: grid;
+  margin-top: 40px;
+  padding: 22px 23px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  border-radius: 9px;
+  background: var(--surface);
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 17px;
+}
+
+.learning-glossary__icon {
+  display: inline-flex;
+  color: var(--primary);
+}
+
+.learning-glossary h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.learning-glossary p {
+  margin: 4px 0 0;
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.learning-glossary > a {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 7px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.learning-glossary > a:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .learning-article {
@@ -1790,6 +1847,191 @@ pre {
 
 .learning-toc button:hover {
   color: var(--primary);
+}
+
+/* Glossário */
+
+.glossary-page {
+  padding: 30px 0 88px;
+}
+
+.glossary-page__shell {
+  width: var(--page-container);
+  margin: 0 auto;
+}
+
+.glossary-header {
+  display: grid;
+  max-width: 900px;
+  padding: 22px 0 34px;
+  border-bottom: 1px solid var(--border);
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 20px;
+}
+
+.glossary-header__icon {
+  display: inline-flex;
+  width: 54px;
+  height: 54px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--primary);
+  border-radius: 10px;
+  color: var(--primary);
+  background: var(--surface);
+}
+
+.glossary-header h1 {
+  margin: 0;
+  font-size: var(--text-page-title);
+  line-height: var(--leading-page-title);
+  letter-spacing: var(--tracking-page-title);
+}
+
+.glossary-header p {
+  margin: 13px 0 0;
+  color: var(--ink-muted);
+  font-size: var(--text-page-lead);
+  line-height: var(--leading-copy);
+}
+
+.glossary-tools {
+  max-width: 540px;
+  padding: 32px 0 38px;
+}
+
+.glossary-search {
+  display: grid;
+  min-height: 44px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  color: var(--ink-muted);
+  background: var(--surface);
+  grid-template-columns: 42px minmax(0, 1fr) 38px;
+  align-items: center;
+}
+
+.glossary-search > svg {
+  justify-self: center;
+}
+
+.glossary-search input {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 0;
+  border: 0;
+  outline: 0;
+  color: var(--ink);
+  background: transparent;
+  font-size: 14px;
+}
+
+.glossary-search input::placeholder {
+  color: var(--ink-faint);
+}
+
+.glossary-search:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 28%, transparent);
+}
+
+.glossary-search button {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 6px;
+  color: var(--ink-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.glossary-search button:hover {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.glossary-groups {
+  display: grid;
+  gap: 44px;
+}
+
+.glossary-group > h2 {
+  margin: 0 0 16px;
+  font-size: var(--text-section-title);
+  letter-spacing: var(--tracking-section-title);
+}
+
+.glossary-list {
+  display: grid;
+  border-top: 1px solid var(--border);
+}
+
+.glossary-list article {
+  min-width: 0;
+  padding: 22px 2px;
+  border-bottom: 1px solid var(--border);
+  scroll-margin-top: 72px;
+}
+
+.glossary-list article:target,
+.glossary-list article:focus-visible {
+  padding-inline: 18px;
+  border-bottom-color: var(--primary);
+  background: var(--primary-soft);
+  box-shadow: inset 3px 0 0 var(--primary);
+  outline: 0;
+}
+
+.glossary-list article header {
+  display: block;
+}
+
+.glossary-list h3 {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.4;
+}
+
+.glossary-list article > p {
+  margin: 12px 0 0;
+  color: var(--ink-muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.glossary-list .glossary-term__detail {
+  color: var(--ink-faint);
+}
+
+.glossary-list .glossary-term__aliases {
+  padding-top: 11px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+}
+
+.glossary-term__aliases strong {
+  color: var(--ink-muted);
+}
+
+.glossary-empty {
+  padding: 50px 24px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.glossary-empty h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.glossary-empty p {
+  margin: 9px 0 20px;
+  color: var(--ink-muted);
+  font-size: 14px;
 }
 
 /* Sobre o projeto */
@@ -2268,6 +2510,33 @@ pre {
     font-size: 13px;
   }
 
+  .learning-glossary {
+    padding: 18px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+
+  .learning-glossary__icon {
+    display: none;
+  }
+
+  .learning-glossary h2 {
+    font-size: 16px;
+  }
+
+  .learning-glossary p {
+    font-size: 13px;
+  }
+
+  .learning-glossary > a {
+    font-size: 0;
+  }
+
+  .learning-glossary > a svg {
+    width: 20px;
+    height: 20px;
+  }
+
   .learning-article {
     padding: 18px 0 58px;
   }
@@ -2307,6 +2576,42 @@ pre {
 
   .learning-pagination > span {
     display: none;
+  }
+
+  .glossary-page {
+    padding: 18px 0 58px;
+  }
+
+  .glossary-header {
+    padding: 12px 0 28px;
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .glossary-header__icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .glossary-header h1 {
+    font-size: var(--text-page-title);
+  }
+
+  .glossary-header p {
+    font-size: var(--text-page-lead);
+  }
+
+  .glossary-tools {
+    padding-top: 26px;
+    padding-bottom: 32px;
+  }
+
+  .glossary-list {
+    grid-template-columns: 1fr;
+  }
+
+  .glossary-list article {
+    padding: 19px 2px;
   }
 
   .project-info {

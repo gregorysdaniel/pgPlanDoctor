@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { watch } from 'vue'
 import LearningIndex from '../components/LearningIndex.vue'
+import Glossary from '../components/Glossary.vue'
 import ProjectInfo from '../components/ProjectInfo.vue'
 import { usePlanSession } from '../composables/usePlanSession'
 import { findLearningArticle } from '../content/learningContent'
@@ -13,8 +14,10 @@ const { loadedPlan } = usePlanSession()
 
 export const router = createRouter({
   history: createWebHashHistory(),
-  scrollBehavior(_to, _from, savedPosition) {
-    return savedPosition ?? { top: 0 }
+  scrollBehavior(to, _from, savedPosition) {
+    if (savedPosition) return savedPosition
+    if (to.hash) return { el: to.hash, top: 72, behavior: 'smooth' }
+    return { top: 0 }
   },
   routes: [
     {
@@ -35,6 +38,12 @@ export const router = createRouter({
       name: 'learning',
       component: LearningIndex,
       meta: { titleKey: 'title.learning', section: 'learning' },
+    },
+    {
+      path: '/aprender/glossario',
+      name: 'glossary',
+      component: Glossary,
+      meta: { titleKey: 'title.glossary', section: 'learning' },
     },
     {
       path: '/aprender/:slug',

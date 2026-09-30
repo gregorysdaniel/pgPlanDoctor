@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   PhArrowRight,
+  PhBookBookmark,
   PhBookOpenText,
   PhChartBar,
   PhMagnifyingGlass,
@@ -26,6 +27,20 @@ const { t } = useI18n()
       </div>
 
     </header>
+
+    <section class="learning-glossary" aria-labelledby="learning-glossary-title">
+      <span class="learning-glossary__icon" aria-hidden="true">
+        <PhBookBookmark :size="31" weight="duotone" />
+      </span>
+      <div>
+        <h2 id="learning-glossary-title">{{ t('learning.glossaryTitle') }}</h2>
+        <p>{{ t('learning.glossaryLead') }}</p>
+      </div>
+      <RouterLink :to="{ name: 'glossary' }">
+        {{ t('learning.openGlossary') }}
+        <PhArrowRight :size="18" weight="bold" aria-hidden="true" />
+      </RouterLink>
+    </section>
 
     <section class="learning-path" aria-labelledby="learning-path-title">
       <h2 id="learning-path-title">{{ t('learning.contents') }}</h2>
