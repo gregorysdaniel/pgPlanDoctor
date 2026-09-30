@@ -10,6 +10,7 @@ import {
   PhMagnifyingGlassPlus,
 } from '@phosphor-icons/vue'
 import type { PlanNode } from '../domain/plan'
+import { useI18n } from '../i18n'
 
 const props = withDefaults(
   defineProps<{
@@ -25,6 +26,8 @@ const props = withDefaults(
 const emit = defineEmits<{
   select: [node: PlanNode]
 }>()
+
+const { locale, t } = useI18n()
 
 const container = ref<HTMLElement | null>(null)
 const viewport = ref<SVGSVGElement | null>(null)
@@ -46,12 +49,16 @@ const paddingY = 64
 const minimumScale = 0.18
 const maximumScale = 2.4
 
-const rowFormatter = new Intl.NumberFormat('pt-BR')
-const decimalFormatter = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 })
-const timeFormatter = new Intl.NumberFormat('pt-BR', {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-})
+const rowFormatter = computed(() => new Intl.NumberFormat(locale.value))
+const decimalFormatter = computed(
+  () => new Intl.NumberFormat(locale.value, { maximumFractionDigits: 1 }),
+)
+const timeFormatter = computed(
+  () => new Intl.NumberFormat(locale.value, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }),
+)
 
 let resizeObserver: ResizeObserver | null = null
 let dragOrigin: { clientX: number; clientY: number; x: number; y: number } | null = null
@@ -167,8 +174,8 @@ function timeRatio(node: PlanNode): number {
 
 function formatTimeValue(value: number): string {
   return value >= 1_000
-    ? `${timeFormatter.format(value / 1_000)} s`
-    : `${timeFormatter.format(value)} ms`
+    ? `${timeFormatter.value.format(value / 1_000)} s`
+    : `${timeFormatter.value.format(value)} ms`
 }
 
 function formatTime(node: PlanNode): string {
@@ -177,26 +184,28 @@ function formatTime(node: PlanNode): string {
 
 function formatTimeShare(node: PlanNode): string {
   if (planTime.value === 0) return '0%'
-  return `${decimalFormatter.format((accumulatedTime(node) / planTime.value) * 100)}%`
+  return `${decimalFormatter.value.format((accumulatedTime(node) / planTime.value) * 100)}%`
 }
 
 function formatRows(node: PlanNode): string {
   const rows = accumulatedRows(node)
-  return `${rowFormatter.format(rows)} ${rows === 1 ? 'linha' : 'linhas'}`
+  return t(rows === 1 ? 'analysis.rows.one' : 'analysis.rows.other', {
+    count: rowFormatter.value.format(rows),
+  })
 }
 
 function formatCost(node: PlanNode): string {
   return node.metrics.totalCost === undefined
-    ? 'não informado'
-    : decimalFormatter.format(node.metrics.totalCost)
+    ? t('tree.notReported')
+    : decimalFormatter.value.format(node.metrics.totalCost)
 }
 
 function category(node: PlanNode): string {
   const labels: Record<PlanNode['kind'], string> = {
-    control: 'CONTROLE',
-    join: 'JUNÇÃO',
-    operation: 'OPERAÇÃO',
-    scan: 'LEITURA',
+    control: t('tree.category.control'),
+    join: t('tree.category.join'),
+    operation: t('tree.category.operation'),
+    scan: t('tree.category.scan'),
   }
 
   return labels[node.kind]
@@ -208,16 +217,16 @@ function subtitle(node: PlanNode): string {
   if (node.joinType) return `${node.joinType} join`
 
   const descriptions: Record<string, string> = {
-    Aggregate: 'resume as linhas recebidas',
-    'Hash Join': 'combina dois ramos',
-    Limit: 'limita o resultado',
-    'Merge Join': 'combina ramos ordenados',
-    'Nested Loop': 'repete a busca interna',
-    Result: 'produz o resultado',
-    Sort: 'ordena as linhas',
+    Aggregate: t('tree.subtitle.aggregate'),
+    'Hash Join': t('tree.subtitle.hashJoin'),
+    Limit: t('tree.subtitle.limit'),
+    'Merge Join': t('tree.subtitle.mergeJoin'),
+    'Nested Loop': t('tree.subtitle.nestedLoop'),
+    Result: t('tree.subtitle.result'),
+    Sort: t('tree.subtitle.sort'),
   }
 
-  return descriptions[node.type] ?? 'processa as linhas recebidas'
+  return descriptions[node.type] ?? t('tree.subtitle.default')
 }
 
 function primaryCondition(node: PlanNode): string | null {
@@ -353,31 +362,31 @@ function endPan(event: PointerEvent): void {
 
 <template>
   <div ref="container" class="plan-tree-container">
-    <div class="plan-tree-toolbar" role="group" aria-label="Controles de visualização">
-      <button type="button" aria-label="Diminuir zoom" title="Diminuir zoom" @click="zoomBy(1 / 1.2)">
+    <div class="plan-tree-toolbar" role="group" :aria-label="t('tree.controls')">
+      <button type="button" :aria-label="t('tree.zoomOut')" :title="t('tree.zoomOut')" @click="zoomBy(1 / 1.2)">
         <PhMagnifyingGlassMinus :size="18" weight="bold" aria-hidden="true" />
       </button>
       <output aria-live="polite">{{ zoomLabel }}</output>
-      <button type="button" aria-label="Aumentar zoom" title="Aumentar zoom" @click="zoomBy(1.2)">
+      <button type="button" :aria-label="t('tree.zoomIn')" :title="t('tree.zoomIn')" @click="zoomBy(1.2)">
         <PhMagnifyingGlassPlus :size="18" weight="bold" aria-hidden="true" />
       </button>
       <span aria-hidden="true"></span>
-      <button type="button" aria-label="Ajustar plano à tela" title="Ajustar plano à tela" @click="fitToView">
+      <button type="button" :aria-label="t('tree.fit')" :title="t('tree.fit')" @click="fitToView">
         <PhCornersOut :size="18" weight="bold" aria-hidden="true" />
       </button>
-      <button type="button" aria-label="Restaurar zoom para 100%" title="Restaurar zoom para 100%" @click="resetZoom">
+      <button type="button" :aria-label="t('tree.reset')" :title="t('tree.reset')" @click="resetZoom">
         <PhArrowCounterClockwise :size="18" weight="bold" aria-hidden="true" />
       </button>
     </div>
 
-    <p class="plan-tree-hint">Arraste para mover · use a roda para ampliar</p>
+    <p class="plan-tree-hint">{{ t('tree.hint') }}</p>
 
     <svg
       ref="viewport"
       class="plan-tree"
       :class="{ 'plan-tree--panning': isPanning }"
       :viewBox="`0 0 ${Math.max(viewportWidth, 1)} ${Math.max(viewportHeight, 1)}`"
-      aria-label="Fluxo horizontal do plano de execução"
+      :aria-label="t('tree.aria')"
       @wheel.prevent="onWheel"
       @pointerdown="onPointerDown"
       @pointermove="onPointerMove"
@@ -422,7 +431,7 @@ function endPan(event: PointerEvent): void {
           >
             <rect x="-50" y="-12" width="100" height="24" rx="12" />
             <text text-anchor="middle" dominant-baseline="middle">
-              {{ rowFormatter.format(accumulatedRows(link.child.node.data)) }} linhas
+              {{ formatRows(link.child.node.data) }}
             </text>
           </g>
         </g>
@@ -475,7 +484,7 @@ function endPan(event: PointerEvent): void {
             :y="topOf(item.node.data) + 21"
             text-anchor="end"
           >
-            ! ATENÇÃO
+            ! {{ t('tree.attention') }}
           </text>
           <text class="plan-node__title" :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 49">
             {{ item.node.data.type }}
@@ -509,7 +518,7 @@ function endPan(event: PointerEvent): void {
             class="plan-node__expand"
             role="button"
             tabindex="0"
-            :aria-label="expandedIds.has(item.node.data.id) ? 'Recolher métricas do nó' : 'Expandir métricas do nó'"
+            :aria-label="expandedIds.has(item.node.data.id) ? t('tree.collapse') : t('tree.expand')"
             :transform="`translate(${nodeWidth / 2 - 22}, ${topOf(item.node.data) + 43})`"
             @click.stop="toggleExpanded(item.node.data)"
             @keydown.enter.stop="toggleExpanded(item.node.data)"
@@ -521,21 +530,21 @@ function endPan(event: PointerEvent): void {
           </g>
 
           <g v-if="expandedIds.has(item.node.data.id)" class="plan-node__details">
-            <text :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 151" class="plan-node__detail-label">ESTIMADAS / EXECUÇÃO</text>
+            <text :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 151" class="plan-node__detail-label">{{ t('tree.estimatedPerExecution') }}</text>
             <text :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 170" class="plan-node__detail-value">
-              {{ rowFormatter.format(item.node.data.metrics.estimatedRows) }} linhas
+              {{ t(item.node.data.metrics.estimatedRows === 1 ? 'analysis.rows.one' : 'analysis.rows.other', { count: rowFormatter.format(item.node.data.metrics.estimatedRows) }) }}
             </text>
-            <text x="8" :y="topOf(item.node.data) + 151" class="plan-node__detail-label">OBSERVADAS / EXECUÇÃO</text>
+            <text x="8" :y="topOf(item.node.data) + 151" class="plan-node__detail-label">{{ t('tree.observedPerExecution') }}</text>
             <text x="8" :y="topOf(item.node.data) + 170" class="plan-node__detail-value">
-              {{ rowFormatter.format(item.node.data.metrics.actualRows) }} linhas
+              {{ t(item.node.data.metrics.actualRows === 1 ? 'analysis.rows.one' : 'analysis.rows.other', { count: rowFormatter.format(item.node.data.metrics.actualRows) }) }}
             </text>
 
-            <text :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 198" class="plan-node__detail-label">LOOPS</text>
+            <text :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 198" class="plan-node__detail-label">{{ t('tree.loops') }}</text>
             <text :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 217" class="plan-node__detail-value">
               {{ rowFormatter.format(item.node.data.metrics.loops) }}
             </text>
             <text x="8" :y="topOf(item.node.data) + 198" class="plan-node__detail-label">
-              {{ discardedRows(item.node.data) === null ? 'CUSTO TOTAL' : 'DESCARTADAS' }}
+              {{ discardedRows(item.node.data) === null ? t('tree.totalCost') : t('tree.discarded') }}
             </text>
             <text x="8" :y="topOf(item.node.data) + 217" class="plan-node__detail-value">
               {{ discardedRows(item.node.data) === null

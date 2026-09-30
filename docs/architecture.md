@@ -13,6 +13,7 @@ O Vue Router controla qual página está visível, o histórico de navegação, 
 ```text
 App.vue
 ├── AppHeader.vue
+│   ├── LanguageSwitcher.vue
 │   └── ThemeSwitcher.vue
 └── RouterView
     ├── PlanInputView.vue
@@ -44,6 +45,10 @@ O histórico por hash permite abrir e atualizar essas URLs sem exigir que o serv
 
 O tema fica em `composables/useTheme.ts`. A preferência aceita `light`, `dark` e `system`, é persistida no navegador e não pertence ao estado do plano.
 
+O idioma fica em `i18n/index.ts`. A aplicação aceita `pt-BR` e `en`, usa a preferência persistida ou o idioma do navegador e atualiza o atributo `lang`, os metadados e os formatos de número e data. As URLs e os slugs permanecem estáveis nos dois idiomas.
+
+As regras e o parser produzem os mesmos dados independentemente do idioma. Textos de erro, descrições de operadores e explicações das heurísticas são resolvidos pelas mensagens de localização durante a apresentação; por isso, trocar o idioma atualiza uma análise já aberta sem processar novamente o JSON.
+
 `composables/useRecentPlans.ts` mantém no `localStorage` os dez planos analisados mais recentemente. O JSON original e os metadados usados na lista ficam somente no navegador. Analisar novamente o mesmo JSON atualiza sua data e sua posição, sem criar uma duplicata.
 
 `data/planData.ts` cataloga os exemplos e mantém seus JSONs separados por cenário. Ao carregar um deles, a entrada percorre o mesmo parser usado para um plano fornecido pelo usuário. O D3 não interpreta a saída do PostgreSQL: ele recebe uma árvore pronta e calcula somente as posições dos nós.
@@ -68,7 +73,7 @@ Uma regra não afirma que determinada alteração resolverá o problema. O conte
 
 ## Conteúdos
 
-`content/learningContent.ts` concentra o texto e as referências dos materiais introdutórios. `LearningIndex.vue` apresenta o índice, enquanto `LearningArticle.vue` é a estrutura reutilizada por cada conteúdo. O `slug` da URL identifica o artigo; valores inexistentes voltam ao índice.
+`content/learningContent.ts` concentra as versões em português e inglês dos materiais introdutórios e suas referências. `LearningIndex.vue` apresenta o índice, enquanto `LearningArticle.vue` é a estrutura reutilizada por cada conteúdo. O mesmo `slug` identifica o artigo nos dois idiomas; valores inexistentes voltam ao índice.
 
 ## Informações e feedback
 

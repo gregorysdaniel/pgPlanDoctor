@@ -10,8 +10,9 @@ import {
   PhShieldCheck,
   PhWarningCircle,
 } from '@phosphor-icons/vue'
-import type { RecentPlan } from '../composables/useRecentPlans'
-import { planExamples, type PlanExample } from '../data/planData'
+import { formatRecentPlanTitle, type RecentPlan } from '../composables/useRecentPlans'
+import { getPlanExamples, type PlanExample } from '../data/planData'
+import { useI18n } from '../i18n'
 
 defineProps<{
   error: string | null
@@ -26,8 +27,10 @@ const emit = defineEmits<{
 }>()
 
 const model = defineModel<string>({ required: true })
+const { locale, t } = useI18n()
 const gutter = ref<HTMLElement | null>(null)
 const activeTab = ref('new-plan')
+const planExamples = computed(getPlanExamples)
 
 const lineNumbers = computed(() => {
   const count = Math.max(20, model.value.split('\n').length)
@@ -52,15 +55,15 @@ function formatAnalyzedAt(value: string): string {
   const yesterday = new Date(today)
   yesterday.setDate(today.getDate() - 1)
 
-  const time = new Intl.DateTimeFormat('pt-BR', {
+  const time = new Intl.DateTimeFormat(locale.value, {
     hour: '2-digit',
     minute: '2-digit',
   }).format(date)
 
-  if (isSameCalendarDay(date, today)) return `Hoje, ${time}`
-  if (isSameCalendarDay(date, yesterday)) return `Ontem, ${time}`
+  if (isSameCalendarDay(date, today)) return t('input.today', { time })
+  if (isSameCalendarDay(date, yesterday)) return t('input.yesterday', { time })
 
-  const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
+  const dateFormatter = new Intl.DateTimeFormat(locale.value, {
     day: 'numeric',
     month: 'short',
     year: date.getFullYear() === today.getFullYear() ? undefined : 'numeric',
@@ -78,11 +81,17 @@ function isSameCalendarDay(first: Date, second: Date): boolean {
 }
 
 function formatPlanSummary(plan: RecentPlan): string {
-  const operators = `${plan.nodeCount} ${plan.nodeCount === 1 ? 'operador' : 'operadores'}`
+  const operators = t(
+    plan.nodeCount === 1 ? 'input.operator.one' : 'input.operator.other',
+    { count: plan.nodeCount },
+  )
   const attention =
     plan.attentionCount === 0
-      ? 'nenhum ponto de atenção'
-      : `${plan.attentionCount} ${plan.attentionCount === 1 ? 'ponto' : 'pontos'} de atenção`
+      ? t('input.attention.none')
+      : t(
+          plan.attentionCount === 1 ? 'input.attention.one' : 'input.attention.other',
+          { count: plan.attentionCount },
+        )
 
   return `${operators} · ${attention}`
 }
@@ -93,11 +102,8 @@ function formatPlanSummary(plan: RecentPlan): string {
     <div class="input-workspace">
       <header class="input-workspace__header">
         <div>
-          <h1 id="input-title">Analisar plano de execução</h1>
-          <p>
-            Cole a saída de <code>EXPLAIN (ANALYZE, FORMAT JSON)</code> para abrir a visualização
-            interativa do plano.
-          </p>
+          <h1 id="input-title">{{ t('input.title') }}</h1>
+          <p v-html="t('input.lead')"></p>
         </div>
         <RouterLink
           class="input-workspace__help"
@@ -107,24 +113,24 @@ function formatPlanSummary(plan: RecentPlan): string {
           }"
         >
           <PhQuestion :size="18" weight="bold" aria-hidden="true" />
-          Como obter o JSON
+          {{ t('input.howToJson') }}
         </RouterLink>
       </header>
 
       <ElTabs v-model="activeTab" class="input-tabs">
-        <ElTabPane label="Novo plano" name="new-plan">
+        <ElTabPane :label="t('input.tab.new')" name="new-plan">
           <section class="plan-editor" aria-labelledby="input-title">
             <header class="plan-editor__header">
               <div class="plan-editor__identity">
                 <span aria-hidden="true"><PhBracketsCurly :size="24" weight="bold" /></span>
                 <div>
-                  <strong>Plano de execução</strong>
-                  <small>Formato JSON</small>
+                  <strong>{{ t('input.plan') }}</strong>
+                  <small>{{ t('input.jsonFormat') }}</small>
                 </div>
               </div>
               <span class="plan-editor__privacy">
                 <PhShieldCheck :size="18" weight="duotone" aria-hidden="true" />
-                Processado localmente
+                {{ t('input.local') }}
               </span>
             </header>
 
@@ -135,8 +141,8 @@ function formatPlanSummary(plan: RecentPlan): string {
               <textarea
                 v-model="model"
                 class="code-editor__textarea"
-                aria-label="Plano de execução em JSON"
-                placeholder="Cole aqui a saída de EXPLAIN (ANALYZE, FORMAT JSON)..."
+                :aria-label="t('input.jsonAria')"
+                :placeholder="t('input.placeholder')"
                 spellcheck="false"
                 @scroll="synchronizeScroll"
                 @keydown.ctrl.enter.prevent="emit('analyze')"
@@ -144,7 +150,7 @@ function formatPlanSummary(plan: RecentPlan): string {
             </div>
 
             <footer class="plan-editor__footer">
-              <span class="editor-shortcut"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> para analisar</span>
+              <span class="editor-shortcut"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> {{ t('input.shortcut') }}</span>
 
               <div class="plan-editor__actions">
                 <ElButton
@@ -154,7 +160,7 @@ function formatPlanSummary(plan: RecentPlan): string {
                   @click="emit('analyze')"
                 >
                   <PhPlay :size="18" weight="fill" aria-hidden="true" />
-                  Analisar plano
+                  {{ t('input.analyze') }}
                 </ElButton>
               </div>
             </footer>
@@ -172,48 +178,48 @@ function formatPlanSummary(plan: RecentPlan): string {
           <div class="input-execution-warning" role="note">
             <PhWarningCircle :size="23" weight="duotone" aria-hidden="true" />
             <p>
-              <strong>EXPLAIN ANALYZE executa a consulta.</strong>
-              Revise comandos que alteram dados antes de gerar o plano.
+              <strong>{{ t('input.warningTitle') }}</strong>
+              {{ t('input.warningText') }}
             </p>
           </div>
         </ElTabPane>
 
-        <ElTabPane label="Consultas recentes" name="recent-plans">
+        <ElTabPane :label="t('input.tab.recent')" name="recent-plans">
           <section class="input-library-panel" aria-labelledby="recent-plans-title">
             <header>
               <PhClockCounterClockwise :size="28" weight="duotone" aria-hidden="true" />
               <div>
-                <h2 id="recent-plans-title">Consultas recentes</h2>
-                <p>Reabra um plano analisado anteriormente neste navegador.</p>
+                <h2 id="recent-plans-title">{{ t('input.recentTitle') }}</h2>
+                <p>{{ t('input.recentLead') }}</p>
               </div>
             </header>
 
             <div v-if="recentPlans.length" class="input-library-list">
               <article v-for="plan in recentPlans" :key="plan.id">
                 <div>
-                  <strong>{{ plan.title }}</strong>
+                  <strong>{{ formatRecentPlanTitle(plan) }}</strong>
                   <span>{{ formatPlanSummary(plan) }}</span>
                 </div>
                 <div class="input-library-item__actions">
                   <time :datetime="plan.analyzedAt">{{ formatAnalyzedAt(plan.analyzedAt) }}</time>
-                  <ElButton @click="emit('openRecentPlan', plan)">Abrir plano</ElButton>
+                  <ElButton @click="emit('openRecentPlan', plan)">{{ t('input.openPlan') }}</ElButton>
                 </div>
               </article>
             </div>
             <div v-else class="input-library-empty">
-              <strong>Nenhuma consulta recente</strong>
-              <p>Os planos analisados neste navegador aparecerão aqui.</p>
+              <strong>{{ t('input.noRecent') }}</strong>
+              <p>{{ t('input.noRecentLead') }}</p>
             </div>
           </section>
         </ElTabPane>
 
-        <ElTabPane label="Exemplos" name="examples">
+        <ElTabPane :label="t('input.tab.examples')" name="examples">
           <section class="input-library-panel" aria-labelledby="examples-title">
             <header>
               <PhFileCode :size="28" weight="duotone" aria-hidden="true" />
               <div>
-                <h2 id="examples-title">Exemplos de planos</h2>
-                <p>Use cenários pequenos para conhecer a visualização e os pontos de atenção.</p>
+                <h2 id="examples-title">{{ t('input.examplesTitle') }}</h2>
+                <p>{{ t('input.examplesLead') }}</p>
               </div>
             </header>
 
@@ -223,7 +229,7 @@ function formatPlanSummary(plan: RecentPlan): string {
                   <strong>{{ example.title }}</strong>
                   <span>{{ example.description }}</span>
                 </div>
-                <ElButton @click="loadExample(example)">Carregar exemplo</ElButton>
+                <ElButton @click="loadExample(example)">{{ t('input.loadExample') }}</ElButton>
               </article>
             </div>
           </section>

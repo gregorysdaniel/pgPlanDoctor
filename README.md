@@ -11,7 +11,7 @@ Ainda não fazem parte desta etapa:
 - conexão direta com PostgreSQL;
 - backend ou sincronização entre dispositivos.
 
-Os dez planos analisados mais recentemente são mantidos no `localStorage` do navegador.
+Os dez planos analisados mais recentemente são mantidos no `localStorage` do navegador. A interface e os conteúdos didáticos estão disponíveis em português e inglês.
 
 ## Tecnologias
 
@@ -20,6 +20,7 @@ Os dez planos analisados mais recentemente são mantidos no `localStorage` do na
 | Vue 3 | Componentes e estado da interface |
 | Vue Router | Rotas, histórico de navegação e URLs diretas |
 | TypeScript | Modelo, parser e validação |
+| Intl API | Formatação regional de números e datas |
 | D3 Hierarchy | Posicionamento dos nós e ligações |
 | Element Plus | Botões, diálogos, menus, collapses e popovers |
 | Phosphor Icons | Ícones da interface e das explicações didáticas |
@@ -39,6 +40,7 @@ src/
 ├── components/LearningIndex.vue # índice dos conteúdos didáticos
 ├── components/LearningArticle.vue # página reutilizável de artigo
 ├── components/ProjectInfo.vue   # projeto, validações e feedback
+├── components/LanguageSwitcher.vue # idiomas português e inglês
 ├── components/ThemeSwitcher.vue # temas claro, escuro e sistema
 ├── components/PlanInput.vue     # entrada do EXPLAIN JSON
 ├── components/PlanAnalysis.vue  # resumo, grafo e inspetor
@@ -54,6 +56,7 @@ src/
 ├── domain/heuristics.ts         # seis regras do MVP
 ├── domain/plan.ts               # tipos TypeScript
 ├── domain/planParser.ts         # conversão recursiva do JSON
+├── i18n/index.ts                # estado do idioma e mensagens da interface
 └── styles.css                   # tokens e aparência dos dois temas
 ```
 
@@ -101,3 +104,5 @@ npm run build
 16. Cada nó apresenta um resumo compacto e pode ser expandido no próprio grafo.
 17. O grafo permite zoom, pan, ajuste à tela e retorno a 100%.
 18. O resumo apresenta métricas globais disponíveis no documento do `EXPLAIN`.
+19. Português e inglês atualizam interface, análise, heurísticas, conteúdos e formatos regionais sem recarregar a página.
+20. O idioma escolhido persiste no navegador e atualiza `lang`, título e descrição do documento.

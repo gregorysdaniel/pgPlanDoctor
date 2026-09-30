@@ -3,17 +3,19 @@ import { computed } from 'vue'
 import { ElDropdown, ElDropdownItem, ElDropdownMenu } from 'element-plus'
 import { PhCaretDown, PhCheck, PhMonitor, PhMoon, PhSun } from '@phosphor-icons/vue'
 import { useTheme, type ThemePreference } from '../composables/useTheme'
+import { useI18n } from '../i18n'
 
 const { preference, setThemePreference } = useTheme()
+const { t } = useI18n()
 
-const options: Array<{ value: ThemePreference; label: string }> = [
-  { value: 'system', label: 'Sistema' },
-  { value: 'light', label: 'Claro' },
-  { value: 'dark', label: 'Escuro' },
-]
+const options = computed<Array<{ value: ThemePreference; label: string }>>(() => [
+  { value: 'system', label: t('theme.system') },
+  { value: 'light', label: t('theme.light') },
+  { value: 'dark', label: t('theme.dark') },
+])
 
 const currentLabel = computed(
-  () => options.find((option) => option.value === preference.value)?.label ?? 'Sistema',
+  () => options.value.find((option) => option.value === preference.value)?.label ?? t('theme.system'),
 )
 
 function selectTheme(command: string | number | object): void {
@@ -28,7 +30,7 @@ function selectTheme(command: string | number | object): void {
     <button
       class="theme-menu-button"
       type="button"
-      :aria-label="`Tema: ${currentLabel}`"
+      :aria-label="`${t('theme.label')}: ${currentLabel}`"
       aria-haspopup="menu"
     >
       <PhMonitor v-if="preference === 'system'" :size="16" weight="duotone" aria-hidden="true" />

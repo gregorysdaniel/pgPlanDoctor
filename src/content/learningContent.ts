@@ -1,3 +1,6 @@
+import { computed } from 'vue'
+import { locale } from '../i18n'
+
 export interface LearningCallout {
   title: string
   text: string
@@ -52,7 +55,7 @@ const plannerStatisticsReference: LearningReference = {
   description: 'Explicação oficial sobre as estatísticas usadas para estimar a quantidade de linhas.',
 }
 
-export const learningArticles: LearningArticle[] = [
+const portugueseLearningArticles: LearningArticle[] = [
   {
     slug: 'da-consulta-ao-plano',
     title: 'Da consulta ao plano',
@@ -264,19 +267,251 @@ export const learningArticles: LearningArticle[] = [
   },
 ]
 
+const queryPathReferenceEn: LearningReference = {
+  label: 'PostgreSQL 17 — The Path of a Query',
+  url: 'https://www.postgresql.org/docs/17/query-path.html',
+  description: 'Official overview of the stages between receiving a query and executing its plan.',
+}
+
+const usingExplainReferenceEn: LearningReference = {
+  label: 'PostgreSQL 17 — Using EXPLAIN',
+  url: 'https://www.postgresql.org/docs/17/using-explain.html',
+  description: 'Official introduction to plan structure, key fields, and EXPLAIN ANALYZE.',
+}
+
+const explainCommandReferenceEn: LearningReference = {
+  label: 'PostgreSQL 17 — EXPLAIN command',
+  url: 'https://www.postgresql.org/docs/17/sql-explain.html',
+  description: 'Syntax, available options, and precautions when running the command.',
+}
+
+const plannerStatisticsReferenceEn: LearningReference = {
+  label: 'PostgreSQL 17 — Statistics Used by the Planner',
+  url: 'https://www.postgresql.org/docs/17/planner-stats.html',
+  description: 'Official explanation of the statistics used to estimate row counts.',
+}
+
+const englishLearningArticles: LearningArticle[] = [
+  {
+    slug: 'da-consulta-ao-plano',
+    title: 'From query to plan',
+    summary: 'Recognize the basic stages a query goes through in PostgreSQL.',
+    sections: [
+      {
+        id: 'visao-geral',
+        title: 'Overview',
+        paragraphs: [
+          'Before returning a result, PostgreSQL interprets the query, prepares a plan, and runs the operations described by that plan.',
+          'After the query is parsed and rewritten, the planner considers paths that can produce the same result. It estimates their cost and hands a plan to the executor, which walks the tree to retrieve and process rows.',
+        ],
+        source: queryPathReferenceEn,
+      },
+      {
+        id: 'termos-principais',
+        title: 'Terms to recognize',
+        paragraphs: ['These terms appear frequently when studying the path of a query:'],
+        bullets: [
+          '<strong>Parser:</strong> checks the syntax and builds a representation of the query.',
+          '<strong>Rewrite system:</strong> applies rules before planning.',
+          '<strong>Planner or optimizer:</strong> prepares the plan delivered to the executor.',
+          '<strong>Executor:</strong> walks the plan and performs its operations.',
+        ],
+        source: queryPathReferenceEn,
+      },
+      {
+        id: 'caminhos-possiveis',
+        title: 'One result can have different paths',
+        paragraphs: [
+          'When an index exists, for example, the planner may consider a sequential scan or an index scan. The choice depends on the estimates available for that query.',
+          'The plan shown by <code>EXPLAIN</code> is the selected path, not a list of every alternative considered.',
+        ],
+        source: queryPathReferenceEn,
+      },
+      {
+        id: 'perguntas-iniciais',
+        title: 'Questions to guide your study',
+        paragraphs: ['You do not need to understand every field when opening a plan for the first time. Start with simple questions:'],
+        bullets: [
+          'Which operators appear in the tree?',
+          'Which nodes produce rows for the next nodes?',
+          'Which values are estimates and which were observed?',
+        ],
+      },
+    ],
+    references: [queryPathReferenceEn, usingExplainReferenceEn],
+  },
+  {
+    slug: 'como-gerar-e-percorrer-um-plano',
+    title: 'How to generate and read a plan',
+    summary: 'Learn the EXPLAIN command and the basic structure of an execution tree.',
+    sections: [
+      {
+        id: 'explain-e-analyze',
+        title: 'EXPLAIN and EXPLAIN ANALYZE',
+        paragraphs: [
+          '<code>EXPLAIN</code> shows the plan created by the planner and the estimated values for its nodes. The query is not run merely to produce this plan.',
+          'The <code>ANALYZE</code> option changes this behavior: the command is run and the output includes measurements such as observed rows and times.',
+        ],
+        callout: {
+          title: 'ANALYZE runs the command',
+          text: 'Check the official guidance before using it with commands that change data. Prefer a safe study environment.',
+          tone: 'attention',
+        },
+        source: explainCommandReferenceEn,
+      },
+      {
+        id: 'formato-json',
+        title: 'JSON output',
+        paragraphs: [
+          'PostgreSQL provides machine-readable formats, including JSON. The command below combines query execution with this output format.',
+          'The JSON hierarchy preserves the relationship between plan nodes and makes programmatic processing easier.',
+        ],
+        code: 'EXPLAIN (ANALYZE, FORMAT JSON)\nSELECT ...;',
+        source: explainCommandReferenceEn,
+      },
+      {
+        id: 'arvore',
+        title: 'The structure is a tree',
+        paragraphs: [
+          'A plan is made of nodes. Lower nodes usually provide rows to operations above them, such as joins, aggregates, or sorts.',
+          'In the example below, the <code>Seq Scan</code> produces rows for the <code>Sort</code>; the <code>Limit</code> then receives the sorted output.',
+        ],
+        code: 'Limit\n└─ Sort\n   └─ Seq Scan',
+        bullets: [
+          'First identify the nodes that access data.',
+          'Observe which node receives each operation’s output.',
+          'Consult the operator documentation when its role is still unclear.',
+        ],
+        source: usingExplainReferenceEn,
+      },
+    ],
+    references: [explainCommandReferenceEn, usingExplainReferenceEn],
+  },
+  {
+    slug: 'metricas-essenciais',
+    title: 'Essential metrics',
+    summary: 'Recognize the basic fields before going deeper into plan analysis.',
+    sections: [
+      {
+        id: 'campos-principais',
+        title: 'Fields to recognize',
+        paragraphs: [
+          'EXPLAIN documentation presents planner estimates and, when <code>ANALYZE</code> is used, values observed during execution.',
+          'Comparing these perspectives helps determine whether the planner worked with a forecast close to what actually happened.',
+        ],
+        bullets: [
+          '<code>Plan Rows</code>: estimated rows produced by the node.',
+          '<code>Actual Rows</code>: rows observed during execution.',
+          '<code>Actual Loops</code>: number of node executions.',
+          '<code>Actual Total Time</code>: time reported for the node.',
+        ],
+        source: usingExplainReferenceEn,
+      },
+      {
+        id: 'loops',
+        title: 'When a node has several loops',
+        paragraphs: [
+          'A node may run more than once. In these cases, the documentation states that actual row and time values are shown as averages per execution.',
+          'To estimate the total associated with the node, you must also consider <code>Actual Loops</code>.',
+        ],
+        code: 'rows per execution × loops = accumulated rows',
+        callout: {
+          title: 'Compare values on the same scale',
+          text: 'A per-execution value should not be compared directly with an already accumulated value.',
+          tone: 'information',
+        },
+        source: usingExplainReferenceEn,
+      },
+      {
+        id: 'custo-e-tempo',
+        title: 'Cost and time are different measures',
+        paragraphs: [
+          '<code>cost</code> values are estimates expressed in planner units. <code>actual time</code> values are execution measurements in milliseconds.',
+          'Node position also matters: values on higher nodes may reflect work performed by their children.',
+        ],
+        source: usingExplainReferenceEn,
+      },
+      {
+        id: 'perguntas',
+        title: 'Questions to guide your study',
+        paragraphs: ['Use these questions as a starting point and consult the documentation to interpret the values you find:'],
+        bullets: [
+          'Was the estimate close to the observed row count?',
+          'Did the node run more than once?',
+          'Were rows removed by a filter?',
+          'Does the observed value belong only to this node or also include its children?',
+        ],
+      },
+    ],
+    references: [usingExplainReferenceEn, plannerStatisticsReferenceEn],
+  },
+  {
+    slug: 'heuristicas-nao-sao-diagnosticos',
+    title: 'Heuristics are not diagnoses',
+    summary: 'Use a plan signal as the starting point for an investigation.',
+    sections: [
+      {
+        id: 'papel-da-heuristica',
+        title: 'The role of a heuristic',
+        paragraphs: [
+          'A heuristic draws attention to a combination of values in the plan. It helps formulate a question but does not determine the cause or the best change by itself.',
+          'PostgreSQL documentation notes that numbers and strategies may vary with data, statistics, platform, and version.',
+        ],
+        bullets: [
+          'A difference between estimated and observed rows.',
+          'Many rows examined to produce only a few rows.',
+          'A node executed repeatedly.',
+        ],
+        source: usingExplainReferenceEn,
+      },
+      {
+        id: 'evidencia-e-hipotese',
+        title: 'Separate evidence from hypothesis',
+        paragraphs: ['First record what is present in the plan. Then formulate a hypothesis that can be compared in a controlled environment.'],
+        code: 'Observed evidence → hypothesis → verification',
+        bullets: [
+          'Evidence: a value or relationship found in the plan.',
+          'Hypothesis: a possible explanation for that signal.',
+          'Verification: a comparison made before and after a controlled change.',
+        ],
+      },
+      {
+        id: 'antes-de-concluir',
+        title: 'Before reaching a conclusion',
+        paragraphs: [
+          'When a signal involves estimates, access methods, or specific operators, consult the matching documentation section before drawing a conclusion.',
+          'Estimates depend on available statistics. Even when current, they remain approximations used by the planner before execution.',
+        ],
+        bullets: [
+          'Does the query still produce the same result?',
+          'Were the data and comparison parameters kept unchanged?',
+          'Was the documentation for the version in use consulted?',
+          'Were other costs of the change also considered?',
+        ],
+        source: plannerStatisticsReferenceEn,
+      },
+    ],
+    references: [usingExplainReferenceEn, plannerStatisticsReferenceEn],
+  },
+]
+
+export const learningArticles = computed(() =>
+  locale.value === 'en' ? englishLearningArticles : portugueseLearningArticles,
+)
+
 export function findLearningArticle(slug: string | null): LearningArticle | null {
   if (!slug) return null
-  return learningArticles.find((article) => article.slug === slug) ?? null
+  return learningArticles.value.find((article) => article.slug === slug) ?? null
 }
 
 export function getAdjacentLearningArticles(article: LearningArticle): {
   previous: LearningArticle | null
   next: LearningArticle | null
 } {
-  const index = learningArticles.findIndex((candidate) => candidate.slug === article.slug)
+  const index = learningArticles.value.findIndex((candidate) => candidate.slug === article.slug)
 
   return {
-    previous: learningArticles[index - 1] ?? null,
-    next: learningArticles[index + 1] ?? null,
+    previous: learningArticles.value[index - 1] ?? null,
+    next: learningArticles.value[index + 1] ?? null,
   }
 }

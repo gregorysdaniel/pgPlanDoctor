@@ -1,14 +1,16 @@
 import { readonly, ref } from 'vue'
 import { evaluatePlan } from '../domain/heuristics'
 import type { PlanNode } from '../domain/plan'
+import { translate } from '../i18n'
 
 export interface RecentPlan {
   id: string
-  title: string
   source: string
   analyzedAt: string
   nodeCount: number
   attentionCount: number
+  rootType: string
+  relations: readonly string[]
 }
 
 const STORAGE_KEY = 'pg-plan-doctor-recent-plans'
@@ -24,14 +26,16 @@ function isRecentPlan(value: unknown): value is RecentPlan {
 
   return (
     typeof plan.id === 'string' &&
-    typeof plan.title === 'string' &&
     typeof plan.source === 'string' &&
     typeof plan.analyzedAt === 'string' &&
     !Number.isNaN(Date.parse(plan.analyzedAt)) &&
     Number.isInteger(plan.nodeCount) &&
     Number(plan.nodeCount) > 0 &&
     Number.isInteger(plan.attentionCount) &&
-    Number(plan.attentionCount) >= 0
+    Number(plan.attentionCount) >= 0 &&
+    typeof plan.rootType === 'string' &&
+    Array.isArray(plan.relations) &&
+    plan.relations.every((relation) => typeof relation === 'string')
   )
 }
 
@@ -69,12 +73,21 @@ function collectRelations(plan: PlanNode, relations = new Set<string>()): string
   return [...relations]
 }
 
-function createTitle(plan: PlanNode): string {
-  const relations = collectRelations(plan)
-
-  if (relations.length === 1) return `${plan.type} em ${relations[0]}`
-  if (relations.length > 1) return `${plan.type} entre ${relations[0]} e ${relations[1]}`
-  return `Plano com ${plan.type}`
+export function formatRecentPlanTitle(plan: RecentPlan): string {
+  if (plan.relations.length === 1) {
+    return translate('recent.singleRelation', {
+      type: plan.rootType,
+      relation: plan.relations[0],
+    })
+  }
+  if (plan.relations.length > 1) {
+    return translate('recent.twoRelations', {
+      type: plan.rootType,
+      first: plan.relations[0],
+      second: plan.relations[1],
+    })
+  }
+  return translate('recent.generic', { type: plan.rootType })
 }
 
 function persistRecentPlans(): void {
@@ -92,11 +105,12 @@ function addRecentPlan(source: string, plan: PlanNode): void {
   const existingPlan = recentPlans.value.find((recentPlan) => recentPlan.source === normalizedSource)
   const recentPlan: RecentPlan = {
     id: existingPlan?.id ?? createIdentifier(),
-    title: createTitle(plan),
     source: normalizedSource,
     analyzedAt: new Date().toISOString(),
     nodeCount: countNodes(plan),
     attentionCount: evaluatePlan(plan).length,
+    rootType: plan.type,
+    relations: collectRelations(plan),
   }
 
   recentPlans.value = [

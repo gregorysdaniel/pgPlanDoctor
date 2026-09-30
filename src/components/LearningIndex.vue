@@ -7,6 +7,9 @@ import {
   PhTreeStructure,
 } from '@phosphor-icons/vue'
 import { learningArticles } from '../content/learningContent'
+import { useI18n } from '../i18n'
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -17,18 +20,15 @@ import { learningArticles } from '../content/learningContent'
           <PhBookOpenText :size="36" weight="duotone" />
         </span>
         <div>
-          <h1>Aprender a interpretar planos</h1>
-          <p>
-            Uma introdução ao caminho da consulta, à leitura do EXPLAIN ANALYZE e à investigação
-            de sinais encontrados em planos de execução.
-          </p>
+          <h1>{{ t('learning.title') }}</h1>
+          <p>{{ t('learning.lead') }}</p>
         </div>
       </div>
 
     </header>
 
     <section class="learning-path" aria-labelledby="learning-path-title">
-      <h2 id="learning-path-title">Conteúdos</h2>
+      <h2 id="learning-path-title">{{ t('learning.contents') }}</h2>
 
       <ol>
         <li v-for="article in learningArticles" :key="article.slug">

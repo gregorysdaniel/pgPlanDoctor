@@ -4,12 +4,15 @@ import { ElButton, ElDialog } from 'element-plus'
 import { PhBookOpenText, PhBracketsCurly, PhInfo, PhPlusCircle } from '@phosphor-icons/vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
+import LanguageSwitcher from './components/LanguageSwitcher.vue'
 import ThemeSwitcher from './components/ThemeSwitcher.vue'
 import { usePlanSession } from './composables/usePlanSession'
+import { useI18n } from './i18n'
 
 const route = useRoute()
 const router = useRouter()
 const { explainInput } = usePlanSession()
+const { t } = useI18n()
 const originalPlanVisible = ref(false)
 
 const isAnalysis = computed(() => route.name === 'analysis')
@@ -31,7 +34,7 @@ function openInput(): void {
           :aria-current="navigationSection === 'learning' ? 'page' : undefined"
         >
           <PhBookOpenText :size="17" weight="bold" aria-hidden="true" />
-          Aprender
+          {{ t('nav.learn') }}
         </RouterLink>
         <RouterLink
           class="header-nav__link"
@@ -40,30 +43,31 @@ function openInput(): void {
           :aria-current="navigationSection === 'about' ? 'page' : undefined"
         >
           <PhInfo :size="17" weight="bold" aria-hidden="true" />
-          Sobre o projeto
+          {{ t('nav.about') }}
         </RouterLink>
       </template>
 
       <template v-if="isAnalysis">
         <ElButton
-          aria-label="Ver JSON original"
-          title="Ver JSON original"
+          :aria-label="t('actions.viewOriginalJson')"
+          :title="t('actions.viewOriginalJson')"
           @click="originalPlanVisible = true"
         >
           <PhBracketsCurly :size="16" weight="bold" aria-hidden="true" />
-          Ver JSON
+          {{ t('actions.viewJson') }}
         </ElButton>
         <ElButton
           type="primary"
-          aria-label="Analisar outro plano"
-          title="Analisar outro plano"
+          :aria-label="t('actions.analyzeAnotherPlan')"
+          :title="t('actions.analyzeAnotherPlan')"
           @click="openInput"
         >
           <PhPlusCircle :size="16" weight="bold" aria-hidden="true" />
-          Novo plano
+          {{ t('actions.newPlan') }}
         </ElButton>
       </template>
 
+      <LanguageSwitcher />
       <ThemeSwitcher />
     </AppHeader>
 
@@ -72,7 +76,7 @@ function openInput(): void {
     <ElDialog
       v-model="originalPlanVisible"
       class="original-plan-dialog"
-      title="Plano original"
+      :title="t('dialog.originalPlan')"
       :teleported="false"
       width="min(860px, calc(100vw - 32px))"
     >

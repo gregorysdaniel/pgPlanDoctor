@@ -5,10 +5,12 @@ import type { RecentPlan } from '../composables/useRecentPlans'
 import { useRecentPlans } from '../composables/useRecentPlans'
 import { usePlanSession } from '../composables/usePlanSession'
 import { parseExplainJson, PlanParseError } from '../domain/planParser'
+import { useI18n } from '../i18n'
 
 const router = useRouter()
 const { explainInput, loadedPlan, parseError } = usePlanSession()
 const { recentPlans, addRecentPlan } = useRecentPlans()
+const { t } = useI18n()
 
 function useExample(source: string): void {
   explainInput.value = source
@@ -28,7 +30,7 @@ async function analyzePlan(): Promise<void> {
     parseError.value =
       error instanceof PlanParseError
         ? error.message
-        : 'Não foi possível carregar o plano de execução.'
+        : t('input.loadError')
   }
 }
 
@@ -42,7 +44,7 @@ async function openRecentPlan(recentPlan: RecentPlan): Promise<void> {
     parseError.value =
       error instanceof PlanParseError
         ? error.message
-        : 'Não foi possível carregar o plano de execução.'
+        : t('input.loadError')
   }
 }
 </script>

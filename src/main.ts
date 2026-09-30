@@ -10,6 +10,8 @@ import '@fontsource/jetbrains-mono/latin-600.css'
 import '@fontsource/jetbrains-mono/latin-700.css'
 import App from './App.vue'
 import { router } from './router'
+import { initializeLocale } from './i18n'
 import './styles.css'
 
+initializeLocale()
 createApp(App).use(router).mount('#app')

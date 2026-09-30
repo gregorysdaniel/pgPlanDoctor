@@ -1,4 +1,5 @@
 import type { PlanNode } from './plan'
+import { locale, translate } from '../i18n'
 
 export interface HeuristicTip {
   id: string
@@ -27,8 +28,6 @@ const MINIMUM_SORT_TO_LIMIT_RATIO = 10
 const MINIMUM_INNER_LOOPS = 10
 const MINIMUM_INNER_TIME_MS = 10
 
-const integerFormatter = new Intl.NumberFormat('pt-BR')
-const decimalFormatter = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 })
 const functionInFilterPattern = /\b(lower|upper|date_trunc|coalesce|substring|trim)\s*\(/i
 
 function accumulatedRows(node: PlanNode): number {
@@ -57,6 +56,8 @@ function getFilterFunction(node: PlanNode): string | null {
 
 export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
   const tips: HeuristicTip[] = []
+  const integerFormatter = new Intl.NumberFormat(locale.value)
+  const decimalFormatter = new Intl.NumberFormat(locale.value, { maximumFractionDigits: 1 })
 
   function visit(node: PlanNode): void {
     const discardedRows = (node.metrics.rowsRemovedByFilter ?? 0) * node.metrics.loops
@@ -72,23 +73,23 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
     if (qError >= MINIMUM_Q_ERROR) {
       tips.push({
         id: `row-estimate-divergence-${node.id}`,
-        title: 'Estimativa de linhas distante da realidade',
+        title: translate('heuristic.r01.title'),
         node,
-        evidence: `O nó estimou ${integerFormatter.format(node.metrics.estimatedRows)} linhas por execução, mas produziu ${integerFormatter.format(node.metrics.actualRows)}. A diferença é de aproximadamente ${decimalFormatter.format(qError)} vezes.`,
-        interpretation:
-          'O planner tomou a decisão usando uma previsão diferente do que aconteceu na execução. Isso pode influenciar a escolha dos scans, das junções e da ordem das operações.',
+        evidence: translate('heuristic.r01.evidence', {
+          estimated: integerFormatter.format(node.metrics.estimatedRows),
+          actual: integerFormatter.format(node.metrics.actualRows),
+          error: decimalFormatter.format(qError),
+        }),
+        interpretation: translate('heuristic.r01.interpretation'),
         suggestion: {
-          prefix: 'Investigue um ',
-          technicalTerm: 'ajuste de estatísticas',
-          suffix:
-            ' da tabela e, quando houver colunas relacionadas, avalie estatísticas estendidas.',
-          explanation:
-            'É a atualização das informações que o PostgreSQL usa para estimar quantas linhas cada operação deve encontrar. Normalmente começa com o comando ANALYZE.',
+          prefix: translate('heuristic.r01.prefix'),
+          technicalTerm: translate('heuristic.r01.term'),
+          suffix: translate('heuristic.r01.suffix'),
+          explanation: translate('heuristic.r01.explanation'),
         },
-        validation:
-          'Atualize ou amplie as estatísticas e gere o plano novamente. Compare as linhas estimadas e reais no mesmo nó e verifique se a mudança também afetou o plano.',
+        validation: translate('heuristic.r01.validation'),
         documentation: {
-          label: 'Documentação do PostgreSQL sobre estatísticas do planner',
+          label: translate('heuristic.r01.doc'),
           url: 'https://www.postgresql.org/docs/current/planner-stats.html',
         },
       })
@@ -105,23 +106,24 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
     ) {
       tips.push({
         id: `seq-scan-discards-rows-${node.id}`,
-        title: 'Muitas linhas descartadas',
+        title: translate('heuristic.r02.title'),
         node,
-        evidence: `O Seq Scan em ${node.relation ?? 'uma relação'} leu aproximadamente ${integerFormatter.format(scannedRows)} linhas e descartou ${integerFormatter.format(discardedRows)} (${discardedPercentage.toFixed(1)}%).`,
-        interpretation:
-          'O filtro retorna uma parcela pequena das linhas examinadas. A leitura completa da tabela pode se tornar relevante conforme ela crescer.',
+        evidence: translate('heuristic.r02.evidence', {
+          relation: node.relation ?? translate('heuristic.unknownRelation'),
+          scanned: integerFormatter.format(scannedRows),
+          discarded: integerFormatter.format(discardedRows),
+          percentage: decimalFormatter.format(discardedPercentage),
+        }),
+        interpretation: translate('heuristic.r02.interpretation'),
         suggestion: {
-          prefix: 'Avalie se um ',
-          technicalTerm: 'índice',
-          suffix:
-            ' nas colunas usadas pelo filtro pode reduzir a quantidade de linhas examinadas.',
-          explanation:
-            'É uma estrutura auxiliar que ajuda o PostgreSQL a localizar linhas sem percorrer toda a tabela. Ela ocupa espaço e adiciona custo às escritas.',
+          prefix: translate('heuristic.r02.prefix'),
+          technicalTerm: translate('heuristic.r02.term'),
+          suffix: translate('heuristic.r02.suffix'),
+          explanation: translate('heuristic.r02.explanation'),
         },
-        validation:
-          'Compare o EXPLAIN ANALYZE antes e depois da alteração. Verifique o tempo, os buffers, as linhas descartadas e o tipo de scan escolhido.',
+        validation: translate('heuristic.r02.validation'),
         documentation: {
-          label: 'Documentação do PostgreSQL sobre índices',
+          label: translate('heuristic.r02.doc'),
           url: 'https://www.postgresql.org/docs/current/indexes-intro.html',
         },
       })
@@ -137,22 +139,24 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
     ) {
       tips.push({
         id: `index-scan-discards-rows-${node.id}`,
-        title: 'Índice ainda encontra muitos candidatos',
+        title: translate('heuristic.r03.title'),
         node,
-        evidence: `O Index Scan em ${node.relation ?? 'uma relação'} examinou aproximadamente ${integerFormatter.format(scannedRows)} linhas e descartou ${integerFormatter.format(discardedRows)} (${discardedPercentage.toFixed(1)}%) no filtro.`,
-        interpretation:
-          'O índice ajuda em uma parte da busca, mas outra condição ainda é aplicada depois e elimina muitos resultados.',
+        evidence: translate('heuristic.r03.evidence', {
+          relation: node.relation ?? translate('heuristic.unknownRelation'),
+          scanned: integerFormatter.format(scannedRows),
+          discarded: integerFormatter.format(discardedRows),
+          percentage: decimalFormatter.format(discardedPercentage),
+        }),
+        interpretation: translate('heuristic.r03.interpretation'),
         suggestion: {
-          prefix: 'Avalie se um ',
-          technicalTerm: 'índice composto',
-          suffix: ' compatível com as condições da consulta pode filtrar melhor os candidatos.',
-          explanation:
-            'É um índice formado por mais de uma coluna. A ordem dessas colunas deve acompanhar a forma como a consulta filtra os dados.',
+          prefix: translate('heuristic.r03.prefix'),
+          technicalTerm: translate('heuristic.r03.term'),
+          suffix: translate('heuristic.r03.suffix'),
+          explanation: translate('heuristic.r03.explanation'),
         },
-        validation:
-          'Compare os planos antes e depois. Verifique se mais condições aparecem no Index Cond, se diminuem as linhas descartadas e como variam tempo e buffers.',
+        validation: translate('heuristic.r03.validation'),
         documentation: {
-          label: 'Documentação do PostgreSQL sobre índices multicoluna',
+          label: translate('heuristic.r03.doc'),
           url: 'https://www.postgresql.org/docs/current/indexes-multicolumn.html',
         },
       })
@@ -169,22 +173,24 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
     ) {
       tips.push({
         id: `function-filter-wide-scan-${node.id}`,
-        title: 'Função aplicada durante uma leitura ampla',
+        title: translate('heuristic.r04.title'),
         node,
-        evidence: `O Seq Scan em ${node.relation ?? 'uma relação'} usa ${filterFunction}(...) no filtro e descarta ${integerFormatter.format(discardedRows)} de aproximadamente ${integerFormatter.format(scannedRows)} linhas examinadas.`,
-        interpretation:
-          'Um índice comum na coluna pode não atender a uma busca feita sobre o resultado da função.',
+        evidence: translate('heuristic.r04.evidence', {
+          relation: node.relation ?? translate('heuristic.unknownRelation'),
+          function: filterFunction,
+          discarded: integerFormatter.format(discardedRows),
+          scanned: integerFormatter.format(scannedRows),
+        }),
+        interpretation: translate('heuristic.r04.interpretation'),
         suggestion: {
-          prefix: 'Avalie se um ',
-          technicalTerm: 'índice de expressão',
-          suffix: ` compatível com ${filterFunction}(...) pode evitar a leitura ampla sem mudar o resultado da consulta.`,
-          explanation:
-            'É um índice criado sobre o resultado de uma expressão, como lower(email), em vez de usar somente o valor original da coluna.',
+          prefix: translate('heuristic.r04.prefix'),
+          technicalTerm: translate('heuristic.r04.term'),
+          suffix: translate('heuristic.r04.suffix', { function: filterFunction }),
+          explanation: translate('heuristic.r04.explanation'),
         },
-        validation:
-          'Crie o índice apenas no cenário de teste e gere o plano novamente. Verifique o tipo de scan, as linhas descartadas, o tempo e os buffers.',
+        validation: translate('heuristic.r04.validation'),
         documentation: {
-          label: 'Documentação do PostgreSQL sobre índices de expressão',
+          label: translate('heuristic.r04.doc'),
           url: 'https://www.postgresql.org/docs/current/indexes-expressional.html',
         },
       })
@@ -206,22 +212,22 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
       ) {
         tips.push({
           id: `wide-sort-before-limit-${node.id}`,
-          title: 'Muitas linhas ordenadas para um resultado pequeno',
+          title: translate('heuristic.r05.title'),
           node: sortNode,
-          evidence: `O Sort recebeu aproximadamente ${integerFormatter.format(sortedRows)} linhas para o Limit entregar ${integerFormatter.format(limitedRows)}.`,
-          interpretation:
-            'A consulta organiza um conjunto muito maior do que o resultado final. Em alguns casos, o PostgreSQL pode ler os dados já na ordem necessária e parar mais cedo.',
+          evidence: translate('heuristic.r05.evidence', {
+            sorted: integerFormatter.format(sortedRows),
+            limited: integerFormatter.format(limitedRows),
+          }),
+          interpretation: translate('heuristic.r05.interpretation'),
           suggestion: {
-            prefix: 'Avalie se um ',
-            technicalTerm: 'índice para ordenação',
-            suffix: ' compatível com o filtro e o ORDER BY pode evitar ou reduzir o trabalho do Sort.',
-            explanation:
-              'É um índice cujas colunas e direções acompanham a ordem pedida pela consulta, permitindo ler primeiro as linhas desejadas.',
+            prefix: translate('heuristic.r05.prefix'),
+            technicalTerm: translate('heuristic.r05.term'),
+            suffix: translate('heuristic.r05.suffix'),
+            explanation: translate('heuristic.r05.explanation'),
           },
-          validation:
-            'Compare os planos com a mesma consulta e o mesmo LIMIT. Verifique se o Sort desapareceu, quantas linhas foram lidas e como variam tempo e buffers.',
+          validation: translate('heuristic.r05.validation'),
           documentation: {
-            label: 'Documentação do PostgreSQL sobre índices e ORDER BY',
+            label: translate('heuristic.r05.doc'),
             url: 'https://www.postgresql.org/docs/current/indexes-ordering.html',
           },
         })
@@ -238,22 +244,23 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
       if (innerNode.metrics.loops >= MINIMUM_INNER_LOOPS && innerTime >= MINIMUM_INNER_TIME_MS) {
         tips.push({
           id: `repeated-inner-lookup-${node.id}`,
-          title: 'Busca interna repetida muitas vezes',
+          title: translate('heuristic.r06.title'),
           node: innerNode,
-          evidence: `O ramo interno ${innerNode.type} foi executado ${integerFormatter.format(innerNode.metrics.loops)} vezes e acumulou aproximadamente ${decimalFormatter.format(innerTime)} ms.`,
-          interpretation:
-            'Cada linha do lado externo dispara uma nova busca no lado interno. Mesmo uma busca curta pode se tornar cara quando é repetida muitas vezes.',
+          evidence: translate('heuristic.r06.evidence', {
+            type: innerNode.type,
+            loops: integerFormatter.format(innerNode.metrics.loops),
+            time: decimalFormatter.format(innerTime),
+          }),
+          interpretation: translate('heuristic.r06.interpretation'),
           suggestion: {
-            prefix: 'Avalie se um ',
-            technicalTerm: 'índice para junção',
-            suffix: ' pode tornar cada busca interna mais direta.',
-            explanation:
-              'É um índice criado nas colunas usadas para relacionar as tabelas, ajudando o PostgreSQL a localizar as correspondências de cada linha.',
+            prefix: translate('heuristic.r06.prefix'),
+            technicalTerm: translate('heuristic.r06.term'),
+            suffix: translate('heuristic.r06.suffix'),
+            explanation: translate('heuristic.r06.explanation'),
           },
-          validation:
-            'Compare o EXPLAIN ANALYZE antes e depois. Multiplique as métricas pelos loops e observe também se Memoize ou Materialize já reaproveitam resultados.',
+          validation: translate('heuristic.r06.validation'),
           documentation: {
-            label: 'Documentação do PostgreSQL sobre leitura de planos',
+            label: translate('heuristic.r06.doc'),
             url: 'https://www.postgresql.org/docs/current/using-explain.html',
           },
         })

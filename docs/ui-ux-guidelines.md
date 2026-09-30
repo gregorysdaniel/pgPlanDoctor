@@ -39,7 +39,7 @@ O pgPlanDoctor não vende um serviço. A interface deve explicar uma tarefa téc
 | Exercism | pgPlanDoctor |
 |---|---|
 | Marca tipográfica no cabeçalho | Marca tipográfica `pgPlanDoctor`, sem caixa decorativa |
-| Cabeçalho com hierarquia horizontal | Marca à esquerda; ações reais e tema à direita |
+| Cabeçalho com hierarquia horizontal | Marca à esquerda; ações, idioma e tema à direita |
 | Hero educacional em duas colunas | Instruções objetivas à esquerda e editor JSON à direita |
 | Ilustração principal | Editor ou visualização do plano; nunca ilustração genérica |
 | Botão primário com contorno e profundidade | Ação `Analisar plano` |
@@ -265,7 +265,7 @@ O cabeçalho segue diretamente a composição do Exercism:
 
 ```text
 ┌────────────────────────────────────────────────────────────────────┐
-│ marca                                             ações reais  tema │
+│ marca                                     ações  idioma  tema │
 └────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -274,7 +274,8 @@ Regras:
 - altura entre 72 e 80 px;
 - conteúdo interno centralizado na largura máxima da página;
 - marca tipográfica livre, sem quadrado ou card atrás dela;
-- ações contextuais e tema à direita;
+- ações contextuais, idioma e tema à direita;
+- seletor de idioma compacto com `PT` e `EN`;
 - seletor de tema compacto em menu;
 - superfície sólida e borda inferior;
 - não criar navegação quando existe apenas um fluxo de trabalho.

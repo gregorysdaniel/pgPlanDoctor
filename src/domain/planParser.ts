@@ -1,4 +1,5 @@
 import type { ExplainPlan, PlanBuffers, PlanNode, PlanNodeKind } from './plan'
+import { translate } from '../i18n'
 
 type JsonObject = Record<string, unknown>
 
@@ -16,7 +17,7 @@ export function parseExplainJson(source: string): ExplainPlan {
   try {
     parsed = JSON.parse(source)
   } catch {
-    throw new PlanParseError('O conteúdo informado não é um JSON válido.')
+    throw new PlanParseError(translate('parser.invalidJson'))
   }
 
   return parseExplainPlan(parsed)
@@ -31,8 +32,8 @@ export function parseExplainPlan(input: unknown): ExplainPlan {
     root: parseNode(document.root, 'Plan', identifiers),
   }
 
-  const planningTimeMs = optionalNumber(document.metadata, 'Planning Time', 'Plano')
-  const executionTimeMs = optionalNumber(document.metadata, 'Execution Time', 'Plano')
+  const planningTimeMs = optionalNumber(document.metadata, 'Planning Time', 'Plan')
+  const executionTimeMs = optionalNumber(document.metadata, 'Execution Time', 'Plan')
 
   if (planningTimeMs !== undefined) plan.planningTimeMs = planningTimeMs
   if (executionTimeMs !== undefined) plan.executionTimeMs = executionTimeMs
@@ -43,19 +44,19 @@ export function parseExplainPlan(input: unknown): ExplainPlan {
 function unwrapPlan(input: unknown): { root: JsonObject; metadata: JsonObject } {
   if (Array.isArray(input)) {
     if (input.length !== 1) {
-      throw new PlanParseError('O JSON deve conter exatamente um plano de execução.')
+      throw new PlanParseError(translate('parser.singlePlan'))
     }
 
     return unwrapPlan(input[0])
   }
 
-  const object = requireObject(input, 'Plano')
+  const object = requireObject(input, 'Plan')
 
   if ('Plan' in object) return { root: requireObject(object.Plan, 'Plan'), metadata: object }
 
   if ('Node Type' in object) return { root: object, metadata: {} }
 
-  throw new PlanParseError('O JSON não contém as propriedades "Plan" ou "Node Type".')
+  throw new PlanParseError(translate('parser.missingPlan'))
 }
 
 function parseNode(
@@ -165,6 +166,10 @@ function classifyNode(type: string): PlanNodeKind {
   return 'operation'
 }
 
+export function describePlanNode(node: PlanNode): string {
+  return describeNode(node.type, node.relation, node.indexName, node.filter, node.sortKeys)
+}
+
 function describeNode(
   type: string,
   relation?: string,
@@ -175,27 +180,33 @@ function describeNode(
   switch (type) {
     case 'Seq Scan':
       return filter
-        ? `Percorre a tabela ${relation ?? 'informada'} e aplica o filtro ${filter}.`
-        : `Percorre todas as linhas da tabela ${relation ?? 'informada'}.`
+        ? translate('node.seqScanFiltered', {
+            relation: relation ?? translate('node.unknownRelation'),
+            filter,
+          })
+        : translate('node.seqScan', { relation: relation ?? translate('node.unknownRelation') })
     case 'Index Scan':
     case 'Index Only Scan':
-      return `Usa o índice ${indexName ?? 'informado'} para buscar linhas em ${relation ?? 'uma tabela'}.`
+      return translate('node.indexScan', {
+        index: indexName ?? translate('node.unknownIndex'),
+        relation: relation ?? translate('node.unknownTable'),
+      })
     case 'Sort':
       return sortKeys?.length
-        ? `Ordena as linhas por ${sortKeys.join(', ')}.`
-        : 'Ordena as linhas recebidas.'
+        ? translate('node.sortKeys', { keys: sortKeys.join(', ') })
+        : translate('node.sort')
     case 'Limit':
-      return 'Entrega somente a quantidade de linhas solicitada pela consulta.'
+      return translate('node.limit')
     case 'Nested Loop':
-      return 'Para cada linha do primeiro ramo, procura correspondências no segundo ramo.'
+      return translate('node.nestedLoop')
     case 'Hash Join':
-      return 'Relaciona os dois ramos usando uma tabela de busca em memória.'
+      return translate('node.hashJoin')
     case 'Merge Join':
-      return 'Relaciona dois conjuntos de linhas que estão ordenados.'
+      return translate('node.mergeJoin')
     case 'Aggregate':
-      return 'Agrupa ou resume as linhas recebidas.'
+      return translate('node.aggregate')
     default:
-      return `Executa a operação ${type}.`
+      return translate('node.default', { type })
   }
 }
 
@@ -214,7 +225,7 @@ function nextIdentifier(type: string, identifiers: Map<string, number>): string 
 
 function requireObject(value: unknown, path: string): JsonObject {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-    throw new PlanParseError(`${path} deve ser um objeto.`)
+    throw new PlanParseError(translate('parser.object', { path }))
   }
 
   return value as JsonObject
@@ -224,7 +235,7 @@ function requireString(object: JsonObject, key: string, path: string): string {
   const value = object[key]
 
   if (typeof value !== 'string' || value.length === 0) {
-    throw new PlanParseError(`${path}.${key} deve ser um texto não vazio.`)
+    throw new PlanParseError(translate('parser.nonEmptyText', { path, key }))
   }
 
   return value
@@ -235,7 +246,7 @@ function optionalString(object: JsonObject, key: string, path: string): string |
   if (value === undefined) return undefined
 
   if (typeof value !== 'string') {
-    throw new PlanParseError(`${path}.${key} deve ser um texto.`)
+    throw new PlanParseError(translate('parser.text', { path, key }))
   }
 
   return value
@@ -245,9 +256,7 @@ function requireNumber(object: JsonObject, key: string, path: string): number {
   const value = optionalNumber(object, key, path)
 
   if (value === undefined) {
-    throw new PlanParseError(
-      `${path}.${key} é obrigatório. Use EXPLAIN (ANALYZE, FORMAT JSON).`,
-    )
+    throw new PlanParseError(translate('parser.requiredMetric', { path, key }))
   }
 
   return value
@@ -258,7 +267,7 @@ function optionalNumber(object: JsonObject, key: string, path: string): number |
   if (value === undefined) return undefined
 
   if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
-    throw new PlanParseError(`${path}.${key} deve ser um número maior ou igual a zero.`)
+    throw new PlanParseError(translate('parser.nonNegativeNumber', { path, key }))
   }
 
   return value
@@ -273,7 +282,7 @@ function optionalStringArray(
   if (value === undefined) return undefined
 
   if (!Array.isArray(value) || value.some((item) => typeof item !== 'string')) {
-    throw new PlanParseError(`${path}.${key} deve ser uma lista de textos.`)
+    throw new PlanParseError(translate('parser.stringArray', { path, key }))
   }
 
   return value
@@ -288,7 +297,7 @@ function optionalObjectArray(
   if (value === undefined) return undefined
 
   if (!Array.isArray(value)) {
-    throw new PlanParseError(`${path}.${key} deve ser uma lista.`)
+    throw new PlanParseError(translate('parser.objectArray', { path, key }))
   }
 
   return value.map((item, index) => requireObject(item, `${path}.${key}[${index}]`))

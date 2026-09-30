@@ -291,18 +291,17 @@ pre {
 
 .brand__symbol {
   display: inline-flex;
-  width: 32px;
+  width: 30px;
   height: 30px;
+  flex: 0 0 30px;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
 }
 
 .brand__symbol img {
-  flex: 0 0 auto;
-  width: 68px;
-  max-width: none;
-  height: auto;
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
@@ -345,6 +344,48 @@ pre {
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
+}
+
+.language-menu-button {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.language-menu-button:hover,
+.language-menu-button:focus-visible {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.language-menu,
+.theme-menu {
+  min-width: 160px;
+}
+
+.language-menu .el-dropdown-menu__item {
+  display: flex;
+  gap: 9px;
+  font-size: 14px;
+}
+
+.language-menu__check,
+.theme-menu__check {
+  margin-left: auto;
+}
+
+.language-menu .language-menu__item--active {
+  color: var(--primary);
+  font-weight: 700;
 }
 
 .theme-menu-button:hover {
@@ -2127,7 +2168,9 @@ pre {
   }
 
   .brand__symbol {
-    width: 32px;
+    width: 28px;
+    height: 28px;
+    flex-basis: 28px;
   }
 
   .brand__name {
@@ -2138,6 +2181,17 @@ pre {
     min-width: 40px;
     justify-content: center;
     padding-inline: 10px;
+  }
+
+  .language-menu-button {
+    min-width: 40px;
+    justify-content: center;
+    padding-inline: 8px;
+  }
+
+  .language-menu-button > svg:first-child,
+  .language-menu-button__chevron {
+    display: none;
   }
 
   .theme-menu-button > span,

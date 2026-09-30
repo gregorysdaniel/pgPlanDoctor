@@ -11,19 +11,24 @@
     <script>
       ;(() => {
         try {
+          const storedLocale = localStorage.getItem('pg-plan-doctor-locale')
+          const locale = storedLocale === 'pt-BR' || storedLocale === 'en'
+            ? storedLocale
+            : (navigator.language.toLowerCase().startsWith('pt') ? 'pt-BR' : 'en')
           const preference = localStorage.getItem('pg-plan-doctor-theme')
           const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
           const theme = preference === 'dark' || (preference !== 'light' && systemDark)
             ? 'dark'
             : 'light'
 
+          document.documentElement.lang = locale
           document.documentElement.dataset.theme = theme
         } catch {
           document.documentElement.dataset.theme = 'light'
         }
       })()
     </script>
-    <title>pgPlanDoctor — Leitura didática de EXPLAIN</title>
+    <title>pgPlanDoctor</title>
   </head>
   <body>
     <div id="app"></div>

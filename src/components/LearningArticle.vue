@@ -10,10 +10,13 @@ import {
 import type { LearningArticle } from '../content/learningContent'
 import type { LearningReference } from '../content/learningContent'
 import { getAdjacentLearningArticles } from '../content/learningContent'
+import { useI18n } from '../i18n'
 
 const props = defineProps<{
   article: LearningArticle
 }>()
+
+const { t } = useI18n()
 
 const adjacentArticles = computed(() => getAdjacentLearningArticles(props.article))
 
@@ -29,10 +32,10 @@ function referenceNumber(reference: LearningReference): number {
 <template>
   <main class="learning-article">
     <div class="learning-article__shell">
-      <nav class="learning-breadcrumb" aria-label="Navegação estrutural">
+      <nav class="learning-breadcrumb" :aria-label="t('learning.breadcrumbAria')">
         <RouterLink :to="{ name: 'learning' }">
           <PhArrowLeft :size="17" weight="bold" aria-hidden="true" />
-          Todos os conteúdos
+          {{ t('learning.allContents') }}
         </RouterLink>
       </nav>
 
@@ -55,7 +58,7 @@ function referenceNumber(reference: LearningReference): number {
                 v-if="section.source"
                 class="learning-section__reference-marker"
                 type="button"
-                :aria-label="`Ver referência ${referenceNumber(section.source)}`"
+                :aria-label="t('learning.reference', { number: referenceNumber(section.source) })"
                 @click="scrollToSection(`recommended-content-${referenceNumber(section.source)}`)"
               >[{{ referenceNumber(section.source) }}]</button>
             </h2>
@@ -88,7 +91,7 @@ function referenceNumber(reference: LearningReference): number {
           </section>
 
           <section class="learning-references" aria-labelledby="learning-references-title">
-            <h2 id="learning-references-title">Conteúdos recomendados</h2>
+            <h2 id="learning-references-title">{{ t('learning.recommended') }}</h2>
             <ol>
               <li
                 v-for="(reference, index) in article.references"
@@ -106,7 +109,7 @@ function referenceNumber(reference: LearningReference): number {
             </ol>
           </section>
 
-          <nav class="learning-pagination" aria-label="Navegação entre conteúdos">
+          <nav class="learning-pagination" :aria-label="t('learning.paginationAria')">
             <RouterLink
               v-if="adjacentArticles.previous"
               class="learning-pagination__previous"
@@ -114,7 +117,7 @@ function referenceNumber(reference: LearningReference): number {
             >
               <PhArrowLeft :size="20" weight="bold" aria-hidden="true" />
               <span>
-                <small>Anterior</small>
+                <small>{{ t('learning.previous') }}</small>
                 <strong>{{ adjacentArticles.previous.title }}</strong>
               </span>
             </RouterLink>
@@ -126,15 +129,15 @@ function referenceNumber(reference: LearningReference): number {
               :to="{ name: 'learning-article', params: { slug: adjacentArticles.next.slug } }"
             >
               <span>
-                <small>Próximo</small>
+                <small>{{ t('learning.next') }}</small>
                 <strong>{{ adjacentArticles.next.title }}</strong>
               </span>
               <PhArrowRight :size="20" weight="bold" aria-hidden="true" />
             </RouterLink>
             <RouterLink v-else class="learning-pagination__next" :to="{ name: 'learning' }">
               <span>
-                <small>Concluir</small>
-                <strong>Voltar aos conteúdos</strong>
+                <small>{{ t('learning.finish') }}</small>
+                <strong>{{ t('learning.back') }}</strong>
               </span>
               <PhArrowRight :size="20" weight="bold" aria-hidden="true" />
             </RouterLink>
@@ -142,7 +145,7 @@ function referenceNumber(reference: LearningReference): number {
         </article>
 
         <aside class="learning-toc" aria-labelledby="learning-toc-title">
-          <h2 id="learning-toc-title">Nesta página</h2>
+          <h2 id="learning-toc-title">{{ t('learning.onThisPage') }}</h2>
           <ul>
             <li v-for="section in article.sections" :key="section.id">
               <button type="button" @click="scrollToSection(section.id)">

@@ -5,16 +5,21 @@ import { ElCollapse, ElCollapseItem, ElLink, ElPopover } from 'element-plus'
 import PlanTree from './PlanTree.vue'
 import { evaluatePlan } from '../domain/heuristics'
 import type { ExplainPlan, PlanNode } from '../domain/plan'
+import { describePlanNode } from '../domain/planParser'
+import { useI18n } from '../i18n'
 
 const props = defineProps<{
   plan: ExplainPlan
 }>()
 
-const integerFormatter = new Intl.NumberFormat('pt-BR')
-const timeFormatter = new Intl.NumberFormat('pt-BR', {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-})
+const { locale, t } = useI18n()
+const integerFormatter = computed(() => new Intl.NumberFormat(locale.value))
+const timeFormatter = computed(
+  () => new Intl.NumberFormat(locale.value, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }),
+)
 
 const root = computed(() => props.plan.root)
 const tips = computed(() => evaluatePlan(root.value))
@@ -33,6 +38,15 @@ const executionTime = computed(() => props.plan.executionTimeMs ?? accumulatedTi
 const resultRows = computed(() => accumulatedRows(root.value))
 const nodeCount = computed(() => countNodes(root.value))
 const planDepth = computed(() => calculateDepth(root.value))
+const structureSummary = computed(() => {
+  const nodes = t(nodeCount.value === 1 ? 'analysis.node.one' : 'analysis.node.other', {
+    count: nodeCount.value,
+  })
+  const levels = t(planDepth.value === 1 ? 'analysis.level.one' : 'analysis.level.other', {
+    count: planDepth.value,
+  })
+  return `${nodes} · ${levels}`
+})
 const relationNames = computed(() => {
   const relations = new Set<string>()
 
@@ -51,8 +65,8 @@ const bufferSummary = computed(() => {
 
   const shared = buffers.sharedHit + buffers.sharedRead
   const temporary = buffers.tempRead + buffers.tempWritten
-  const parts = [`${formatInteger(shared)} compartilhados`]
-  if (temporary > 0) parts.push(`${formatInteger(temporary)} temporários`)
+  const parts = [t('analysis.sharedBuffers', { count: formatInteger(shared) })]
+  if (temporary > 0) parts.push(t('analysis.tempBuffers', { count: formatInteger(temporary) }))
   return parts.join(' · ')
 })
 
@@ -88,45 +102,45 @@ function calculateDepth(node: PlanNode): number {
 }
 
 function formatInteger(value: number): string {
-  return integerFormatter.format(value)
+  return integerFormatter.value.format(value)
 }
 
 function formatTime(value: number): string {
   return value >= 1_000
-    ? `${timeFormatter.format(value / 1_000)} s`
-    : `${timeFormatter.format(value)} ms`
+    ? `${timeFormatter.value.format(value / 1_000)} s`
+    : `${timeFormatter.value.format(value)} ms`
 }
 </script>
 
 <template>
   <main class="analysis-screen">
-    <section class="analysis-summary" aria-label="Resumo da execução">
+    <section class="analysis-summary" :aria-label="t('analysis.summaryAria')">
       <div class="summary-metric">
-        <span>Execução</span>
+        <span>{{ t('analysis.execution') }}</span>
         <strong>{{ formatTime(executionTime) }}</strong>
       </div>
       <div v-if="plan.planningTimeMs !== undefined" class="summary-metric">
-        <span>Planejamento</span>
+        <span>{{ t('analysis.planning') }}</span>
         <strong>{{ formatTime(plan.planningTimeMs) }}</strong>
       </div>
       <div class="summary-metric">
-        <span>Resultado</span>
-        <strong>{{ formatInteger(resultRows) }} {{ resultRows === 1 ? 'linha' : 'linhas' }}</strong>
+        <span>{{ t('analysis.result') }}</span>
+        <strong>{{ t(resultRows === 1 ? 'analysis.rows.one' : 'analysis.rows.other', { count: formatInteger(resultRows) }) }}</strong>
       </div>
       <div class="summary-metric">
-        <span>Estrutura</span>
-        <strong>{{ nodeCount }} nós · {{ planDepth }} níveis</strong>
+        <span>{{ t('analysis.structure') }}</span>
+        <strong>{{ structureSummary }}</strong>
       </div>
       <div v-if="bufferSummary" class="summary-metric summary-metric--buffers">
-        <span>Buffers</span>
+        <span>{{ t('analysis.buffers') }}</span>
         <strong>{{ bufferSummary }}</strong>
       </div>
       <div class="summary-metric" :class="{ 'summary-metric--attention': tips.length > 0 }">
-        <span>Pontos de atenção</span>
+        <span>{{ t('analysis.attention') }}</span>
         <strong>{{ tips.length }}</strong>
       </div>
       <div v-if="relationNames.length" class="summary-metric summary-metric--relations">
-        <span>Relações</span>
+        <span>{{ t('analysis.relations') }}</span>
         <div>
           <code v-for="relation in relationNames" :key="relation">{{ relation }}</code>
         </div>
@@ -137,10 +151,10 @@ function formatTime(value: number): string {
       <section class="graph-pane" aria-labelledby="graph-title">
         <header class="graph-pane__header">
           <div>
-            <h1 id="graph-title">Fluxo de execução</h1>
-            <p>Os dados partem das folhas à esquerda e seguem até o resultado. Expanda um nó para ver mais.</p>
+            <h1 id="graph-title">{{ t('analysis.flowTitle') }}</h1>
+            <p>{{ t('analysis.flowLead') }}</p>
           </div>
-          <span class="graph-direction">dados → resultado</span>
+          <span class="graph-direction">{{ t('analysis.direction') }}</span>
         </header>
 
         <div class="graph-canvas">
@@ -152,55 +166,55 @@ function formatTime(value: number): string {
           />
         </div>
 
-        <footer class="graph-legend" aria-label="Legenda do fluxo">
-          <span><i class="legend-time"></i> tempo inclusivo relativo</span>
-          <span><i class="legend-attention"></i> ponto de atenção</span>
-          <span><i class="legend-selected"></i> operador selecionado</span>
+        <footer class="graph-legend" :aria-label="t('analysis.legendAria')">
+          <span><i class="legend-time"></i> {{ t('analysis.inclusiveTime') }}</span>
+          <span><i class="legend-attention"></i> {{ t('analysis.attentionPoint') }}</span>
+          <span><i class="legend-selected"></i> {{ t('analysis.selectedOperator') }}</span>
         </footer>
       </section>
 
       <aside class="node-inspector" aria-labelledby="inspector-title">
         <section class="inspector-section inspector-introduction">
-          <p class="inspector-label">Operador selecionado</p>
+          <p class="inspector-label">{{ t('analysis.selectedOperatorLabel') }}</p>
           <h2 id="inspector-title">
             {{ selectedNode.type }}
-            <template v-if="selectedNode.relation">em <code>{{ selectedNode.relation }}</code></template>
+            <template v-if="selectedNode.relation">{{ t('analysis.inRelation') }} <code>{{ selectedNode.relation }}</code></template>
           </h2>
-          <p>{{ selectedNode.description }}</p>
+          <p>{{ describePlanNode(selectedNode) }}</p>
         </section>
 
         <section class="inspector-section">
           <div class="inspector-section__heading">
-            <h3>Métricas da execução</h3>
+            <h3>{{ t('analysis.executionMetrics') }}</h3>
             <RouterLink
               :to="{ name: 'learning-article', params: { slug: 'metricas-essenciais' } }"
             >
-              Como ler
+              {{ t('analysis.howToRead') }}
             </RouterLink>
           </div>
           <dl class="metrics-grid">
             <div v-if="selectedExaminedRows !== null">
-              <dt>Examinadas</dt>
+              <dt>{{ t('analysis.examined') }}</dt>
               <dd>{{ formatInteger(selectedExaminedRows) }}</dd>
             </div>
             <div>
-              <dt>Produzidas</dt>
+              <dt>{{ t('analysis.produced') }}</dt>
               <dd>{{ formatInteger(accumulatedRows(selectedNode)) }}</dd>
             </div>
             <div v-if="selectedReceivedRows !== null">
-              <dt>Recebidas</dt>
+              <dt>{{ t('analysis.received') }}</dt>
               <dd>{{ formatInteger(selectedReceivedRows) }}</dd>
             </div>
             <div v-if="selectedDiscardedRows !== null">
-              <dt>Descartadas</dt>
+              <dt>{{ t('analysis.discarded') }}</dt>
               <dd class="metric-attention">{{ formatInteger(selectedDiscardedRows) }}</dd>
             </div>
             <div>
-              <dt>Execuções</dt>
+              <dt>{{ t('analysis.executions') }}</dt>
               <dd>{{ formatInteger(selectedNode.metrics.loops) }}</dd>
             </div>
             <div>
-              <dt>Tempo acumulado</dt>
+              <dt>{{ t('analysis.accumulatedTime') }}</dt>
               <dd>{{ formatTime(selectedAccumulatedTime) }}</dd>
             </div>
           </dl>
@@ -212,22 +226,22 @@ function formatTime(value: number): string {
               <PhWarningCircle :size="31" weight="duotone" />
             </span>
             <div>
-              <p class="inspector-label">Ponto de atenção</p>
+              <p class="inspector-label">{{ t('analysis.attentionPoint') }}</p>
               <h3>{{ selectedTip.title }}</h3>
             </div>
           </div>
 
           <dl class="attention-structure">
             <div>
-              <dt>O que o plano mostrou</dt>
+              <dt>{{ t('analysis.whatPlanShowed') }}</dt>
               <dd>{{ selectedTip.evidence }}</dd>
             </div>
             <div>
-              <dt>Como ler</dt>
+              <dt>{{ t('analysis.howToRead') }}</dt>
               <dd>{{ selectedTip.interpretation }}</dd>
             </div>
             <div>
-              <dt>Próximo passo</dt>
+              <dt>{{ t('analysis.nextStep') }}</dt>
               <dd>
                 {{ selectedTip.suggestion.prefix }}<ElPopover
                   placement="top"
@@ -246,13 +260,13 @@ function formatTime(value: number): string {
               </dd>
             </div>
             <div>
-              <dt>Como confirmar</dt>
+              <dt>{{ t('analysis.howToConfirm') }}</dt>
               <dd>{{ selectedTip.validation }}</dd>
             </div>
           </dl>
 
           <p class="heuristic-limit">
-            Este sinal indica onde investigar; ele não determina sozinho qual alteração será melhor.
+            {{ t('analysis.heuristicLimit') }}
           </p>
           <RouterLink
             class="heuristic-learning-link"
@@ -261,7 +275,7 @@ function formatTime(value: number): string {
               params: { slug: 'heuristicas-nao-sao-diagnosticos' },
             }"
           >
-            Entenda como interpretar uma heurística
+            {{ t('analysis.learnHeuristic') }}
           </RouterLink>
           <ElLink
             :href="selectedTip.documentation.url"
@@ -274,14 +288,14 @@ function formatTime(value: number): string {
         </section>
 
         <ElCollapse class="advanced-metrics">
-          <ElCollapseItem name="advanced" title="Métricas avançadas">
+          <ElCollapseItem name="advanced" :title="t('analysis.advancedMetrics')">
             <dl>
-              <div><dt>Estimativa</dt><dd>{{ formatInteger(selectedNode.metrics.estimatedRows) }}</dd></div>
-              <div><dt>Tempo por execução</dt><dd>{{ formatTime(selectedNode.metrics.totalTimeMs) }}</dd></div>
-              <div v-if="selectedNode.indexName"><dt>Índice</dt><dd><code>{{ selectedNode.indexName }}</code></dd></div>
-              <div v-if="selectedNode.filter"><dt>Filtro</dt><dd><code>{{ selectedNode.filter }}</code></dd></div>
+              <div><dt>{{ t('analysis.estimate') }}</dt><dd>{{ formatInteger(selectedNode.metrics.estimatedRows) }}</dd></div>
+              <div><dt>{{ t('analysis.timePerExecution') }}</dt><dd>{{ formatTime(selectedNode.metrics.totalTimeMs) }}</dd></div>
+              <div v-if="selectedNode.indexName"><dt>{{ t('analysis.index') }}</dt><dd><code>{{ selectedNode.indexName }}</code></dd></div>
+              <div v-if="selectedNode.filter"><dt>{{ t('analysis.filter') }}</dt><dd><code>{{ selectedNode.filter }}</code></dd></div>
               <div v-if="selectedNode.indexCondition"><dt>Index Cond</dt><dd><code>{{ selectedNode.indexCondition }}</code></dd></div>
-              <div v-if="selectedNode.sortKeys"><dt>Ordenação</dt><dd><code>{{ selectedNode.sortKeys.join(', ') }}</code></dd></div>
+              <div v-if="selectedNode.sortKeys"><dt>{{ t('analysis.sort') }}</dt><dd><code>{{ selectedNode.sortKeys.join(', ') }}</code></dd></div>
             </dl>
           </ElCollapseItem>
         </ElCollapse>
