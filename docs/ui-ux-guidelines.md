@@ -188,7 +188,9 @@ As cores podem diferir do Exercism, mas contraste, distribuição e hierarquia d
   --attention: #e5a364;
   --attention-soft: #3b2b20;
   --danger: #f08088;
+  --danger-soft: #3c242a;
   --success: #69c39c;
+  --success-soft: #20382f;
 
   --shadow-button: 0 3px 0 rgba(5, 8, 14, 0.42);
   --shadow-raised: 0 12px 28px rgba(5, 8, 14, 0.3);

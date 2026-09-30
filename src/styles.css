@@ -33,7 +33,11 @@
   --attention: #e5a364;
   --attention-soft: #3b2b20;
   --danger: #f08088;
+  --danger-soft: #3c242a;
   --success: #69c39c;
+  --success-soft: #20382f;
+  --information: #abb2c0;
+  --information-soft: #292f3a;
 
   --shadow-button: 0 3px 0 rgba(5, 8, 14, 0.42);
   --shadow-raised: 0 12px 28px rgba(5, 8, 14, 0.3);
@@ -106,26 +110,67 @@ pre {
 
   --el-color-primary: var(--primary);
   --el-color-primary-dark-2: var(--primary-hover);
-  --el-color-primary-light-3: color-mix(in srgb, var(--primary) 72%, white);
-  --el-color-primary-light-5: color-mix(in srgb, var(--primary) 52%, white);
+  --el-color-primary-light-3: color-mix(in srgb, var(--primary) 72%, var(--surface));
+  --el-color-primary-light-5: color-mix(in srgb, var(--primary) 52%, var(--surface));
+  --el-color-primary-light-7: color-mix(in srgb, var(--primary) 34%, var(--surface));
   --el-color-primary-light-8: var(--primary-soft);
   --el-color-primary-light-9: var(--primary-soft);
   --el-color-danger: var(--danger);
+  --el-color-danger-dark-2: color-mix(in srgb, var(--danger) 80%, black);
+  --el-color-danger-light-3: color-mix(in srgb, var(--danger) 72%, var(--surface));
+  --el-color-danger-light-5: color-mix(in srgb, var(--danger) 52%, var(--surface));
+  --el-color-danger-light-7: color-mix(in srgb, var(--danger) 34%, var(--surface));
+  --el-color-danger-light-8: var(--danger-soft);
+  --el-color-danger-light-9: var(--danger-soft);
   --el-color-warning: var(--attention);
+  --el-color-warning-dark-2: color-mix(in srgb, var(--attention) 80%, black);
+  --el-color-warning-light-3: color-mix(in srgb, var(--attention) 72%, var(--surface));
+  --el-color-warning-light-5: color-mix(in srgb, var(--attention) 52%, var(--surface));
+  --el-color-warning-light-7: color-mix(in srgb, var(--attention) 34%, var(--surface));
+  --el-color-warning-light-8: var(--attention-soft);
+  --el-color-warning-light-9: var(--attention-soft);
+  --el-color-success: var(--success);
+  --el-color-success-dark-2: color-mix(in srgb, var(--success) 80%, black);
+  --el-color-success-light-3: color-mix(in srgb, var(--success) 72%, var(--surface));
+  --el-color-success-light-5: color-mix(in srgb, var(--success) 52%, var(--surface));
+  --el-color-success-light-7: color-mix(in srgb, var(--success) 34%, var(--surface));
+  --el-color-success-light-8: var(--success-soft);
+  --el-color-success-light-9: var(--success-soft);
+  --el-color-info: var(--information);
+  --el-color-info-dark-2: color-mix(in srgb, var(--information) 80%, black);
+  --el-color-info-light-3: color-mix(in srgb, var(--information) 72%, var(--surface));
+  --el-color-info-light-5: color-mix(in srgb, var(--information) 52%, var(--surface));
+  --el-color-info-light-7: color-mix(in srgb, var(--information) 34%, var(--surface));
+  --el-color-info-light-8: var(--information-soft);
+  --el-color-info-light-9: var(--information-soft);
   --el-bg-color: var(--surface);
+  --el-bg-color-page: var(--page);
   --el-bg-color-overlay: var(--surface-raised);
+  --el-fill-color: var(--surface-subtle);
   --el-fill-color-blank: var(--surface);
   --el-fill-color-light: var(--surface-subtle);
   --el-fill-color-lighter: var(--surface-subtle);
+  --el-fill-color-extra-light: var(--surface-raised);
   --el-fill-color-dark: var(--border);
+  --el-fill-color-darker: var(--border-strong);
   --el-border-color: var(--border);
   --el-border-color-light: var(--border);
   --el-border-color-lighter: var(--border);
+  --el-border-color-extra-light: var(--border);
+  --el-border-color-dark: var(--border-strong);
+  --el-border-color-darker: var(--border-strong);
   --el-border-radius-base: 8px;
   --el-text-color-primary: var(--ink);
   --el-text-color-regular: var(--ink-muted);
   --el-text-color-secondary: var(--ink-muted);
   --el-text-color-placeholder: var(--ink-faint);
+  --el-text-color-disabled: var(--ink-faint);
+  --el-disabled-bg-color: var(--surface-subtle);
+  --el-disabled-border-color: var(--border);
+  --el-disabled-text-color: var(--ink-faint);
+  --el-mask-color: rgba(5, 8, 14, 0.72);
+  --el-mask-color-extra-light: rgba(5, 8, 14, 0.42);
+  --el-box-shadow-light: var(--shadow-raised);
   --el-font-family: var(--font-ui);
 }
 
@@ -574,6 +619,21 @@ pre {
   border: 0;
   border-top: 1px solid color-mix(in srgb, var(--danger) 45%, transparent);
   border-radius: 0;
+  color: var(--danger);
+  background: var(--danger-soft);
+  --el-alert-bg-color: var(--danger-soft);
+  --el-alert-border-color: color-mix(in srgb, var(--danger) 45%, var(--danger-soft));
+  --el-alert-text-color: var(--danger);
+}
+
+.parse-error .el-alert__title,
+.parse-error .el-alert__icon {
+  color: var(--danger);
+}
+
+.parse-error .el-alert__title {
+  font-weight: 600;
+  line-height: 1.5;
 }
 
 .input-execution-warning {
