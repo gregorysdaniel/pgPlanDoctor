@@ -1,29 +1,33 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { ElAlert, ElButton, ElPopover } from 'element-plus'
+import { ElAlert, ElButton, ElTabPane, ElTabs } from 'element-plus'
 import {
-  PhArrowsLeftRight,
   PhBracketsCurly,
   PhClockCounterClockwise,
   PhFileCode,
-  PhMagnifyingGlass,
   PhPlay,
   PhQuestion,
+  PhShieldCheck,
   PhWarningCircle,
 } from '@phosphor-icons/vue'
+import type { RecentPlan } from '../composables/useRecentPlans'
+import { planExamples, type PlanExample } from '../data/planData'
 
 defineProps<{
   error: string | null
   loading?: boolean
+  recentPlans: readonly RecentPlan[]
 }>()
 
 const emit = defineEmits<{
   analyze: []
-  useExample: []
+  useExample: [source: string]
+  openRecentPlan: [plan: RecentPlan]
 }>()
 
 const model = defineModel<string>({ required: true })
 const gutter = ref<HTMLElement | null>(null)
+const activeTab = ref('new-plan')
 
 const lineNumbers = computed(() => {
   const count = Math.max(20, model.value.split('\n').length)
@@ -36,150 +40,195 @@ function synchronizeScroll(event: Event): void {
   if (!gutter.value) return
   gutter.value.scrollTop = (event.target as HTMLTextAreaElement).scrollTop
 }
+
+function loadExample(example: PlanExample): void {
+  emit('useExample', example.source)
+  activeTab.value = 'new-plan'
+}
+
+function formatAnalyzedAt(value: string): string {
+  const date = new Date(value)
+  const today = new Date()
+  const yesterday = new Date(today)
+  yesterday.setDate(today.getDate() - 1)
+
+  const time = new Intl.DateTimeFormat('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
+
+  if (isSameCalendarDay(date, today)) return `Hoje, ${time}`
+  if (isSameCalendarDay(date, yesterday)) return `Ontem, ${time}`
+
+  const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
+    day: 'numeric',
+    month: 'short',
+    year: date.getFullYear() === today.getFullYear() ? undefined : 'numeric',
+  })
+
+  return `${dateFormatter.format(date)}, ${time}`
+}
+
+function isSameCalendarDay(first: Date, second: Date): boolean {
+  return (
+    first.getFullYear() === second.getFullYear() &&
+    first.getMonth() === second.getMonth() &&
+    first.getDate() === second.getDate()
+  )
+}
+
+function formatPlanSummary(plan: RecentPlan): string {
+  const operators = `${plan.nodeCount} ${plan.nodeCount === 1 ? 'operador' : 'operadores'}`
+  const attention =
+    plan.attentionCount === 0
+      ? 'nenhum ponto de atenção'
+      : `${plan.attentionCount} ${plan.attentionCount === 1 ? 'ponto' : 'pontos'} de atenção`
+
+  return `${operators} · ${attention}`
+}
 </script>
 
 <template>
   <main class="input-screen">
-    <div class="input-hero">
-      <section class="input-copy" aria-labelledby="input-title">
-        <h1 id="input-title">Visualize seu plano de execução</h1>
-        <p class="input-lead">
-          Transforme a saída de <code>EXPLAIN (ANALYZE, FORMAT JSON)</code> em uma árvore interativa.
-          Compare o fluxo de linhas, os tempos e as estimativas para localizar pontos que merecem
-          investigação. O processamento ocorre no navegador e o plano não é enviado a um servidor.
-        </p>
-
-        <section class="analysis-scope" aria-labelledby="analysis-scope-title">
-          <h2 id="analysis-scope-title">O que você pode examinar</h2>
-          <ul>
-            <li>
-              <span class="analysis-scope__icon" aria-hidden="true">
-                <PhArrowsLeftRight :size="28" weight="duotone" />
-              </span>
-              <div>
-                <strong>Estrutura da execução</strong>
-                <span>
-                  Veja como leituras, junções, ordenações e outros operadores formam o resultado.
-                </span>
-              </div>
-            </li>
-            <li>
-              <span class="analysis-scope__icon" aria-hidden="true">
-                <PhClockCounterClockwise :size="28" weight="duotone" />
-              </span>
-              <div>
-                <strong>Linhas, repetições e tempo</strong>
-                <span>
-                  Compare estimativas e valores observados, incluindo descartes e execuções
-                  repetidas.
-                </span>
-              </div>
-            </li>
-            <li>
-              <span class="analysis-scope__icon" aria-hidden="true">
-                <PhMagnifyingGlass :size="28" weight="duotone" />
-              </span>
-              <div>
-                <strong>Sinais para investigar</strong>
-                <span>Consulte a evidência, uma interpretação possível e como conferir cada sinal.</span>
-              </div>
-            </li>
-          </ul>
-        </section>
-
-        <div class="safety-note">
-          <span class="safety-note__icon" aria-hidden="true">
-            <PhWarningCircle :size="30" weight="duotone" />
-          </span>
+    <div class="input-workspace">
+      <header class="input-workspace__header">
+        <div>
+          <h1 id="input-title">Analisar plano de execução</h1>
           <p>
-            <strong>EXPLAIN ANALYZE executa a consulta.</strong>
-            Revise comandos que alteram dados antes de gerar o plano.
+            Cole a saída de <code>EXPLAIN (ANALYZE, FORMAT JSON)</code> para abrir a visualização
+            interativa do plano.
           </p>
         </div>
-      </section>
+        <RouterLink
+          class="input-workspace__help"
+          :to="{
+            name: 'learning-article',
+            params: { slug: 'como-gerar-e-percorrer-um-plano' },
+          }"
+        >
+          <PhQuestion :size="18" weight="bold" aria-hidden="true" />
+          Como obter o JSON
+        </RouterLink>
+      </header>
 
-      <section class="plan-editor" aria-label="Editor do plano de execução">
-        <header class="plan-editor__header">
-          <div class="plan-editor__identity">
-            <span aria-hidden="true"><PhBracketsCurly :size="24" weight="bold" /></span>
-            <div>
-              <strong>Plano de execução</strong>
-              <small>Formato JSON</small>
+      <ElTabs v-model="activeTab" class="input-tabs">
+        <ElTabPane label="Novo plano" name="new-plan">
+          <section class="plan-editor" aria-labelledby="input-title">
+            <header class="plan-editor__header">
+              <div class="plan-editor__identity">
+                <span aria-hidden="true"><PhBracketsCurly :size="24" weight="bold" /></span>
+                <div>
+                  <strong>Plano de execução</strong>
+                  <small>Formato JSON</small>
+                </div>
+              </div>
+              <span class="plan-editor__privacy">
+                <PhShieldCheck :size="18" weight="duotone" aria-hidden="true" />
+                Processado localmente
+              </span>
+            </header>
+
+            <div class="code-editor">
+              <div ref="gutter" class="code-editor__gutter" aria-hidden="true">
+                <span v-for="line in lineNumbers" :key="line">{{ line }}</span>
+              </div>
+              <textarea
+                v-model="model"
+                class="code-editor__textarea"
+                aria-label="Plano de execução em JSON"
+                placeholder="Cole aqui a saída de EXPLAIN (ANALYZE, FORMAT JSON)..."
+                spellcheck="false"
+                @scroll="synchronizeScroll"
+                @keydown.ctrl.enter.prevent="emit('analyze')"
+              ></textarea>
             </div>
+
+            <footer class="plan-editor__footer">
+              <span class="editor-shortcut"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> para analisar</span>
+
+              <div class="plan-editor__actions">
+                <ElButton
+                  type="primary"
+                  :disabled="!hasContent"
+                  :loading="loading"
+                  @click="emit('analyze')"
+                >
+                  <PhPlay :size="18" weight="fill" aria-hidden="true" />
+                  Analisar plano
+                </ElButton>
+              </div>
+            </footer>
+
+            <ElAlert
+              v-if="error"
+              class="parse-error"
+              :closable="false"
+              :title="error"
+              type="error"
+              show-icon
+            />
+          </section>
+
+          <div class="input-execution-warning" role="note">
+            <PhWarningCircle :size="23" weight="duotone" aria-hidden="true" />
+            <p>
+              <strong>EXPLAIN ANALYZE executa a consulta.</strong>
+              Revise comandos que alteram dados antes de gerar o plano.
+            </p>
           </div>
+        </ElTabPane>
 
-          <ElPopover
-            placement="bottom-end"
-            trigger="click"
-            :teleported="false"
-            :width="360"
-            popper-class="plan-help-popover"
-          >
-            <template #reference>
-              <ElButton class="plan-editor__help">
-                <PhQuestion :size="18" weight="bold" aria-hidden="true" />
-                Como obter o JSON
-              </ElButton>
-            </template>
-            <strong>Comando no PostgreSQL</strong>
-            <p>Adicione esta linha antes da consulta:</p>
-            <code>EXPLAIN (ANALYZE, FORMAT JSON)</code>
-            <RouterLink
-              class="plan-help-popover__link"
-              :to="{
-                name: 'learning-article',
-                params: { slug: 'como-gerar-e-percorrer-um-plano' },
-              }"
-            >
-              Ver explicação completa
-            </RouterLink>
-          </ElPopover>
-        </header>
+        <ElTabPane label="Consultas recentes" name="recent-plans">
+          <section class="input-library-panel" aria-labelledby="recent-plans-title">
+            <header>
+              <PhClockCounterClockwise :size="28" weight="duotone" aria-hidden="true" />
+              <div>
+                <h2 id="recent-plans-title">Consultas recentes</h2>
+                <p>Reabra um plano analisado anteriormente neste navegador.</p>
+              </div>
+            </header>
 
-        <div class="code-editor">
-          <div ref="gutter" class="code-editor__gutter" aria-hidden="true">
-            <span v-for="line in lineNumbers" :key="line">{{ line }}</span>
-          </div>
-          <textarea
-            v-model="model"
-            class="code-editor__textarea"
-            aria-label="Plano de execução em JSON"
-            placeholder="Cole aqui a saída de EXPLAIN (ANALYZE, FORMAT JSON)..."
-            spellcheck="false"
-            @scroll="synchronizeScroll"
-            @keydown.ctrl.enter.prevent="emit('analyze')"
-          ></textarea>
-        </div>
+            <div v-if="recentPlans.length" class="input-library-list">
+              <article v-for="plan in recentPlans" :key="plan.id">
+                <div>
+                  <strong>{{ plan.title }}</strong>
+                  <span>{{ formatPlanSummary(plan) }}</span>
+                </div>
+                <div class="input-library-item__actions">
+                  <time :datetime="plan.analyzedAt">{{ formatAnalyzedAt(plan.analyzedAt) }}</time>
+                  <ElButton @click="emit('openRecentPlan', plan)">Abrir plano</ElButton>
+                </div>
+              </article>
+            </div>
+            <div v-else class="input-library-empty">
+              <strong>Nenhuma consulta recente</strong>
+              <p>Os planos analisados neste navegador aparecerão aqui.</p>
+            </div>
+          </section>
+        </ElTabPane>
 
-        <footer class="plan-editor__footer">
-          <span class="editor-shortcut"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> para analisar</span>
+        <ElTabPane label="Exemplos" name="examples">
+          <section class="input-library-panel" aria-labelledby="examples-title">
+            <header>
+              <PhFileCode :size="28" weight="duotone" aria-hidden="true" />
+              <div>
+                <h2 id="examples-title">Exemplos de planos</h2>
+                <p>Use cenários pequenos para conhecer a visualização e os pontos de atenção.</p>
+              </div>
+            </header>
 
-          <div class="plan-editor__actions">
-            <ElButton @click="emit('useExample')">
-              <PhFileCode :size="18" weight="duotone" aria-hidden="true" />
-              Carregar exemplo
-            </ElButton>
-            <ElButton
-              type="primary"
-              :disabled="!hasContent"
-              :loading="loading"
-              @click="emit('analyze')"
-            >
-              <PhPlay :size="18" weight="fill" aria-hidden="true" />
-              Analisar plano
-            </ElButton>
-          </div>
-        </footer>
-
-        <ElAlert
-          v-if="error"
-          class="parse-error"
-          :closable="false"
-          :title="error"
-          type="error"
-          show-icon
-        />
-      </section>
+            <div class="input-library-list input-library-list--examples">
+              <article v-for="example in planExamples" :key="example.id">
+                <div>
+                  <strong>{{ example.title }}</strong>
+                  <span>{{ example.description }}</span>
+                </div>
+                <ElButton @click="loadExample(example)">Carregar exemplo</ElButton>
+              </article>
+            </div>
+          </section>
+        </ElTabPane>
+      </ElTabs>
     </div>
   </main>
 </template>

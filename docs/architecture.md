@@ -44,7 +44,9 @@ O histórico por hash permite abrir e atualizar essas URLs sem exigir que o serv
 
 O tema fica em `composables/useTheme.ts`. A preferência aceita `light`, `dark` e `system`, é persistida no navegador e não pertence ao estado do plano.
 
-O exemplo de `planData.ts` percorre o mesmo parser usado pela entrada. O D3 não interpreta a saída do PostgreSQL: ele recebe uma árvore pronta e calcula somente as posições dos nós.
+`composables/useRecentPlans.ts` mantém no `localStorage` os dez planos analisados mais recentemente. O JSON original e os metadados usados na lista ficam somente no navegador. Analisar novamente o mesmo JSON atualiza sua data e sua posição, sem criar uma duplicata.
+
+`data/planData.ts` cataloga os exemplos e mantém seus JSONs separados por cenário. Ao carregar um deles, a entrada percorre o mesmo parser usado para um plano fornecido pelo usuário. O D3 não interpreta a saída do PostgreSQL: ele recebe uma árvore pronta e calcula somente as posições dos nós.
 
 ## Fluxo do plano
 
@@ -75,8 +77,8 @@ O feedback é coletado em um Google Forms externo configurado por `VITE_FEEDBACK
 ## Limites atuais
 
 - não existe conexão direta com PostgreSQL;
-- não existe backend ou persistência;
-- o estado do plano existe somente durante a sessão da página;
+- não existe backend ou sincronização do histórico entre navegadores e dispositivos;
+- a análise carregada existe somente durante a sessão; apenas os dez planos recentes ficam no armazenamento local;
 - os links do Google Forms e do benchmark são configurações obrigatórias do ambiente;
 - o grafo usa rolagem quando excede a área; pan e zoom ainda podem ser adicionados;
 - apenas o formato JSON possui parser.

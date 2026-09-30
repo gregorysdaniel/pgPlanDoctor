@@ -9,8 +9,9 @@ Receber uma saída de `EXPLAIN (ANALYZE, FORMAT JSON)` e renderizar seu fluxo no
 Ainda não fazem parte desta etapa:
 
 - conexão direta com PostgreSQL;
-- backend;
-- persistência.
+- backend ou sincronização entre dispositivos.
+
+Os dez planos analisados mais recentemente são mantidos no `localStorage` do navegador.
 
 ## Tecnologias
 
@@ -42,11 +43,14 @@ src/
 ├── components/PlanInput.vue     # entrada do EXPLAIN JSON
 ├── components/PlanAnalysis.vue  # resumo, grafo e inspetor
 ├── components/PlanTree.vue      # layout D3 e SVG horizontal
+├── composables/useRecentPlans.ts # histórico local dos planos analisados
 ├── composables/usePlanSession.ts # estado temporário do plano entre as rotas
 ├── composables/useTheme.ts      # preferência e persistência do tema
 ├── content/learningContent.ts   # textos e referências da área Aprender
-├── data/explainAnalyzeExample.json
-├── data/planData.ts
+├── data/explainAnalyzeExample.json # filtro seletivo, ordenação e limite
+├── data/rowEstimateExample.json # estimativa de linhas divergente
+├── data/repeatedWorkExample.json # trabalho interno repetido
+├── data/planData.ts             # catálogo dos exemplos disponíveis
 ├── domain/heuristics.ts         # seis regras do MVP
 ├── domain/plan.ts               # tipos TypeScript
 ├── domain/planParser.ts         # conversão recursiva do JSON
@@ -92,3 +96,5 @@ npm run build
 11. A área Aprender apresenta os quatro conteúdos e pode ser acessada pelo contexto do analisador.
 12. Voltar, avançar e abrir diretamente uma URL preservam a página esperada.
 13. O build funciona sem backend.
+14. Planos analisados recentemente podem ser reabertos após recarregar a aplicação.
+15. Cada cenário da aba Exemplos carrega e analisa seu próprio plano.

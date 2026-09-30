@@ -1,0 +1,17 @@
+[
+  {
+    "Plan": {
+      "Node Type": "Seq Scan",
+      "Relation Name": "order_items",
+      "Alias": "order_items",
+      "Plan Rows": 24,
+      "Actual Startup Time": 0.018,
+      "Actual Total Time": 18.642,
+      "Actual Rows": 2400,
+      "Actual Loops": 1,
+      "Filter": "(status = 'pending'::text)"
+    },
+    "Planning Time": 0.094,
+    "Execution Time": 18.811
+  }
+]

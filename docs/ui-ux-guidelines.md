@@ -124,7 +124,7 @@ Não use uma escala verde–amarelo–vermelho para classificar o plano.
 
 Em telas desktop, a tarefa principal deve aparecer inteira sem rolagem vertical.
 
-- na entrada, mostre título, instrução, informações exibidas, aviso, acesso à ajuda, editor e ações no primeiro viewport;
+- na entrada, mantenha título, instrução, editor, ações e orientações operacionais no primeiro viewport;
 - na análise, mantenha resumo, grafo, legenda e início do inspetor visíveis;
 - adapte a altura das áreas de trabalho com `dvh`, `minmax()` e `clamp()`;
 - somente conteúdo realmente adicional, um painel expandido ou uma mensagem de erro pode continuar abaixo da dobra;
@@ -308,40 +308,43 @@ O PlanoClaro usa **Phosphor Icons** por meio de `@phosphor-icons/vue`. Essa é a
 
 ### 9.1 Composição
 
-A entrada usa a composição em duas colunas da referência, sem se comportar como um hero comercial:
+A entrada é um workspace operacional. O editor é a superfície principal e divide a página com o histórico e os exemplos por meio de abas:
 
 ```text
-┌ informação necessária ────────────┬ editor JSON ────────────────────┐
-│                                   │                                 │
-│ Visualize seu plano de execução   │ Plano de execução               │
-│ Formato, finalidade e privacidade │ JSON                            │
-│                                   │ JSON                            │
-│ O que pode ser examinado          │                                 │
-│ Aviso de execução                 │                                 │
-│                                   │ ajuda  exemplo       analisar  │
-└───────────────────────────────────┴─────────────────────────────────┘
+Analisar plano de execução
+Instrução curta sobre a entrada                         Como obter o JSON
+
+Novo plano         Consultas recentes         Exemplos
+─────────────────────────────────────────────────────────────────────
+┌ editor JSON ───────────────────────────────────────────────────────┐
+│ Plano de execução                              Processado localmente│
+│                                                                    │
+│ JSON                                                               │
+│                                                                    │
+│ atalho                                             analisar         │
+└────────────────────────────────────────────────────────────────────┘
+Aviso de execução
 ```
 
 - largura máxima de 1360 px, compartilhada com as demais páginas;
-- duas colunas entre 42/58 e 50/50;
-- conteúdo principal centralizado verticalmente no espaço disponível;
-- título de 38–48 px;
-- editor com pelo menos 680 px de largura; sua altura acompanha o viewport;
-- fundo com padrão geométrico quase imperceptível;
-- título literal, sem slogan, eyebrow ou marca-texto decorativo.
+- editor ocupa toda a largura do workspace;
+- título entre 30 e 36 px, alinhado ao editor;
+- cabeçalho contém título, instrução e acesso à ajuda para gerar o JSON;
+- as abas separam entrada, histórico local e exemplos sem misturar essas funções;
+- editor e ações essenciais permanecem no primeiro viewport do desktop;
+- fundo plano, sem padrão decorativo;
+- título literal, sem slogan, hero, eyebrow ou marca-texto decorativo.
 
 ### 9.2 Conteúdo permitido
 
-A coluna esquerda pode informar:
+O cabeçalho e o editor podem informar:
 
 - o comando e formato aceitos;
-- métricas produzidas pela análise;
-- categorias de informação mostradas no resultado;
 - risco de executar `EXPLAIN ANALYZE`;
-- comando para gerar o JSON;
-- informar que o processamento é local, enquanto isso for verdadeiro.
+- que o processamento é local, enquanto isso for verdadeiro;
+- link para a explicação completa sobre como gerar o plano.
 
-Não inclua um roteiro “cole, visualize, investigue”. Essas ações já estão evidentes na interface.
+Não inclua lista de funcionalidades, métricas do resultado ou roteiro “cole, visualize, investigue”. Essas informações pertencem às páginas Sobre, Aprender e à própria análise.
 
 ### 9.3 Editor
 
@@ -350,9 +353,9 @@ Não inclua um roteiro “cole, visualize, investigue”. Essas ações já est�
 - numeração de linhas;
 - quebra de linha preservada;
 - barra inferior com atalho e ações;
-- ajuda para obter o JSON em popover no cabeçalho, sem alterar a altura da página;
+- ajuda para obter o JSON visível no cabeçalho da página;
 - `Analisar plano` como ação primária;
-- `Carregar exemplo` como ação secundária;
+- carregamento de exemplos dentro da aba `Exemplos`, não no rodapé do editor;
 - erro específico junto ao editor;
 - apenas `JSON` deve aparecer enquanto o parser textual não existir.
 
@@ -596,6 +599,7 @@ src/
 ├── content/
 │   └── learningContent.ts
 ├── composables/
+│   ├── useRecentPlans.ts
 │   ├── usePlanSession.ts
 │   └── useTheme.ts
 ├── domain/
@@ -610,6 +614,7 @@ Regras:
 - componentes não contêm regras de heurística;
 - o Vue Router controla as páginas; componentes não manipulam `location`, `history` ou hashes diretamente;
 - estado transitório do plano fica em `usePlanSession.ts`, não em componentes globais;
+- histórico de planos fica em `useRecentPlans.ts` e permanece local ao navegador;
 - parser não conhece a interface;
 - `PlanTree.vue` recebe dados prontos;
 - cores ficam em tokens globais;
