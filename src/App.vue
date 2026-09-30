@@ -5,7 +5,6 @@ import { PhBookOpenText, PhBracketsCurly, PhInfo, PhPlusCircle } from '@phosphor
 import { useRoute, useRouter } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
 import LanguageSwitcher from './components/LanguageSwitcher.vue'
-import ThemeSwitcher from './components/ThemeSwitcher.vue'
 import { usePlanSession } from './composables/usePlanSession'
 import { useI18n } from './i18n'
 
@@ -68,7 +67,6 @@ function openInput(): void {
       </template>
 
       <LanguageSwitcher />
-      <ThemeSwitcher />
     </AppHeader>
 
     <RouterView />

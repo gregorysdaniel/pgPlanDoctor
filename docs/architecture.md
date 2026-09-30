@@ -13,8 +13,7 @@ O Vue Router controla qual página está visível, o histórico de navegação, 
 ```text
 App.vue
 ├── AppHeader.vue
-│   ├── LanguageSwitcher.vue
-│   └── ThemeSwitcher.vue
+│   └── LanguageSwitcher.vue
 └── RouterView
     ├── PlanInputView.vue
     │   └── PlanInput.vue
@@ -43,7 +42,7 @@ O histórico por hash permite abrir e atualizar essas URLs sem exigir que o serv
 
 `PlanInputView.vue` converte o JSON e abre a rota de análise somente depois de obter um `PlanNode` válido. A rota `#/analise` também possui uma guarda: quando nenhum plano foi carregado na sessão, o acesso direto volta para a entrada.
 
-O tema fica em `composables/useTheme.ts`. A preferência aceita `light`, `dark` e `system`, é persistida no navegador e não pertence ao estado do plano.
+O tema escuro suave é definido diretamente pelos tokens globais em `styles.css`. Não existe preferência de tema nem estado associado ao plano.
 
 O idioma fica em `i18n/index.ts`. A aplicação aceita `pt-BR` e `en`, usa a preferência persistida ou o idioma do navegador e atualiza o atributo `lang`, os metadados e os formatos de número e data. As URLs e os slugs permanecem estáveis nos dois idiomas.
 

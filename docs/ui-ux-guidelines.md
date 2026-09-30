@@ -28,7 +28,7 @@ Estes são requisitos do produto e não devem ser modificados para aproximar a a
 - separação entre evidência, interpretação e forma de validação;
 - visualização do fluxo das linhas;
 - seleção e inspeção de operadores;
-- temas claro, escuro e sistema;
+- tema escuro suave e consistente;
 - acessibilidade por teclado;
 - locale `pt-BR`.
 
@@ -39,7 +39,7 @@ O pgPlanDoctor não vende um serviço. A interface deve explicar uma tarefa téc
 | Exercism | pgPlanDoctor |
 |---|---|
 | Marca tipográfica no cabeçalho | Marca tipográfica `pgPlanDoctor`, sem caixa decorativa |
-| Cabeçalho com hierarquia horizontal | Marca à esquerda; ações, idioma e tema à direita |
+| Cabeçalho com hierarquia horizontal | Marca à esquerda; ações e idioma à direita |
 | Hero educacional em duas colunas | Instruções objetivas à esquerda e editor JSON à direita |
 | Ilustração principal | Editor ou visualização do plano; nunca ilustração genérica |
 | Botão primário com contorno e profundidade | Ação `Analisar plano` |
@@ -158,97 +158,54 @@ Não use caixa alta monoespaçada como recurso decorativo recorrente.
 
 As cores podem diferir do Exercism, mas contraste, distribuição e hierarquia devem permanecer próximos.
 
-### 6.1 Tema claro
+### 6.1 Tema escuro suave
 
 ```css
-:root,
-:root[data-theme="light"] {
-  color-scheme: light;
-
-  --page: #f7f8fc;
-  --surface: #ffffff;
-  --surface-subtle: #f1f3f9;
-  --surface-raised: #ffffff;
-
-  --ink: #171541;
-  --ink-muted: #555b78;
-  --ink-faint: #858ba3;
-
-  --border: #d9ddec;
-  --border-strong: #aeb6cf;
-  --pattern: #e9ecf5;
-
-  --primary: #5276bd;
-  --primary-hover: #3f609f;
-  --primary-soft: #edf2fb;
-  --button-primary: #4969aa;
-  --button-primary-hover: #3f5d98;
-  --button-primary-active: #354f83;
-  --button-primary-text: #ffffff;
-  --highlight: #ffef70;
-
-  --attention: #b85c18;
-  --attention-soft: #fff3e5;
-  --danger: #c93645;
-  --success: #16835f;
-
-  --shadow-button: 0 4px 0 rgba(23, 21, 65, 0.2);
-  --shadow-raised: 0 14px 36px rgba(38, 40, 78, 0.12);
-}
-```
-
-### 6.2 Tema escuro
-
-O tema escuro adapta a mesma interface. Ele não cria outra direção visual nem usa cores mais saturadas para parecer gamificado. As superfícies são grafite e o azul fica reservado para ações, foco e informação selecionada.
-
-```css
-:root[data-theme="dark"] {
+:root {
   color-scheme: dark;
 
-  --page: #121417;
-  --surface: #191c21;
-  --surface-subtle: #22262d;
-  --surface-raised: #1d2026;
-  --code-surface: #15181d;
+  --page: #171a21;
+  --surface: #20242d;
+  --surface-subtle: #292e39;
+  --surface-raised: #252a35;
 
-  --ink: #f1f3f5;
-  --ink-muted: #b3b9c3;
-  --ink-faint: #858d99;
+  --ink: #e7eaf0;
+  --ink-muted: #abb2c0;
+  --ink-faint: #7f899b;
 
-  --border: #30353d;
-  --border-strong: #49515d;
-  --pattern: #24282e;
+  --border: #343b49;
+  --border-strong: #4b5566;
+  --pattern: #292e38;
 
-  --primary: #7796d8;
-  --primary-hover: #91abe2;
-  --primary-soft: #253049;
-  --button-primary: #506da6;
-  --button-primary-hover: #5d7dbb;
-  --button-primary-active: #466092;
+  --primary: #7f9edb;
+  --primary-hover: #9ab3e4;
+  --primary-soft: #293550;
+  --button-primary: #5573ad;
+  --button-primary-hover: #5976b0;
+  --button-primary-active: #4b6599;
   --button-primary-text: #ffffff;
 
-  --attention: #e3a064;
-  --attention-soft: #33261d;
-  --danger: #ed7d86;
-  --success: #62ba94;
+  --attention: #e5a364;
+  --attention-soft: #3b2b20;
+  --danger: #f08088;
+  --success: #69c39c;
 
-  --shadow-button: 0 2px 0 rgba(0, 0, 0, 0.38);
-  --shadow-raised: 0 12px 28px rgba(0, 0, 0, 0.24);
+  --shadow-button: 0 3px 0 rgba(5, 8, 14, 0.42);
+  --shadow-raised: 0 12px 28px rgba(5, 8, 14, 0.3);
 }
 ```
 
 Regras:
 
-- componentes usam tokens, nunca cores de tema codificadas localmente;
+- componentes usam tokens, nunca cores da paleta codificadas localmente;
 - azul de destaque e azul de botão pertencem à mesma família, mas o botão usa um tom mais profundo para manter contraste com texto branco;
 - botões secundários permanecem neutros e recebem azul apenas no `hover` ou no foco;
 - botões desabilitados usam superfície e texto neutros; não use um azul claro que possa ser confundido com uma ação disponível;
 - não inverta a página com `filter`;
 - evite preto e branco puros em superfícies grandes;
-- o tema deve ser aplicado antes da primeira pintura;
-- trocar o tema não altera o plano nem o nó selecionado.
+- mantenha contraste WCAG AA entre texto, superfícies e ações.
 
-### 6.3 Formas
+### 6.2 Formas
 
 - raio pequeno: 6 px;
 - raio padrão: 8 px;
@@ -265,7 +222,7 @@ O cabeçalho segue diretamente a composição do Exercism:
 
 ```text
 ┌────────────────────────────────────────────────────────────────────┐
-│ marca                                     ações  idioma  tema │
+│ marca                                           ações  idioma │
 └────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -274,9 +231,8 @@ Regras:
 - altura entre 72 e 80 px;
 - conteúdo interno centralizado na largura máxima da página;
 - marca tipográfica livre, sem quadrado ou card atrás dela;
-- ações contextuais, idioma e tema à direita;
+- ações contextuais e idioma à direita;
 - seletor de idioma compacto com `PT` e `EN`;
-- seletor de tema compacto em menu;
 - superfície sólida e borda inferior;
 - não criar navegação quando existe apenas um fluxo de trabalho.
 
@@ -349,7 +305,7 @@ Não inclua lista de funcionalidades, métricas do resultado ou roteiro “cole,
 
 ### 9.3 Editor
 
-- aparência de editor claro no tema claro e escuro no tema escuro;
+- aparência de editor integrada ao tema escuro suave;
 - fonte técnica entre 14 e 16 px;
 - numeração de linhas;
 - quebra de linha preservada;
@@ -360,7 +316,7 @@ Não inclua lista de funcionalidades, métricas do resultado ou roteiro “cole,
 - erro específico junto ao editor;
 - apenas `JSON` deve aparecer enquanto o parser textual não existir.
 
-O editor é uma superfície do produto, não um terminal cenográfico. Não force fundo escuro no tema claro.
+O editor é uma superfície do produto, não um terminal cenográfico. Diferencie-o das demais superfícies sem usar preto puro.
 
 Não exiba estados derivados apenas da presença de texto, como `JSON pronto para análise` ou `Aguardando o plano`. Use mensagens de estado somente quando houver processamento, validação, sucesso ou erro reais.
 
@@ -497,7 +453,7 @@ Evite usar automaticamente:
 - `ElCard` para toda seção;
 - `ElTag` para qualquer valor curto;
 - `ElAlert` para dicas e heurísticas;
-- estilos padrão sem mapear os tokens dos dois temas.
+- estilos padrão sem mapear os tokens visuais do projeto.
 
 ## 13. Linguagem
 
@@ -536,13 +492,11 @@ Considere `loops` em valores acumulados e deixe claro quando um valor é por exe
 
 ## 15. Tema
 
-O seletor permite `Sistema`, `Claro` e `Escuro`.
+O pgPlanDoctor usa um único tema escuro suave.
 
-- `Sistema` acompanha `prefers-color-scheme`;
-- escolha manual é persistida;
-- o controle mostra a preferência atual;
-- ícone possui nome acessível;
-- diálogos, popovers, editor e SVG respeitam o tema;
+- não existe seletor nem preferência persistida;
+- superfícies evitam preto puro e textos evitam branco puro;
+- diálogos, popovers, editor e SVG usam os mesmos tokens;
 - nenhuma informação depende apenas de cor.
 
 ## 16. Responsividade
@@ -571,7 +525,7 @@ O seletor permite `Sistema`, `Claro` e `Escuro`.
 
 ## 17. Acessibilidade
 
-- WCAG AA nos dois temas;
+- WCAG AA no tema adotado;
 - foco visível;
 - ordem de foco coerente;
 - nós selecionáveis por teclado;
@@ -592,7 +546,6 @@ src/
 │   └── LearningArticleView.vue
 ├── components/
 │   ├── AppHeader.vue
-│   ├── ThemeSwitcher.vue
 │   ├── PlanInput.vue
 │   ├── PlanAnalysis.vue
 │   ├── PlanTree.vue
@@ -603,8 +556,7 @@ src/
 │   └── learningContent.ts
 ├── composables/
 │   ├── useRecentPlans.ts
-│   ├── usePlanSession.ts
-│   └── useTheme.ts
+│   └── usePlanSession.ts
 ├── domain/
 │   ├── plan.ts
 │   ├── planParser.ts
@@ -621,7 +573,6 @@ Regras:
 - parser não conhece a interface;
 - `PlanTree.vue` recebe dados prontos;
 - cores ficam em tokens globais;
-- estado do tema não se mistura ao estado do plano;
 - SVG usa variáveis CSS sempre que possível.
 
 ## 19. Processo de implementação
@@ -633,7 +584,7 @@ Para cada região:
 3. adapte o conteúdo real do pgPlanDoctor;
 4. implemente sem recuperar estilos anteriores;
 5. compare lado a lado na mesma resolução;
-6. valide claro, escuro e responsividade.
+6. valide contraste e responsividade.
 
 Não faça ajustes incrementais em uma região cuja estrutura ainda pertence à direção antiga. Substitua a composição inteira.
 
@@ -648,7 +599,7 @@ Uma alteração visual só está concluída quando:
 - [ ] a largura do desktop é bem aproveitada;
 - [ ] tipografia e controles são confortáveis a 100% de zoom;
 - [ ] ações primária, secundária e terciária são distinguíveis;
-- [ ] temas claro e escuro preservam hierarquia e contraste;
+- [ ] o tema escuro suave preserva hierarquia e contraste;
 - [ ] o fluxo do plano permanece legível;
 - [ ] evidência, interpretação e validação continuam separadas;
 - [ ] parser, heurísticas e apresentação permanecem desacoplados.
@@ -659,7 +610,7 @@ Valide pelo menos em:
 - 1440 × 900;
 - 1024 × 768;
 - 390 × 844;
-- temas claro e escuro;
+- tema escuro suave;
 - plano linear e plano ramificado.
 
 ## 21. Proibições

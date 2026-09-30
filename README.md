@@ -41,13 +41,11 @@ src/
 ├── components/LearningArticle.vue # página reutilizável de artigo
 ├── components/ProjectInfo.vue   # projeto, validações e feedback
 ├── components/LanguageSwitcher.vue # idiomas português e inglês
-├── components/ThemeSwitcher.vue # temas claro, escuro e sistema
 ├── components/PlanInput.vue     # entrada do EXPLAIN JSON
 ├── components/PlanAnalysis.vue  # resumo, grafo e inspetor
 ├── components/PlanTree.vue      # árvore SVG horizontal, expansão e zoom
 ├── composables/useRecentPlans.ts # histórico local dos planos analisados
 ├── composables/usePlanSession.ts # estado temporário do plano entre as rotas
-├── composables/useTheme.ts      # preferência e persistência do tema
 ├── content/learningContent.ts   # textos e referências da área Aprender
 ├── data/explainAnalyzeExample.json # filtro seletivo, ordenação e limite
 ├── data/rowEstimateExample.json # estimativa de linhas divergente
@@ -57,7 +55,7 @@ src/
 ├── domain/plan.ts               # tipos TypeScript
 ├── domain/planParser.ts         # conversão recursiva do JSON
 ├── i18n/index.ts                # estado do idioma e mensagens da interface
-└── styles.css                   # tokens e aparência dos dois temas
+└── styles.css                   # tokens e aparência do tema escuro suave
 ```
 
 Consulte também a [arquitetura](docs/architecture.md) e as [diretrizes de UI/UX](docs/ui-ux-guidelines.md).
@@ -91,7 +89,7 @@ npm run build
 3. O fluxo segue da esquerda para a direita, das folhas ao resultado.
 4. Selecionar um nó atualiza o inspetor.
 5. Pontos de atenção aparecem no nó correspondente.
-6. Temas claro, escuro e sistema preservam o plano selecionado.
+6. O tema escuro suave mantém contraste e legibilidade em todas as páginas.
 7. O TypeScript rejeita dados incompatíveis com `PlanNode`.
 8. As ligações mostram a direção do fluxo e as linhas produzidas.
 9. As heurísticas exibem evidência, interpretação, próximo passo e validação.
