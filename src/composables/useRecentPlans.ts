@@ -11,7 +11,7 @@ export interface RecentPlan {
   attentionCount: number
 }
 
-const STORAGE_KEY = 'planoclaro-recent-plans'
+const STORAGE_KEY = 'pg-plan-doctor-recent-plans'
 const MAXIMUM_RECENT_PLANS = 10
 const recentPlans = ref<RecentPlan[]>([])
 

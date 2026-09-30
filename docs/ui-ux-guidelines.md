@@ -1,6 +1,6 @@
-# Diretrizes de UI/UX — PlanoClaro
+# Diretrizes de UI/UX — pgPlanDoctor
 
-Este documento define a direção visual do PlanoClaro. Ele substitui integralmente as diretrizes anteriores.
+Este documento define a direção visual do pgPlanDoctor. Ele substitui integralmente as diretrizes anteriores.
 
 ## 1. Fonte de verdade
 
@@ -13,9 +13,9 @@ Ordem de prioridade para decisões visuais:
 3. componentes já implementados;
 4. aparência padrão do Element Plus.
 
-Se o código atual divergir da referência, o código deve mudar. Não misture esta direção com estilos anteriores do PlanoClaro.
+Se o código atual divergir da referência, o código deve mudar. Não misture esta direção com estilos anteriores do pgPlanDoctor.
 
-Copiar a linguagem visual não significa reutilizar propriedade da marca. Não use o logotipo, o nome, as personagens, os ícones de linguagens ou as ilustrações do Exercism. O conteúdo, a marca e os elementos gráficos devem pertencer ao PlanoClaro.
+Copiar a linguagem visual não significa reutilizar propriedade da marca. Não use o logotipo, o nome, as personagens, os ícones de linguagens ou as ilustrações do Exercism. O conteúdo, a marca e os elementos gráficos devem pertencer ao pgPlanDoctor.
 
 ## 2. O que permanece independente do visual
 
@@ -32,13 +32,13 @@ Estes são requisitos do produto e não devem ser modificados para aproximar a a
 - acessibilidade por teclado;
 - locale `pt-BR`.
 
-O PlanoClaro não vende um serviço. A interface deve explicar uma tarefa técnica, não promover um produto.
+O pgPlanDoctor não vende um serviço. A interface deve explicar uma tarefa técnica, não promover um produto.
 
-## 3. Tradução da referência para o PlanoClaro
+## 3. Tradução da referência para o pgPlanDoctor
 
-| Exercism | PlanoClaro |
+| Exercism | pgPlanDoctor |
 |---|---|
-| Marca tipográfica no cabeçalho | Marca tipográfica `PlanoClaro`, sem caixa decorativa |
+| Marca tipográfica no cabeçalho | Marca tipográfica `pgPlanDoctor`, sem caixa decorativa |
 | Cabeçalho com hierarquia horizontal | Marca à esquerda; ações reais e tema à direita |
 | Hero educacional em duas colunas | Instruções objetivas à esquerda e editor JSON à direita |
 | Ilustração principal | Editor ou visualização do plano; nunca ilustração genérica |
@@ -96,13 +96,13 @@ Não use:
 - “leve sua análise ao próximo nível”;
 - “visualize, investigue e evolua”;
 - slogans sobre eficiência, inteligência ou clareza;
-- parágrafos institucionais sobre o PlanoClaro.
+- parágrafos institucionais sobre o pgPlanDoctor.
 
 Também não use rótulos soltos como `PostgreSQL · EXPLAIN ANALYZE` acima de um título. Um texto sem verbo ou explicação precisa deixar claro qual informação oferece ao aluno.
 
 ### 4.4 Profundidade controlada
 
-O Exercism usa contornos definidos, sombras curtas em ações e sombras difusas em superfícies importantes. O PlanoClaro deve fazer o mesmo.
+O Exercism usa contornos definidos, sombras curtas em ações e sombras difusas em superfícies importantes. O pgPlanDoctor deve fazer o mesmo.
 
 - botões primários podem usar sombra curta deslocada para baixo;
 - o editor e painéis principais podem usar sombra difusa leve;
@@ -290,7 +290,7 @@ Não adicionar:
 
 ## 8. Ícones
 
-O PlanoClaro usa **Phosphor Icons** por meio de `@phosphor-icons/vue`. Essa é a única família de ícones da interface.
+O pgPlanDoctor usa **Phosphor Icons** por meio de `@phosphor-icons/vue`. Essa é a única família de ícones da interface.
 
 - importe cada componente pelo nome; não registre a biblioteca inteira globalmente;
 - use `duotone` em conceitos didáticos, avisos e elementos de identidade;
@@ -448,7 +448,7 @@ A área `Aprender` ensina a interpretar planos de execução; ela não é um cur
 - conecte editor, métricas e heurísticas diretamente aos conteúdos relacionados;
 - não adicione gamificação, progresso fictício, certificado ou linguagem promocional.
 
-O conteúdo deve funcionar sem depender da ferramenta. Não escreva instruções sobre onde clicar, como navegar pela interface ou como o PlanoClaro apresenta determinada informação.
+O conteúdo deve funcionar sem depender da ferramenta. Não escreva instruções sobre onde clicar, como navegar pela interface ou como o pgPlanDoctor apresenta determinada informação.
 
 A área funciona como curadoria introdutória, não como referência autoral. Use a documentação do PostgreSQL 17 como fonte técnica principal. Antes do link, apresente uma síntese em português e, quando útil, um exemplo pequeno; depois encaminhe o aprofundamento para a fonte oficial.
 
@@ -629,7 +629,7 @@ Para cada região:
 
 1. observe a região equivalente na captura do Exercism;
 2. registre estrutura, escala, alinhamento, borda e profundidade;
-3. adapte o conteúdo real do PlanoClaro;
+3. adapte o conteúdo real do pgPlanDoctor;
 4. implemente sem recuperar estilos anteriores;
 5. compare lado a lado na mesma resolução;
 6. valide claro, escuro e responsividade.

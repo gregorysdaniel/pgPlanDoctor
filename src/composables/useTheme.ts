@@ -3,7 +3,7 @@ import { computed, readonly, ref } from 'vue'
 export type ThemePreference = 'light' | 'dark' | 'system'
 export type ResolvedTheme = 'light' | 'dark'
 
-const STORAGE_KEY = 'planoclaro-theme'
+const STORAGE_KEY = 'pg-plan-doctor-theme'
 const preference = ref<ThemePreference>('system')
 const resolvedTheme = ref<ResolvedTheme>('light')
 

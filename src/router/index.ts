@@ -19,20 +19,20 @@ export const router = createRouter({
       path: '/',
       name: 'input',
       component: PlanInputView,
-      meta: { title: 'PlanoClaro', section: 'input' },
+      meta: { title: 'pgPlanDoctor', section: 'input' },
     },
     {
       path: '/analise',
       name: 'analysis',
       component: PlanAnalysisView,
-      meta: { title: 'Análise do plano | PlanoClaro', section: 'input' },
+      meta: { title: 'Análise do plano | pgPlanDoctor', section: 'input' },
       beforeEnter: () => loadedPlan.value !== null || { name: 'input' },
     },
     {
       path: '/aprender',
       name: 'learning',
       component: LearningIndex,
-      meta: { title: 'Aprender | PlanoClaro', section: 'learning' },
+      meta: { title: 'Aprender | pgPlanDoctor', section: 'learning' },
     },
     {
       path: '/aprender/:slug',
@@ -47,7 +47,7 @@ export const router = createRouter({
       path: '/sobre',
       name: 'about',
       component: ProjectInfo,
-      meta: { title: 'Sobre o projeto | PlanoClaro', section: 'about' },
+      meta: { title: 'Sobre o projeto | pgPlanDoctor', section: 'about' },
     },
     {
       path: '/:pathMatch(.*)*',
@@ -59,9 +59,9 @@ export const router = createRouter({
 router.afterEach((to) => {
   if (to.name === 'learning-article') {
     const article = findLearningArticle(String(to.params.slug))
-    document.title = article ? `${article.title} | PlanoClaro` : 'Aprender | PlanoClaro'
+    document.title = article ? `${article.title} | pgPlanDoctor` : 'Aprender | pgPlanDoctor'
     return
   }
 
-  document.title = typeof to.meta.title === 'string' ? to.meta.title : 'PlanoClaro'
+  document.title = typeof to.meta.title === 'string' ? to.meta.title : 'pgPlanDoctor'
 })

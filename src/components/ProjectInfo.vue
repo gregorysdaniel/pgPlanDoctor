@@ -46,9 +46,9 @@ const heuristicValidations: HeuristicValidation[] = [
   <main class="project-info">
     <article class="project-info__document">
       <header class="project-info__header">
-        <h1>Sobre o PlanoClaro</h1>
+        <h1>Sobre o pgPlanDoctor</h1>
         <p>
-          O PlanoClaro é uma ferramenta didática para apoiar estudantes e desenvolvedores
+          O pgPlanDoctor é uma ferramenta didática para apoiar estudantes e desenvolvedores
           iniciantes na interpretação de planos de execução do PostgreSQL. A saída de
           <code>EXPLAIN (ANALYZE, FORMAT JSON)</code> é organizada como uma árvore interativa,
           permitindo acompanhar o caminho dos dados e consultar as métricas de cada operador.

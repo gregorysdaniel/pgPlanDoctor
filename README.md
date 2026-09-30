@@ -1,4 +1,4 @@
-# PlanoClaro
+# pgPlanDoctor
 
 Aplicação frontend didática para carregar e visualizar um plano de execução do PostgreSQL.
 
@@ -42,7 +42,7 @@ src/
 ├── components/ThemeSwitcher.vue # temas claro, escuro e sistema
 ├── components/PlanInput.vue     # entrada do EXPLAIN JSON
 ├── components/PlanAnalysis.vue  # resumo, grafo e inspetor
-├── components/PlanTree.vue      # árvore SVG vertical, expansão e zoom
+├── components/PlanTree.vue      # árvore SVG horizontal, expansão e zoom
 ├── composables/useRecentPlans.ts # histórico local dos planos analisados
 ├── composables/usePlanSession.ts # estado temporário do plano entre as rotas
 ├── composables/useTheme.ts      # preferência e persistência do tema

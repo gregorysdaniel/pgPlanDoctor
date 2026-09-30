@@ -21,7 +21,7 @@ function openInput(): void {
 </script>
 
 <template>
-  <div class="planoclaro">
+  <div class="pg-plan-doctor">
     <AppHeader>
       <template #nav>
         <RouterLink

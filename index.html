@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Leitura didática de planos de execução do PostgreSQL."
+      content="pgPlanDoctor: leitura didática de planos de execução do PostgreSQL."
     />
     <script>
       ;(() => {
         try {
-          const preference = localStorage.getItem('planoclaro-theme')
+          const preference = localStorage.getItem('pg-plan-doctor-theme')
           const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches
           const theme = preference === 'dark' || (preference !== 'light' && systemDark)
             ? 'dark'
@@ -22,7 +22,7 @@
         }
       })()
     </script>
-    <title>PlanoClaro — Leitura didática de EXPLAIN</title>
+    <title>pgPlanDoctor — Leitura didática de EXPLAIN</title>
   </head>
   <body>
     <div id="app"></div>

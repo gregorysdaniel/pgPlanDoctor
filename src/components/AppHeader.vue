@@ -5,11 +5,11 @@ import { PhTreeStructure } from '@phosphor-icons/vue'
 <template>
   <header class="app-header">
     <div class="app-header__inner">
-      <RouterLink class="brand" :to="{ name: 'input' }" aria-label="Ir para a entrada do PlanoClaro">
+      <RouterLink class="brand" :to="{ name: 'input' }" aria-label="Ir para a entrada do pgPlanDoctor">
         <span class="brand__symbol" aria-hidden="true">
           <PhTreeStructure :size="30" weight="duotone" />
         </span>
-        <span class="brand__name">PlanoClaro</span>
+        <span class="brand__name">pgPlanDoctor</span>
       </RouterLink>
 
       <nav class="app-header__nav" aria-label="Navegação principal">

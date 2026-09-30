@@ -72,7 +72,7 @@ Uma regra não afirma que determinada alteração resolverá o problema. O conte
 
 ## Informações e feedback
 
-`ProjectInfo.vue` documenta o propósito do PlanoClaro e a validação das heurísticas. Os scripts, planos e medições continuam na documentação própria do benchmark.
+`ProjectInfo.vue` documenta o propósito do pgPlanDoctor e a validação das heurísticas. Os scripts, planos e medições continuam na documentação própria do benchmark.
 
 O feedback é coletado em um Google Forms externo configurado por `VITE_FEEDBACK_FORM_URL`. A aplicação não recebe nem armazena as respostas. A documentação completa do benchmark é acessada por `VITE_BENCHMARK_GITHUB_URL`.
 
