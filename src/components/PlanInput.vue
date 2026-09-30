@@ -128,7 +128,7 @@ function formatPlanSummary(plan: RecentPlan): string {
                   <small>{{ t('input.jsonFormat') }}</small>
                 </div>
               </div>
-              <span class="plan-editor__privacy">
+              <span class="plan-editor__privacy" :title="t('input.localDetail')">
                 <PhShieldCheck :size="18" weight="duotone" aria-hidden="true" />
                 {{ t('input.local') }}
               </span>

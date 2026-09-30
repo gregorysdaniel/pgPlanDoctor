@@ -102,7 +102,10 @@ pre {
   --text-page-title: clamp(32px, 3vw, 42px);
   --text-page-lead: 16px;
   --text-section-title: 22px;
+  --text-component-title: 17px;
   --text-body: 15px;
+  --text-small: 13px;
+  --text-label: 12px;
   --leading-page-title: 1.15;
   --leading-copy: 1.7;
   --tracking-page-title: -0.035em;
@@ -2175,6 +2178,31 @@ pre {
   color: var(--primary-hover);
 }
 
+.project-info__technical-list {
+  display: grid;
+  max-width: 880px;
+  margin: 22px 0;
+  gap: 18px;
+}
+
+.project-info__technical-list > div {
+  padding: 0;
+}
+
+.project-info__technical-list h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--text-component-title);
+  line-height: 1.4;
+}
+
+.project-info__technical-list p {
+  margin: 7px 0 0;
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
 .validation-table {
   overflow-x: auto;
   margin-top: 28px;
@@ -2185,9 +2213,12 @@ pre {
 
 .validation-table table {
   width: 100%;
-  min-width: 720px;
   border-collapse: collapse;
   text-align: left;
+}
+
+.validation-table table {
+  min-width: 1180px;
 }
 
 .validation-table th,
@@ -2200,13 +2231,13 @@ pre {
 .validation-table th {
   color: var(--ink);
   background: var(--surface-subtle);
-  font-size: 12px;
+  font-size: var(--text-label);
   font-weight: 700;
 }
 
 .validation-table td {
   color: var(--ink-muted);
-  font-size: 13px;
+  font-size: var(--text-small);
   line-height: 1.55;
 }
 
@@ -2219,9 +2250,13 @@ pre {
 }
 
 .validation-table td:nth-child(2) {
-  width: 290px;
+  width: 220px;
   color: var(--ink);
   font-weight: 600;
+}
+
+.validation-table td:nth-child(3) {
+  width: 500px;
 }
 
 .validation-table code {
@@ -2231,7 +2266,7 @@ pre {
 
 .project-info__document .project-info__note {
   margin-top: 18px;
-  font-size: 13px;
+  font-size: var(--text-small);
 }
 
 .project-info__external-link {
@@ -2246,6 +2281,34 @@ pre {
 
 .project-info__external-link:hover {
   color: var(--primary-hover);
+}
+
+.project-info__limits {
+  display: grid;
+  max-width: 900px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  gap: 12px;
+}
+
+.project-info__limits li {
+  position: relative;
+  padding-left: 22px;
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: var(--leading-copy);
+}
+
+.project-info__limits li::before {
+  position: absolute;
+  top: 0.72em;
+  left: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  content: "";
 }
 
 @media (min-width: 1025px) {
