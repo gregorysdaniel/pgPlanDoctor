@@ -62,7 +62,7 @@ A referência usa tipografia e controles em escala confortável. Não compacte a
 - título de componente: 18–22 px;
 - botões: 15–17 px, peso 600 ou 700;
 - metadados técnicos: mínimo de 12 px;
-- controles: altura mínima de 44 px.
+- controles principais: altura mínima de 44 px; controles compactos do cabeçalho podem usar 34 px.
 
 Nenhum texto necessário à tarefa pode usar 9, 10 ou 11 px.
 
@@ -228,11 +228,12 @@ O cabeçalho segue diretamente a composição do Exercism:
 
 Regras:
 
-- altura entre 72 e 80 px;
+- altura de 56 px no desktop e aproximadamente 82 px no celular com duas linhas;
 - conteúdo interno centralizado na largura máxima da página;
 - marca tipográfica livre, sem quadrado ou card atrás dela;
 - ações contextuais e idioma à direita;
 - seletor de idioma compacto com `PT` e `EN`;
+- navegação com ícones pequenos ao lado dos rótulos textuais;
 - superfície sólida e borda inferior;
 - não criar navegação quando existe apenas um fluxo de trabalho.
 

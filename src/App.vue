@@ -32,7 +32,7 @@ function openInput(): void {
           :to="{ name: 'learning' }"
           :aria-current="navigationSection === 'learning' ? 'page' : undefined"
         >
-          <PhBookOpenText :size="17" weight="bold" aria-hidden="true" />
+          <PhBookOpenText :size="15" weight="bold" aria-hidden="true" />
           {{ t('nav.learn') }}
         </RouterLink>
         <RouterLink
@@ -41,7 +41,7 @@ function openInput(): void {
           :to="{ name: 'about' }"
           :aria-current="navigationSection === 'about' ? 'page' : undefined"
         >
-          <PhInfo :size="17" weight="bold" aria-hidden="true" />
+          <PhInfo :size="15" weight="bold" aria-hidden="true" />
           {{ t('nav.about') }}
         </RouterLink>
       </template>

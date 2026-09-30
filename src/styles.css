@@ -92,7 +92,7 @@ pre {
 
   /* Mesmo trilho externo para as páginas; a análise usa a largura total para o grafo. */
   --page-container: min(1360px, calc(100% - 64px));
-  --header-height: 66px;
+  --header-height: 56px;
 
   /* Escala tipográfica compartilhada pelas páginas. */
   --text-page-title: clamp(32px, 3vw, 42px);
@@ -207,26 +207,26 @@ pre {
   margin: 0 auto;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 32px;
+  gap: 24px;
 }
 
 .app-header__nav {
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .header-nav__link {
   display: inline-flex;
-  min-height: 38px;
+  min-height: 34px;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   padding: 0 4px;
   border: 0;
   color: var(--ink-muted);
   background: transparent;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   text-decoration: none;
   cursor: pointer;
@@ -244,7 +244,7 @@ pre {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   padding: 0;
   border: 0;
   color: var(--ink);
@@ -255,9 +255,9 @@ pre {
 
 .brand__symbol {
   display: inline-flex;
-  width: 30px;
-  height: 30px;
-  flex: 0 0 30px;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
   align-items: center;
   justify-content: center;
 }
@@ -270,7 +270,7 @@ pre {
 }
 
 .brand__name {
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 700;
   letter-spacing: -0.04em;
 }
@@ -280,14 +280,14 @@ pre {
   min-width: 0;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 6px;
 }
 
 .app-header__actions .el-button {
-  min-height: 38px;
-  padding-inline: 14px;
+  min-height: 34px;
+  padding-inline: 12px;
   border-width: 1px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -297,10 +297,10 @@ pre {
 
 .language-menu-button {
   display: inline-flex;
-  min-height: 38px;
+  min-height: 34px;
   align-items: center;
   gap: 7px;
-  padding: 0 10px;
+  padding: 0 9px;
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--ink);
@@ -1999,7 +1999,7 @@ pre {
   }
 
   .app-header__inner {
-    gap: 24px;
+    gap: 20px;
   }
 
   .analysis-workspace {
@@ -2043,25 +2043,25 @@ pre {
 @media (max-width: 760px) {
   .pg-plan-doctor {
     --page-container: calc(100% - 32px);
-    --header-height: 94px;
+    --header-height: 82px;
   }
 
   .app-header__inner {
     min-height: auto;
-    padding: 8px 0;
+    padding: 5px 0;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 6px 12px;
+    gap: 4px 10px;
   }
 
   .app-header__nav {
     grid-row: 2;
     grid-column: 1 / -1;
     border-top: 1px solid var(--border);
-    gap: 20px;
+    gap: 18px;
   }
 
   .header-nav__link {
-    min-height: 40px;
+    min-height: 34px;
     font-size: 13px;
   }
 
@@ -2072,24 +2072,24 @@ pre {
   }
 
   .app-header__actions .el-button {
-    width: 40px;
-    min-width: 40px;
+    width: 36px;
+    min-width: 36px;
     padding-inline: 0;
     font-size: 0;
   }
 
   .brand__symbol {
-    width: 28px;
-    height: 28px;
-    flex-basis: 28px;
+    width: 24px;
+    height: 24px;
+    flex-basis: 24px;
   }
 
   .brand__name {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .language-menu-button {
-    min-width: 40px;
+    min-width: 36px;
     justify-content: center;
     padding-inline: 8px;
   }
