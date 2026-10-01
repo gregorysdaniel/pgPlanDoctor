@@ -156,9 +156,9 @@ function formatPlanSummary(plan: RecentPlan): string {
                   @command="loadExample"
                 >
                   <button class="plan-example-button" type="button" aria-haspopup="menu">
-                    <PhFileCode :size="16" weight="duotone" aria-hidden="true" />
+                    <PhFileCode :size="16" weight="bold" aria-hidden="true" />
                     <span>{{ t('input.loadExample') }}</span>
-                    <PhCaretDown :size="13" weight="bold" aria-hidden="true" />
+                    <PhCaretDown :size="14" weight="bold" aria-hidden="true" />
                   </button>
 
                   <template #dropdown>
@@ -218,11 +218,15 @@ function formatPlanSummary(plan: RecentPlan): string {
               :title="error"
               type="error"
               show-icon
-            />
+            >
+              <template #icon>
+                <PhWarningCircle :size="24" weight="duotone" aria-hidden="true" />
+              </template>
+            </ElAlert>
           </section>
 
           <div class="input-execution-warning" role="note">
-            <PhWarningCircle :size="23" weight="duotone" aria-hidden="true" />
+            <PhWarningCircle :size="24" weight="duotone" aria-hidden="true" />
             <p>
               <strong>{{ t('input.warningTitle') }}</strong>
               {{ t('input.warningText') }}

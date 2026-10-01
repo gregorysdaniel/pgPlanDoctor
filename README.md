@@ -24,7 +24,7 @@ Os dez planos analisados mais recentemente são mantidos no `localStorage` do na
 | D3 Hierarchy | Posicionamento dos nós e ligações |
 | Element Plus | Botões, diálogos, menus, collapses e popovers |
 | Phosphor Icons | Ícones da interface e das explicações didáticas |
-| Poppins e JetBrains Mono | Tipografia da interface e dos dados técnicos |
+| Fonte de sistema, Poppins e JetBrains Mono | Interface, marca e dados técnicos, respectivamente |
 | Vite | Ambiente de desenvolvimento e build |
 
 ## Arquivos principais
@@ -43,7 +43,7 @@ src/
 ├── components/ProjectInfo.vue   # projeto, validações e feedback
 ├── components/LanguageSwitcher.vue # idiomas português e inglês
 ├── components/PlanInput.vue     # entrada do EXPLAIN JSON
-├── components/PlanAnalysis.vue  # contexto, grafo e dicas
+├── components/PlanAnalysis.vue  # contexto, grafo e pontos de atenção
 ├── components/PlanTree.vue      # árvore SVG horizontal, expansão e zoom
 ├── composables/useRecentPlans.ts # histórico local dos planos analisados
 ├── composables/usePlanSession.ts # estado temporário do plano entre as rotas
@@ -89,7 +89,7 @@ npm run build
 1. A entrada e a análise aparecem como momentos separados.
 2. O JSON de `EXPLAIN ANALYZE` pode ser colado e analisado.
 3. O fluxo segue da esquerda para a direita, das folhas ao resultado.
-4. Selecionar um nó o destaca e, quando aplicável, abre sua dica correspondente.
+4. Selecionar um nó o destaca e, quando aplicável, abre o ponto de atenção correspondente.
 5. Pontos de atenção aparecem no nó correspondente.
 6. O tema escuro suave mantém contraste e legibilidade em todas as páginas.
 7. O TypeScript rejeita dados incompatíveis com `PlanNode`.
@@ -107,8 +107,8 @@ npm run build
 19. Um nó virtual e não interativo identifica o resultado final sem alterar o plano analisado.
 20. A barra e a porcentagem de tempo usam uma escala sequencial neutro–azul; laranja continua reservado às heurísticas.
 21. Execução, resultado, estrutura e quantidade de pontos de atenção aparecem como contexto discreto junto à legenda inferior.
-22. O painel de dicas fica à esquerda, separa lista e detalhe e pode ser recolhido para ampliar o grafo.
-23. Cada resumo mostra uma métrica observável; selecionar uma dica abre seu detalhe e centraliza o nó relacionado.
+22. O painel de pontos de atenção fica à esquerda, separa lista e detalhe e pode ser recolhido para ampliar o grafo.
+23. Cada resumo mostra uma métrica observável; selecionar um ponto de atenção abre seu detalhe e centraliza o nó relacionado.
 24. Português e inglês atualizam interface, análise, heurísticas, conteúdos e formatos regionais sem recarregar a página.
 25. O idioma escolhido persiste no navegador e atualiza `lang`, título e descrição do documento.
 26. O glossário permite buscar termos em português e inglês e pode ser aberto pelo contexto das heurísticas.

@@ -64,7 +64,7 @@ Os nós começam compactos, com operador, relação, linhas e tempo inclusivo. C
 
 O SVG mantém uma transformação de viewport independente do layout. Roda do mouse e botões controlam o zoom, o arraste do fundo move a árvore e o ajuste à tela recalcula escala e translação. O zoom altera somente a transformação geométrica: o conteúdo dos nós não é trocado nem ocultado de acordo com a escala. O modo de leitura preserva uma escala mínima legível. Ao expandir um nó, sua posição na tela é preservada em vez de reenquadrar toda a árvore.
 
-Quando um nó é selecionado, `PlanTree.vue` o envia para `PlanAnalysis.vue`. O Vue atualiza o destaque e associa a dica correspondente, quando houver, sem recalcular o parser. À esquerda, o painel alterna entre a lista resumida e o detalhe de uma única dica; cada resumo usa uma métrica calculada pela própria regra, sem criar pontuações artificiais. O painel pode ser recolhido sem alterar a câmera da árvore, e o plano original pode ser consultado em um diálogo sem perder a análise.
+Quando um nó é selecionado, `PlanTree.vue` o envia para `PlanAnalysis.vue`. O Vue atualiza o destaque e associa o ponto de atenção correspondente, quando houver, sem recalcular o parser. À esquerda, o painel alterna entre a lista resumida e o detalhe de um único ponto de atenção; cada resumo usa uma métrica calculada pela própria regra, sem criar pontuações artificiais. O painel pode ser recolhido sem alterar a câmera da árvore, e o plano original pode ser consultado em um diálogo sem perder a análise.
 
 ## Heurísticas
 

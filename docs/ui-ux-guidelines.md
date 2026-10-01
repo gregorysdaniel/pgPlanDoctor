@@ -57,7 +57,7 @@ A densidade deve se aproximar do cabeçalho sem comprometer textos de leitura ou
 
 - corpo: 15 px;
 - texto auxiliar: 12–14 px;
-- título principal: 30–36 px no desktop;
+- título principal: 24–28 px, com peso 600;
 - título de seção: 20 px;
 - título de componente: 16–18 px;
 - botões: 14 px, peso 600;
@@ -72,7 +72,7 @@ Rótulos menores do SVG podem usar 8–11 px quando forem complementares e a inf
 - cabeçalho, entrada e páginas informativas compartilham um contêiner externo de até 1360 px;
 - o contêiner mantém 32 px de margem lateral no desktop, 20 px em notebooks e 16 px no celular;
 - limites de leitura pertencem às colunas internas, não criam uma margem externa diferente em cada página;
-- a tela de análise é a exceção: grafo e painel de dicas usam a largura total disponível;
+- a tela de análise é a exceção: grafo e painel de pontos de atenção usam a largura total disponível;
 - a entrada usa o editor em largura integral dentro do contêiner;
 - componentes importantes ocupam espaço proporcional à sua função;
 - não centralize uma coluna estreita em um monitor amplo.
@@ -129,26 +129,27 @@ Não use uma escala verde–amarelo–vermelho para classificar o plano.
 Em telas desktop, a tarefa principal deve aparecer inteira sem rolagem vertical.
 
 - na entrada, mantenha título, instrução, editor, ações e orientações operacionais no primeiro viewport;
-- na análise, mantenha contexto, grafo, legenda e início das dicas visíveis;
+- na análise, mantenha contexto, grafo, legenda e início dos pontos de atenção visíveis;
 - adapte a altura das áreas de trabalho com `dvh`, `minmax()` e `clamp()`;
 - somente conteúdo realmente adicional, um painel expandido ou uma mensagem de erro pode continuar abaixo da dobra;
-- painéis extensos, como a lista de dicas, podem ter rolagem própria;
+- painéis extensos, como a lista de pontos de atenção, podem ter rolagem própria;
 - em tablets, celulares ou janelas muito baixas, preserve o tamanho legível e aceite a rolagem da página.
 
 Não reduza tipografia ou alvos de toque apenas para eliminar a rolagem.
 
 ## 5. Tipografia
 
-A família principal é **Poppins**, com fallback para fonte geométrica do sistema. A família técnica é **JetBrains Mono**, com fallback monoespaçado.
+A interface usa a fonte de sistema para manter títulos, controles e textos discretos e legíveis. **Poppins** fica restrita à marca. A família técnica é **JetBrains Mono**, com fallback monoespaçado.
 
 ```css
 :root {
-  --font-ui: "Poppins", "Avenir Next", "Segoe UI", sans-serif;
+  --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-brand: "Poppins", "Avenir Next", "Segoe UI", sans-serif;
   --font-code: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
 }
 ```
 
-Use `Poppins` em marca, navegação, títulos, textos e botões. Use a fonte técnica somente em:
+Use a fonte de sistema em navegação, títulos, textos e botões; preserve `Poppins` na marca. Use a fonte técnica somente em:
 
 - JSON e SQL;
 - valores de métricas;
@@ -157,6 +158,17 @@ Use `Poppins` em marca, navegação, títulos, textos e botões. Use a fonte té
 - rótulos muito curtos do grafo.
 
 Não use caixa alta monoespaçada como recurso decorativo recorrente.
+
+Preserve a capitalização dos operadores e os nomes de relações como aparecem no plano. Ícones informativos e marcadores de listas usam tons neutros; azul identifica ações, links e seleção. Descrições dos exemplos orientam o que observar, em vez de listar funcionalidades.
+
+Pesos compartilhados, definidos em tokens globais:
+
+- texto corrido: `--weight-body` (400);
+- títulos de páginas, seções, componentes e itens de listas: `--weight-title` (600);
+- botões e links de ação: `--weight-control` (600);
+- ênfase no texto e marca: `--weight-emphasis` (700).
+
+Defina o peso dos títulos explicitamente; não dependa do negrito padrão do navegador. `<strong>` usado como título de um item recebe o peso de título, enquanto ênfase no texto mantém 700.
 
 ## 6. Fundação visual
 
@@ -242,7 +254,7 @@ O cabeçalho segue diretamente a composição do Exercism:
 
 Regras:
 
-- altura de 56 px no desktop e aproximadamente 82 px no celular com duas linhas;
+- altura de 56 px no desktop e aproximadamente 104 px no celular com duas linhas e alvos de toque de 44 px;
 - conteúdo interno centralizado na largura máxima da página;
 - marca tipográfica livre, sem quadrado ou card atrás dela;
 - ações contextuais e idioma à direita;
@@ -266,13 +278,15 @@ O pgPlanDoctor usa **Phosphor Icons** por meio de `@phosphor-icons/vue`. Essa é
 
 - importe cada componente pelo nome; não registre a biblioteca inteira globalmente;
 - use `duotone` em conceitos didáticos, avisos e elementos de identidade;
-- use `regular`, `bold` ou `fill` em controles e ações pequenas;
+- use `bold` em controles e ações pequenas; `regular` pode ser usado em campos de busca e `fill` em ações de execução;
 - mantenha ícones informativos entre 24 e 32 px e ícones de ação entre 16 e 20 px;
 - deixe a cor ser herdada com `currentColor` e use os tokens semânticos existentes;
 - associe ícones de ação a um rótulo textual; o ícone não substitui o nome da ação;
 - escolha símbolos pelo significado, não para preencher espaços vazios;
 - não misture Phosphor com emoji, glifos de texto ou SVGs copiados de outras bibliotecas;
 - preserve SVG próprio somente quando ele representar dados do plano, como nós, conexões e legendas do grafo.
+
+Ícones de metadados compactos podem usar `duotone` em 16 px, como o indicador de processamento local. Em erros do Element Plus, forneça o ícone Phosphor pelo slot disponível. Botões compactos de menu, como idioma e exemplos, compartilham borda, superfície, raio de 8 px e estados de interação; no celular, o alvo mínimo é 44 px.
 
 Ícones podem tornar explicações mais fáceis de percorrer, mas não devem converter cada linha em um card decorativo. A organização do conteúdo continua vindo de tipografia, espaço e bordas.
 
@@ -286,7 +300,7 @@ A entrada é um workspace operacional. O editor é a superfície principal e div
 Analisar plano de execução
 Instrução curta sobre a entrada                         Como obter o JSON
 
-Novo plano         Consultas recentes
+Novo plano         Planos recentes
 ─────────────────────────────────────────────────────────────────────
 ┌ editor JSON ───────────────────────────────────────────────────────┐
 │ EXPLAIN JSON       Processado no navegador   Carregar exemplo ▾    │
@@ -300,7 +314,7 @@ Aviso de execução
 
 - largura máxima de 1360 px, compartilhada com as demais páginas;
 - editor ocupa toda a largura do workspace;
-- título entre 30 e 36 px, alinhado ao editor;
+- título entre 24 e 28 px, alinhado ao editor;
 - cabeçalho contém título, instrução e acesso à ajuda para gerar o JSON;
 - as abas separam somente a entrada e o histórico local;
 - exemplos são atalhos que preenchem o editor e ficam em um menu na toolbar, não em uma aba própria;
@@ -342,7 +356,7 @@ A tela de análise reaproveita a linguagem do Exercism em um ambiente de ferrame
 
 ```text
 ┌ cabeçalho ──────────────────────────────────────────────────────────┐
-├ dicas ───────────────┬ grafo ───────────────────────────────────────┤
+├ pontos de atenção ──┬ grafo ───────────────────────────────────────┤
 │ lista resumida       │                                              │
 │ ou detalhe           │ operadores e ligações                        │
 │ selecionado          │                                              │
@@ -380,19 +394,19 @@ A tela de análise reaproveita a linguagem do Exercism em um ambiente de ferrame
 
 Não usar mapa de calor. Cor forte em todo o nó prejudica leitura e aproxima a interface de um monitor de infraestrutura.
 
-### 10.3 Dicas
+### 10.3 Pontos de atenção
 
 - painel à esquerda, por acompanhar o início natural da leitura, com largura entre 400 e 460 px no desktop;
 - quando recolhido, o controle para reabrir o painel permanece à esquerda, antes do título do grafo;
-- a lista e o detalhe são estados separados: escolher uma dica substitui a lista pelo documento e oferece retorno explícito;
+- a lista e o detalhe são estados separados: escolher um ponto de atenção substitui a lista pelo documento e oferece retorno explícito;
 - abrir ou recolher o painel preserva a posição atual da câmera da árvore;
-- título e quantidade de dicas compartilham uma única barra, sem repetir “Dicas encontradas” como subtítulo permanente;
+- título e quantidade de pontos de atenção compartilham uma única barra, sem repetir “Pontos de atenção encontrados” como subtítulo permanente;
 - botão de recolher sem moldura permanente; cor de fundo aparece somente na interação;
-- lista contínua, alinhada às bordas do painel, sem transformar cada dica em um card flutuante;
-- cada dica apresenta título, métrica observável, operador e uma evidência curta antes de abrir o detalhe;
+- lista contínua, alinhada às bordas do painel, sem transformar cada ponto de atenção em um card flutuante;
+- cada ponto de atenção apresenta título, métrica observável, operador e uma evidência curta antes de abrir o detalhe;
 - laranja fica restrito ao contador, ao marcador da seleção e ao ponto de atenção no grafo; o detalhe usa texto neutro;
-- selecionar uma dica centraliza o nó correspondente;
-- evidência, interpretação, próximo passo e validação aparecem somente para a dica selecionada;
+- selecionar um ponto de atenção centraliza o nó correspondente;
+- evidência, interpretação, próximo passo e validação aparecem somente para o ponto selecionado;
 - não repetir no painel métricas que já estão disponíveis no nó compacto ou expandido;
 - rolagem própria quando o conteúdo ultrapassar a altura disponível;
 - corpo entre 13 e 14 px para preservar uma largura e um ritmo de leitura confortáveis.
@@ -480,7 +494,7 @@ Evite usar automaticamente:
 
 - `ElCard` para toda seção;
 - `ElTag` para qualquer valor curto;
-- `ElAlert` para dicas e heurísticas;
+- `ElAlert` para pontos de atenção e heurísticas;
 - estilos padrão sem mapear os tokens visuais do projeto.
 
 ## 13. Linguagem
@@ -539,7 +553,7 @@ O pgPlanDoctor usa um único tema escuro suave.
 ### Notebook e tablet
 
 - abaixo de aproximadamente 1024 px, áreas lado a lado podem empilhar;
-- dicas podem ir abaixo do grafo ou permanecer recolhidas;
+- pontos de atenção podem ir abaixo do grafo ou permanecer recolhidos;
 - tamanhos de fonte são preservados;
 - grafo usa rolagem e zoom antes de reduzir os nós.
 

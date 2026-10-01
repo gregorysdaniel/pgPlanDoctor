@@ -28,7 +28,7 @@ function selectLanguage(command: string | number | object): void {
       :aria-label="`${t('language.label')}: ${currentOption.label}`"
       aria-haspopup="menu"
     >
-      <PhGlobe :size="16" weight="duotone" aria-hidden="true" />
+      <PhGlobe :size="16" weight="bold" aria-hidden="true" />
       <span>{{ currentOption.shortLabel }}</span>
       <PhCaretDown class="language-menu-button__chevron" :size="14" weight="bold" aria-hidden="true" />
     </button>
