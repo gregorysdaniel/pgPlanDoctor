@@ -1270,6 +1270,9 @@ pre {
 }
 
 .plan-node-inspector__attention {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: var(--attention);
 }
 
@@ -1763,6 +1766,70 @@ pre {
   margin: 7px 0 0;
   font-size: 18px;
   line-height: 1.4;
+}
+
+.analysis-node-tips {
+  margin: 16px 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.analysis-node-tips__heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.analysis-node-tips__heading h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: var(--weight-title);
+}
+
+.analysis-node-tips ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.analysis-node-tips button {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink-muted);
+  background: transparent;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+}
+
+.analysis-node-tips button:hover {
+  background: var(--surface-raised);
+}
+
+.analysis-node-tips button[aria-pressed='true'] {
+  color: var(--ink);
+  background: var(--primary-soft);
+  box-shadow: inset 3px 0 var(--primary);
+}
+
+.analysis-node-tips button > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.analysis-node-tips__metric {
+  flex: 0 0 auto;
+  font-family: var(--font-code);
+  font-size: 11px;
 }
 
 .analysis-tip-structure {

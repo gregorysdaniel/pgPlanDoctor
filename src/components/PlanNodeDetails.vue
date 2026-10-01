@@ -9,7 +9,7 @@ import { useI18n } from '../i18n'
 const props = defineProps<{
   node: PlanNode
   number: number
-  attention: boolean
+  attentionCount: number
   timeShare: string
 }>()
 
@@ -205,7 +205,15 @@ onBeforeUnmount(() => observer?.disconnect())
         <strong>{{ node.type }}</strong>
       </button>
       <span class="plan-node-inspector__identity">
-        <PhWarningCircle v-if="attention" :size="16" weight="bold" :aria-label="t('analysis.attentionPoint')" class="plan-node-inspector__attention" />
+        <span
+          v-if="attentionCount > 0"
+          class="plan-node-inspector__attention"
+          :aria-label="t(attentionCount === 1 ? 'analysis.nodeTips.one' : 'analysis.nodeTips.other', { count: attentionCount })"
+          :title="t(attentionCount === 1 ? 'analysis.nodeTips.one' : 'analysis.nodeTips.other', { count: attentionCount })"
+        >
+          <PhWarningCircle :size="16" weight="bold" aria-hidden="true" />
+          {{ attentionCount }}
+        </span>
         <span>#{{ number }}</span>
       </span>
     </header>

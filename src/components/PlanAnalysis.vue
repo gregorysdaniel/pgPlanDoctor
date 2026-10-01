@@ -25,9 +25,16 @@ const toolsOpen = ref(true)
 
 const root = computed(() => props.plan.root)
 const tips = computed(() => evaluatePlan(root.value))
-const attentionNodeIds = computed(() => [...new Set(tips.value.map((tip) => tip.node.id))])
+const attentionCounts = computed(() => {
+  const counts: Record<string, number> = {}
+  for (const tip of tips.value) counts[tip.node.id] = (counts[tip.node.id] ?? 0) + 1
+  return counts
+})
 const selectedNode = ref<PlanNode>(root.value)
 const selectedTipId = ref<string | null>(null)
+const selectedNodeTips = computed(
+  () => tips.value.filter((tip) => tip.node.id === selectedNode.value.id),
+)
 const selectedTip = computed(
   () => tips.value.find((tip) => tip.id === selectedTipId.value) ?? null,
 )
@@ -86,8 +93,12 @@ function tipNodeLabel(tip: HeuristicTip): string {
 }
 
 function selectNode(node: PlanNode): void {
+  const shouldOpenTools = selectedNode.value.id !== node.id || selectedTipId.value === null
   selectedNode.value = node
-  selectedTipId.value = tips.value.find((tip) => tip.node.id === node.id)?.id ?? null
+  if (!selectedNodeTips.value.some((tip) => tip.id === selectedTipId.value)) {
+    selectedTipId.value = selectedNodeTips.value[0]?.id ?? null
+  }
+  if (shouldOpenTools && selectedNodeTips.value.length > 0) toolsOpen.value = true
 }
 
 function selectTip(tip: HeuristicTip): void {
@@ -130,7 +141,7 @@ function toggleTools(): void {
             ref="tree"
             :plan="root"
             :selected-id="selectedNode.id"
-            :attention-node-ids="attentionNodeIds"
+            :attention-counts="attentionCounts"
             @select="selectNode"
           />
         </div>
@@ -204,7 +215,29 @@ function toggleTools(): void {
 
         <section v-if="selectedTip" class="analysis-tip-detail">
           <p class="analysis-tip-detail__node">{{ tipNodeLabel(selectedTip) }}</p>
-          <h3>{{ selectedTip.title }}</h3>
+          <nav
+            v-if="selectedNodeTips.length > 1"
+            class="analysis-node-tips"
+            :aria-label="t('analysis.nodeTipsTitle')"
+          >
+            <div class="analysis-node-tips__heading">
+              <h3>{{ t('analysis.nodeTipsTitle') }}</h3>
+              <span class="analysis-tips__count">{{ selectedNodeTips.length }}</span>
+            </div>
+            <ol>
+              <li v-for="tip in selectedNodeTips" :key="tip.id">
+                <button
+                  type="button"
+                  :aria-pressed="selectedTipId === tip.id"
+                  @click="selectedTipId = tip.id"
+                >
+                  <span>{{ tip.title }}</span>
+                  <span class="analysis-node-tips__metric">{{ tip.metric }}</span>
+                </button>
+              </li>
+            </ol>
+          </nav>
+          <h3 aria-live="polite" aria-atomic="true">{{ selectedTip.title }}</h3>
 
           <dl class="analysis-tip-structure">
             <div>

@@ -410,6 +410,10 @@ Não usar mapa de calor. Cor forte em todo o nó prejudica leitura e aproxima a 
 - cada ponto de atenção apresenta título, métrica observável, operador e uma evidência curta antes de abrir o detalhe;
 - laranja fica restrito ao contador, ao marcador da seleção e ao ponto de atenção no grafo; o detalhe usa texto neutro;
 - selecionar um ponto de atenção centraliza o nó correspondente;
+- o grafo mostra a quantidade de pontos de atenção de cada nó, inclusive no cabeçalho expandido;
+- quando o nó selecionado possui vários achados, uma lista com títulos e métricas permite alternar entre eles acima do detalhe;
+- alternar entre achados do mesmo nó preserva a câmera; interagir com as abas ou recolher o nó preserva o achado escolhido;
+- selecionar outro nó com achados reabre o painel recolhido; nós sem achados mantêm a lista geral;
 - evidência, interpretação, próximo passo e validação aparecem somente para o ponto selecionado;
 - não repetir no painel métricas que já estão disponíveis no nó compacto ou expandido;
 - rolagem própria quando o conteúdo ultrapassar a altura disponível;

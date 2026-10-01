@@ -16,10 +16,10 @@ const props = withDefaults(
   defineProps<{
     plan: PlanNode
     selectedId: string
-    attentionNodeIds?: string[]
+    attentionCounts?: Record<string, number>
   }>(),
   {
-    attentionNodeIds: () => [],
+    attentionCounts: () => ({}),
   },
 )
 
@@ -102,7 +102,9 @@ watch(
   },
 )
 
-const attentionIds = computed(() => new Set(props.attentionNodeIds))
+function attentionCount(node: PlanNode): number {
+  return props.attentionCounts[node.id] ?? 0
+}
 
 function nodeHeight(node: PlanNode): number {
   return expandedIds.value.has(node.id)
@@ -320,7 +322,11 @@ function resizeExpanded(node: PlanNode, height: number): void {
 }
 
 function accessibleLabel(node: PlanNode): string {
-  return `${node.type}, ${subtitle(node)}, ${formatRows(node)}, ${formatTime(node)}`
+  const label = `${node.type}, ${subtitle(node)}, ${formatRows(node)}, ${formatTime(node)}`
+  const count = attentionCount(node)
+  return count > 0
+    ? `${label}, ${t(count === 1 ? 'analysis.nodeTips.one' : 'analysis.nodeTips.other', { count })}`
+    : label
 }
 
 function outputAccessibleLabel(): string {
@@ -525,7 +531,7 @@ defineExpose({ focusNode })
           :data-node-id="item.node.data.id"
           :class="{
             'plan-node--selected': selectedId === item.node.data.id,
-            'plan-node--attention': attentionIds.has(item.node.data.id),
+            'plan-node--attention': attentionCount(item.node.data) > 0,
             'plan-node--expanded': expandedIds.has(item.node.data.id),
           }"
           :transform="`translate(${item.x}, ${item.y})`"
@@ -547,7 +553,7 @@ defineExpose({ focusNode })
             rx="4"
           />
           <rect
-            v-if="attentionIds.has(item.node.data.id)"
+            v-if="attentionCount(item.node.data) > 0"
             class="plan-node__attention-rail"
             :x="-widthOf(item.node.data) / 2"
             :y="topOf(item.node.data)"
@@ -561,13 +567,13 @@ defineExpose({ focusNode })
             #{{ item.number }}
           </text>
           <text
-            v-if="attentionIds.has(item.node.data.id)"
+            v-if="attentionCount(item.node.data) > 0"
             class="plan-node__attention-label"
             :x="nodeWidth / 2 - 13"
             :y="topOf(item.node.data) + 18"
             text-anchor="end"
           >
-            ! {{ t('tree.attention') }}
+            ! {{ attentionCount(item.node.data) }} {{ t('tree.attention') }}
           </text>
           <text class="plan-node__title" :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 43">
             {{ truncate(item.node.data.type, 25) }}
@@ -612,7 +618,7 @@ defineExpose({ focusNode })
             <PlanNodeDetails
               :node="item.node.data"
               :number="item.number"
-              :attention="attentionIds.has(item.node.data.id)"
+              :attention-count="attentionCount(item.node.data)"
               :time-share="formatTimeShare(item.node.data)"
               @toggle="toggleExpanded(item.node.data)"
               @select="select(item.node.data)"

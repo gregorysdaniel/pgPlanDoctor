@@ -108,7 +108,7 @@ npm run build
 19. Um nó virtual e não interativo identifica o resultado final sem alterar o plano analisado.
 20. A barra e a porcentagem de tempo usam uma escala sequencial neutro–azul; laranja continua reservado às heurísticas.
 21. Execução, resultado, estrutura e quantidade de pontos de atenção aparecem como contexto discreto junto à legenda inferior.
-22. O painel de pontos de atenção fica à esquerda, separa lista e detalhe e pode ser recolhido para ampliar o grafo.
+22. O painel de pontos de atenção fica à esquerda, separa lista e detalhe e pode ser recolhido para ampliar o grafo. Nós com vários achados mostram a contagem no grafo e permitem alternar entre seus pontos de atenção no painel, sem mover a câmera.
 23. Cada resumo mostra uma métrica observável; selecionar um ponto de atenção abre seu detalhe e centraliza o nó relacionado.
 24. Português e inglês atualizam interface, análise, heurísticas, conteúdos e formatos regionais sem recarregar a página.
 25. O idioma escolhido persiste no navegador e atualiza `lang`, título e descrição do documento.
