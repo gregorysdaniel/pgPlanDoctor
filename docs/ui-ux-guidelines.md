@@ -4,16 +4,16 @@ Este documento define a direção visual do pgPlanDoctor. Ele substitui integral
 
 ## 1. Fonte de verdade
 
-A interface deve usar o **Exercism como referência visual principal**. A intenção é reproduzir sua linguagem de produto educacional: tipografia, escala, composição, navegação, botões, superfícies, ritmo e clareza didática.
+A interface deve seguir a linguagem já consolidada no cabeçalho do pgPlanDoctor: compacta, plana, técnica e com uso contido da cor primária. O Exercism permanece como referência secundária de clareza didática e organização, não como um modelo a ser reproduzido literalmente.
 
 Ordem de prioridade para decisões visuais:
 
-1. capturas do Exercism fornecidas como referência;
-2. regras deste documento;
-3. componentes já implementados;
+1. regras deste documento;
+2. cabeçalho e tokens globais implementados;
+3. capturas do Exercism fornecidas como referência secundária;
 4. aparência padrão do Element Plus.
 
-Se o código atual divergir da referência, o código deve mudar. Não misture esta direção com estilos anteriores do pgPlanDoctor.
+Se uma região divergir dessa linguagem, prefira corrigir escala, alinhamento, bordas e hierarquia antes de adicionar decoração.
 
 Copiar a linguagem visual não significa reutilizar propriedade da marca. Não use o logotipo, o nome, as personagens, os ícones de linguagens ou as ilustrações do Exercism. O conteúdo, a marca e os elementos gráficos devem pertencer ao pgPlanDoctor.
 
@@ -34,37 +34,38 @@ Estes são requisitos do produto e não devem ser modificados para aproximar a a
 
 O pgPlanDoctor não vende um serviço. A interface deve explicar uma tarefa técnica, não promover um produto.
 
-## 3. Tradução da referência para o pgPlanDoctor
+## 3. Tradução das referências para o pgPlanDoctor
 
 | Exercism | pgPlanDoctor |
 |---|---|
 | Marca tipográfica no cabeçalho | Marca tipográfica `pgPlanDoctor`, sem caixa decorativa |
 | Cabeçalho com hierarquia horizontal | Marca à esquerda; ações e idioma à direita |
-| Hero educacional em duas colunas | Instruções objetivas à esquerda e editor JSON à direita |
+| Área principal de exercício | Título objetivo, ajuda contextual e editor JSON em largura integral |
 | Ilustração principal | Editor ou visualização do plano; nunca ilustração genérica |
-| Botão primário com contorno e profundidade | Ação `Analisar plano` |
+| Ação primária inequívoca | Ação sólida e compacta `Analisar plano` |
 | Blocos de trilhas e exercícios | Operadores, métricas e regras de investigação |
 | Linguagem de aprendizagem | Explicações diretas sobre PostgreSQL |
-| Fundo geométrico sutil | Padrão inspirado em nós e conexões do plano |
+| Fundo geométrico sutil | Padrão restrito à área navegável do grafo |
 
 O resultado deve ser reconhecível como uma ferramenta diferente, construída com a mesma gramática visual.
 
 ## 4. Princípios
 
-### 4.1 Grande e legível
+### 4.1 Compacto e legível
 
-A referência usa tipografia e controles em escala confortável. Não compacte a interface para mostrar mais conteúdo.
+A densidade deve se aproximar do cabeçalho sem comprometer textos de leitura ou alvos de toque.
 
-- corpo: 16–18 px;
-- texto auxiliar: mínimo de 14 px;
-- título principal: 38–48 px no desktop;
-- título de seção: 26–36 px;
-- título de componente: 18–22 px;
-- botões: 15–17 px, peso 600 ou 700;
-- metadados técnicos: mínimo de 12 px;
-- controles principais: altura mínima de 44 px; controles compactos do cabeçalho podem usar 34 px.
+- corpo: 15 px;
+- texto auxiliar: 12–14 px;
+- título principal: 30–36 px no desktop;
+- título de seção: 20 px;
+- título de componente: 16–18 px;
+- botões: 14 px, peso 600;
+- metadados técnicos: 11–13 px;
+- controles principais: 40 px no desktop; controles do cabeçalho podem usar 34 px;
+- no celular, ações essenciais preservam alvo de toque de pelo menos 44 px.
 
-Nenhum texto necessário à tarefa pode usar 9, 10 ou 11 px.
+Rótulos menores do SVG podem usar 8–11 px quando forem complementares e a mesma informação estiver disponível no nó ou no inspetor.
 
 ### 4.2 Conteúdo largo
 
@@ -72,7 +73,7 @@ Nenhum texto necessário à tarefa pode usar 9, 10 ou 11 px.
 - o contêiner mantém 32 px de margem lateral no desktop, 20 px em notebooks e 16 px no celular;
 - limites de leitura pertencem às colunas internas, não criam uma margem externa diferente em cada página;
 - a tela de análise é a exceção: resumo, grafo e inspetor usam a largura total disponível;
-- a entrada usa duas colunas de proporções próximas;
+- a entrada usa o editor em largura integral dentro do contêiner;
 - componentes importantes ocupam espaço proporcional à sua função;
 - não centralize uma coluna estreita em um monitor amplo.
 
@@ -102,11 +103,12 @@ Também não use rótulos soltos como `PostgreSQL · EXPLAIN ANALYZE` acima de u
 
 ### 4.4 Profundidade controlada
 
-O Exercism usa contornos definidos, sombras curtas em ações e sombras difusas em superfícies importantes. O pgPlanDoctor deve fazer o mesmo.
+A interface é plana por padrão. Profundidade deve vir principalmente de contraste entre superfícies e bordas.
 
-- botões primários podem usar sombra curta deslocada para baixo;
-- o editor e painéis principais podem usar sombra difusa leve;
-- cards secundários usam borda, não sombra;
+- botões primários usam cor sólida, sem sombra obrigatória;
+- editor, painéis e nós usam borda discreta em vez de elevação;
+- sombras ficam reservadas a overlays, diálogos e situações em que a sobreposição precisa ser percebida;
+- listas de conteúdo usam linhas e espaço, não uma sequência de cards;
 - elementos clicáveis devem parecer clicáveis antes do hover;
 - não use glassmorphism, brilho neon ou gradientes azul–roxo.
 
@@ -164,10 +166,11 @@ As cores podem diferir do Exercism, mas contraste, distribuição e hierarquia d
 :root {
   color-scheme: dark;
 
-  --page: #171a21;
+  --page: #1a1e26;
   --surface: #20242d;
   --surface-subtle: #292e39;
   --surface-raised: #252a35;
+  --code-surface: #171a21;
 
   --ink: #e7eaf0;
   --ink-muted: #abb2c0;
@@ -192,8 +195,8 @@ As cores podem diferir do Exercism, mas contraste, distribuição e hierarquia d
   --success: #69c39c;
   --success-soft: #20382f;
 
-  --shadow-button: 0 3px 0 rgba(5, 8, 14, 0.42);
-  --shadow-raised: 0 12px 28px rgba(5, 8, 14, 0.3);
+  --shadow-button: none;
+  --shadow-raised: 0 8px 20px rgba(5, 8, 14, 0.22);
 }
 ```
 
@@ -211,9 +214,10 @@ Regras:
 
 - raio pequeno: 6 px;
 - raio padrão: 8 px;
-- raio de superfície grande: 12 px;
-- bordas: 1 ou 2 px;
-- botões primários: borda visível e sombra curta;
+- superfícies funcionais: raio de até 8 px;
+- listas documentais: sem raio ou caixa externa;
+- bordas: preferencialmente 1 px;
+- botões primários: borda discreta e sem sombra por padrão;
 - pílulas apenas para estado, categoria ou contagem curta.
 
 Não use arredondamento exagerado em todos os elementos.
@@ -277,7 +281,7 @@ Instrução curta sobre a entrada                         Como obter o JSON
 Novo plano         Consultas recentes         Exemplos
 ─────────────────────────────────────────────────────────────────────
 ┌ editor JSON ───────────────────────────────────────────────────────┐
-│ Plano de execução                              Processado localmente│
+│ Plano de execução                           Processado no navegador│
 │                                                                    │
 │ JSON                                                               │
 │                                                                    │
@@ -418,17 +422,19 @@ O texto separa evidência, interpretação e hipótese. Uma alteração possíve
 
 ### 12.1 Botões
 
-- primário: cor sólida, texto claro, borda escura sutil e sombra curta;
-- secundário: superfície branca, borda primária e texto primário;
+- primário: cor sólida, texto claro e borda discreta, sem sombra por padrão;
+- secundário: superfície neutra, borda neutra e azul somente no `hover` ou foco;
 - terciário: texto ou ícone sem card ao redor;
-- altura mínima de 44 px;
+- altura padrão de 40 px no desktop e 34 px no cabeçalho;
+- no celular, preserve alvo de toque de pelo menos 44 px para ações essenciais;
 - rótulo descreve a ação: `Analisar plano`, `Ver JSON`, `Novo plano`.
 
 ### 12.2 Cards e painéis
 
 - usar card somente quando o conteúdo for uma unidade independente;
-- borda nítida e raio de 8–12 px;
-- sombra apenas em superfície prioritária;
+- borda de 1 px e raio de até 8 px em superfícies funcionais;
+- listas, índices, paginação e texto informativo preferem estrutura plana com espaço e separadores;
+- sombra apenas em overlays ou quando for necessário comunicar sobreposição;
 - não envolver cada parágrafo ou métrica em um card.
 
 ### 12.3 Links
@@ -507,13 +513,13 @@ O pgPlanDoctor usa um único tema escuro suave.
 ### Desktop amplo
 
 - contêiner externo de até 1360 px, alinhado entre cabeçalho e páginas;
-- entrada em duas colunas;
+- entrada e páginas informativas alinhadas ao mesmo contêiner do cabeçalho;
 - grafo e inspetor lado a lado;
 - componentes não diminuem porque existe mais espaço.
 
 ### Notebook e tablet
 
-- abaixo de aproximadamente 1024 px, entrada pode empilhar;
+- abaixo de aproximadamente 1024 px, áreas lado a lado podem empilhar;
 - inspetor pode ir abaixo do grafo ou virar drawer;
 - tamanhos de fonte são preservados;
 - grafo usa rolagem e zoom antes de reduzir os nós.
@@ -584,10 +590,10 @@ Regras:
 
 Para cada região:
 
-1. observe a região equivalente na captura do Exercism;
-2. registre estrutura, escala, alinhamento, borda e profundidade;
+1. compare a região com o cabeçalho e com os tokens globais;
+2. registre estrutura, escala, alinhamento, borda e densidade;
 3. adapte o conteúdo real do pgPlanDoctor;
-4. implemente sem recuperar estilos anteriores;
+4. implemente evitando decoração que não comunique função;
 5. compare lado a lado na mesma resolução;
 6. valide contraste e responsividade.
 
@@ -597,7 +603,7 @@ Não faça ajustes incrementais em uma região cuja estrutura ainda pertence à 
 
 Uma alteração visual só está concluída quando:
 
-- [ ] a estrutura lembra claramente a referência sem usar seus ativos de marca;
+- [ ] a estrutura segue a linguagem compacta e plana estabelecida no cabeçalho;
 - [ ] a página não parece dashboard administrativo ou interface de IA;
 - [ ] não há texto promocional ou de preenchimento;
 - [ ] cada frase informa algo necessário à tarefa;

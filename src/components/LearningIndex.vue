@@ -18,7 +18,7 @@ const { t } = useI18n()
     <header class="learning-index__header">
       <div class="learning-index__title">
         <span class="learning-index__icon" aria-hidden="true">
-          <PhBookOpenText :size="36" weight="duotone" />
+          <PhBookOpenText :size="27" weight="duotone" />
         </span>
         <div>
           <h1>{{ t('learning.title') }}</h1>
@@ -30,7 +30,7 @@ const { t } = useI18n()
 
     <section class="learning-glossary" aria-labelledby="learning-glossary-title">
       <span class="learning-glossary__icon" aria-hidden="true">
-        <PhBookBookmark :size="31" weight="duotone" />
+        <PhBookBookmark :size="24" weight="duotone" />
       </span>
       <div>
         <h2 id="learning-glossary-title">{{ t('learning.glossaryTitle') }}</h2>
@@ -49,10 +49,10 @@ const { t } = useI18n()
         <li v-for="article in learningArticles" :key="article.slug">
           <RouterLink :to="{ name: 'learning-article', params: { slug: article.slug } }">
             <span class="learning-path__article-icon" aria-hidden="true">
-              <PhTreeStructure v-if="article.slug === 'da-consulta-ao-plano'" :size="30" weight="duotone" />
-              <PhBookOpenText v-else-if="article.slug === 'como-gerar-e-percorrer-um-plano'" :size="30" weight="duotone" />
-              <PhChartBar v-else-if="article.slug === 'metricas-essenciais'" :size="30" weight="duotone" />
-              <PhMagnifyingGlass v-else :size="30" weight="duotone" />
+              <PhTreeStructure v-if="article.slug === 'da-consulta-ao-plano'" :size="24" weight="duotone" />
+              <PhBookOpenText v-else-if="article.slug === 'como-gerar-e-percorrer-um-plano'" :size="24" weight="duotone" />
+              <PhChartBar v-else-if="article.slug === 'metricas-essenciais'" :size="24" weight="duotone" />
+              <PhMagnifyingGlass v-else :size="24" weight="duotone" />
             </span>
             <span class="learning-path__copy">
               <strong>{{ article.title }}</strong>

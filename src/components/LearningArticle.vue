@@ -77,11 +77,11 @@ function referenceNumber(reference: LearningReference): number {
             >
               <PhWarningCircle
                 v-if="section.callout.tone === 'attention'"
-                :size="27"
+                :size="22"
                 weight="duotone"
                 aria-hidden="true"
               />
-              <PhInfo v-else :size="27" weight="duotone" aria-hidden="true" />
+              <PhInfo v-else :size="22" weight="duotone" aria-hidden="true" />
               <div>
                 <strong>{{ section.callout.title }}</strong>
                 <p>{{ section.callout.text }}</p>

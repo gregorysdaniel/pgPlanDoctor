@@ -58,7 +58,7 @@ function categoryLabel(category: (typeof glossaryCategoryOrder)[number]): string
 
       <header class="glossary-header">
         <span class="glossary-header__icon" aria-hidden="true">
-          <PhBookBookmark :size="34" weight="duotone" />
+          <PhBookBookmark :size="27" weight="duotone" />
         </span>
         <div>
           <h1>{{ t('glossary.title') }}</h1>
