@@ -1,8 +1,17 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { ElAlert, ElButton, ElTabPane, ElTabs } from 'element-plus'
+import { computed, nextTick, ref } from 'vue'
+import {
+  ElAlert,
+  ElButton,
+  ElDropdown,
+  ElDropdownItem,
+  ElDropdownMenu,
+  ElTabPane,
+  ElTabs,
+} from 'element-plus'
 import {
   PhBracketsCurly,
+  PhCaretDown,
   PhClockCounterClockwise,
   PhFileCode,
   PhPlay,
@@ -11,7 +20,7 @@ import {
   PhWarningCircle,
 } from '@phosphor-icons/vue'
 import { formatRecentPlanTitle, type RecentPlan } from '../composables/useRecentPlans'
-import { getPlanExamples, type PlanExample } from '../data/planData'
+import { getPlanExamples } from '../data/planData'
 import { useI18n } from '../i18n'
 
 defineProps<{
@@ -29,6 +38,7 @@ const emit = defineEmits<{
 const model = defineModel<string>({ required: true })
 const { locale, t } = useI18n()
 const gutter = ref<HTMLElement | null>(null)
+const editor = ref<HTMLTextAreaElement | null>(null)
 const activeTab = ref('new-plan')
 const planExamples = computed(getPlanExamples)
 
@@ -44,9 +54,16 @@ function synchronizeScroll(event: Event): void {
   gutter.value.scrollTop = (event.target as HTMLTextAreaElement).scrollTop
 }
 
-function loadExample(example: PlanExample): void {
+async function loadExample(command: string | number | object): Promise<void> {
+  if (typeof command !== 'string') return
+
+  const example = planExamples.value.find((item) => item.id === command)
+  if (!example) return
+
   emit('useExample', example.source)
   activeTab.value = 'new-plan'
+  await nextTick()
+  editor.value?.focus()
 }
 
 function formatAnalyzedAt(value: string): string {
@@ -122,13 +139,44 @@ function formatPlanSummary(plan: RecentPlan): string {
           <section class="plan-editor" aria-labelledby="input-title">
             <header class="plan-editor__header">
               <div class="plan-editor__identity">
-                <span aria-hidden="true"><PhBracketsCurly :size="24" weight="bold" /></span>
-                <div>
-                  <strong>{{ t('input.plan') }}</strong>
-                  <small>{{ t('input.jsonFormat') }}</small>
-                </div>
+                <PhBracketsCurly :size="18" weight="bold" aria-hidden="true" />
+                <strong>{{ t('input.editorLabel') }}</strong>
               </div>
 
+              <div class="plan-editor__toolbar">
+                <span class="plan-editor__privacy" :title="t('input.localDetail')">
+                  <PhShieldCheck :size="16" weight="duotone" aria-hidden="true" />
+                  {{ t('input.local') }}
+                </span>
+
+                <ElDropdown
+                  trigger="click"
+                  placement="bottom-end"
+                  popper-class="plan-example-popper"
+                  @command="loadExample"
+                >
+                  <button class="plan-example-button" type="button" aria-haspopup="menu">
+                    <PhFileCode :size="16" weight="duotone" aria-hidden="true" />
+                    <span>{{ t('input.loadExample') }}</span>
+                    <PhCaretDown :size="13" weight="bold" aria-hidden="true" />
+                  </button>
+
+                  <template #dropdown>
+                    <ElDropdownMenu class="plan-example-menu">
+                      <ElDropdownItem
+                        v-for="example in planExamples"
+                        :key="example.id"
+                        :command="example.id"
+                      >
+                        <span class="plan-example-menu__copy">
+                          <strong>{{ example.title }}</strong>
+                          <small>{{ example.description }}</small>
+                        </span>
+                      </ElDropdownItem>
+                    </ElDropdownMenu>
+                  </template>
+                </ElDropdown>
+              </div>
             </header>
 
             <div class="code-editor">
@@ -136,6 +184,7 @@ function formatPlanSummary(plan: RecentPlan): string {
                 <span v-for="line in lineNumbers" :key="line">{{ line }}</span>
               </div>
               <textarea
+                ref="editor"
                 v-model="model"
                 class="code-editor__textarea"
                 :aria-label="t('input.jsonAria')"
@@ -210,27 +259,6 @@ function formatPlanSummary(plan: RecentPlan): string {
           </section>
         </ElTabPane>
 
-        <ElTabPane :label="t('input.tab.examples')" name="examples">
-          <section class="input-library-panel" aria-labelledby="examples-title">
-            <header>
-              <PhFileCode :size="28" weight="duotone" aria-hidden="true" />
-              <div>
-                <h2 id="examples-title">{{ t('input.examplesTitle') }}</h2>
-                <p>{{ t('input.examplesLead') }}</p>
-              </div>
-            </header>
-
-            <div class="input-library-list input-library-list--examples">
-              <article v-for="example in planExamples" :key="example.id">
-                <div>
-                  <strong>{{ example.title }}</strong>
-                  <span>{{ example.description }}</span>
-                </div>
-                <ElButton @click="loadExample(example)">{{ t('input.loadExample') }}</ElButton>
-              </article>
-            </div>
-          </section>
-        </ElTabPane>
       </ElTabs>
     </div>
   </main>

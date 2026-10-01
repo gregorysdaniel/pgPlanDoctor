@@ -100,7 +100,7 @@ npm run build
 12. Voltar, avançar e abrir diretamente uma URL preservam a página esperada.
 13. O build funciona sem backend.
 14. Planos analisados recentemente podem ser reabertos após recarregar a aplicação.
-15. Cada cenário da aba Exemplos carrega e analisa seu próprio plano.
+15. Cada cenário do menu `Carregar exemplo` preenche o editor e pode ser analisado normalmente.
 16. Cada nó apresenta um resumo compacto e pode ser expandido no próprio grafo.
 17. O grafo permite zoom, pan, ajuste à tela e retorno a 100%.
 18. O resumo apresenta métricas globais disponíveis no documento do `EXPLAIN`.

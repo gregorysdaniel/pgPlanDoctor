@@ -278,10 +278,10 @@ A entrada é um workspace operacional. O editor é a superfície principal e div
 Analisar plano de execução
 Instrução curta sobre a entrada                         Como obter o JSON
 
-Novo plano         Consultas recentes         Exemplos
+Novo plano         Consultas recentes
 ─────────────────────────────────────────────────────────────────────
 ┌ editor JSON ───────────────────────────────────────────────────────┐
-│ Plano de execução                           Processado no navegador│
+│ EXPLAIN JSON       Processado no navegador   Carregar exemplo ▾    │
 │                                                                    │
 │ JSON                                                               │
 │                                                                    │
@@ -294,7 +294,8 @@ Aviso de execução
 - editor ocupa toda a largura do workspace;
 - título entre 30 e 36 px, alinhado ao editor;
 - cabeçalho contém título, instrução e acesso à ajuda para gerar o JSON;
-- as abas separam entrada, histórico local e exemplos sem misturar essas funções;
+- as abas separam somente a entrada e o histórico local;
+- exemplos são atalhos que preenchem o editor e ficam em um menu na toolbar, não em uma aba própria;
 - editor e ações essenciais permanecem no primeiro viewport do desktop;
 - fundo plano, sem padrão decorativo;
 - título literal, sem slogan, hero, eyebrow ou marca-texto decorativo.
@@ -319,7 +320,7 @@ Não inclua lista de funcionalidades, métricas do resultado ou roteiro “cole,
 - barra inferior com atalho e ações;
 - ajuda para obter o JSON visível no cabeçalho da página;
 - `Analisar plano` como ação primária;
-- carregamento de exemplos dentro da aba `Exemplos`, não no rodapé do editor;
+- carregamento de exemplos pelo menu `Carregar exemplo` na toolbar do editor;
 - erro específico junto ao editor;
 - apenas `JSON` deve aparecer enquanto o parser textual não existir.
 
