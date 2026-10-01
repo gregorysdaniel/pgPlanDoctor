@@ -114,11 +114,13 @@ A interface é plana por padrão. Profundidade deve vir principalmente de contra
 
 ### 4.5 Cor tem função
 
-- cor primária: ação, link e seleção;
+- cor primária: ação principal, foco, link interativo e seleção;
 - laranja: ponto de atenção;
 - vermelho: erro real;
 - verde: sucesso ou estado concluído;
 - neutros: estrutura e hierarquia.
+
+Fundos, bordas, ícones informativos, navegação inativa e controles secundários usam cinzas grafite neutros. A identidade do PostgreSQL vem da marca e do azul aplicado com intenção, não de uma dominante azul sobre toda a tela.
 
 Não use uma escala verde–amarelo–vermelho para classificar o plano.
 
@@ -166,30 +168,30 @@ As cores podem diferir do Exercism, mas contraste, distribuição e hierarquia d
 :root {
   color-scheme: dark;
 
-  --page: #1a1e26;
-  --surface: #20242d;
-  --surface-subtle: #292e39;
-  --surface-raised: #252a35;
-  --code-surface: #171a21;
+  --page: #17191d;
+  --surface: #1c1f24;
+  --surface-subtle: #25282e;
+  --surface-raised: #202329;
+  --code-surface: #121418;
 
-  --ink: #e7eaf0;
-  --ink-muted: #abb2c0;
-  --ink-faint: #7f899b;
+  --ink: #eceef1;
+  --ink-muted: #a5abb3;
+  --ink-faint: #747c87;
 
-  --border: #343b49;
-  --border-strong: #4b5566;
-  --pattern: #292e38;
+  --border: #343941;
+  --border-strong: #484e58;
+  --pattern: #272a2f;
 
-  --primary: #7f9edb;
-  --primary-hover: #9ab3e4;
-  --primary-soft: #293550;
-  --button-primary: #5573ad;
-  --button-primary-hover: #5976b0;
-  --button-primary-active: #4b6599;
+  --primary: #7594c4;
+  --primary-hover: #91aad0;
+  --primary-soft: #242c39;
+  --button-primary: #4d6f9f;
+  --button-primary-hover: #587bad;
+  --button-primary-active: #425f88;
   --button-primary-text: #ffffff;
 
-  --attention: #e5a364;
-  --attention-soft: #3b2b20;
+  --attention: #d49a5b;
+  --attention-soft: #382b20;
   --danger: #f08088;
   --danger-soft: #3c242a;
   --success: #69c39c;
@@ -204,7 +206,8 @@ Regras:
 
 - componentes usam tokens, nunca cores da paleta codificadas localmente;
 - azul de destaque e azul de botão pertencem à mesma família, mas o botão usa um tom mais profundo para manter contraste com texto branco;
-- botões secundários permanecem neutros e recebem azul apenas no `hover` ou no foco;
+- botões secundários permanecem neutros também no `hover`; o contorno de foco continua azul por acessibilidade;
+- ícones sem ação e a navegação ativa usam os tons de texto, não a cor primária;
 - botões desabilitados usam superfície e texto neutros; não use um azul claro que possa ser confundido com uma ação disponível;
 - não inverta a página com `filter`;
 - evite preto e branco puros em superfícies grandes;

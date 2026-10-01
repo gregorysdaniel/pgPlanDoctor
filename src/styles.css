@@ -1,43 +1,43 @@
 :root {
   color-scheme: dark;
   font-family: "Poppins", "Avenir Next", "Segoe UI", sans-serif;
-  color: #e7eaf0;
-  background: #1a1e26;
+  color: #eceef1;
+  background: #17191d;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 
   --font-ui: "Poppins", "Avenir Next", "Segoe UI", sans-serif;
   --font-code: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
 
-  --page: #1a1e26;
-  --surface: #20242d;
-  --surface-subtle: #292e39;
-  --surface-raised: #252a35;
-  --code-surface: #171a21;
+  --page: #17191d;
+  --surface: #1c1f24;
+  --surface-subtle: #25282e;
+  --surface-raised: #202329;
+  --code-surface: #121418;
 
-  --ink: #e7eaf0;
-  --ink-muted: #abb2c0;
-  --ink-faint: #7f899b;
+  --ink: #eceef1;
+  --ink-muted: #a5abb3;
+  --ink-faint: #747c87;
 
-  --border: #343b49;
-  --border-strong: #4b5566;
-  --pattern: #292e38;
+  --border: #343941;
+  --border-strong: #484e58;
+  --pattern: #272a2f;
 
-  --primary: #7f9edb;
-  --primary-hover: #9ab3e4;
-  --primary-soft: #293550;
-  --button-primary: #5573ad;
-  --button-primary-hover: #5976b0;
-  --button-primary-active: #4b6599;
+  --primary: #7594c4;
+  --primary-hover: #91aad0;
+  --primary-soft: #242c39;
+  --button-primary: #4d6f9f;
+  --button-primary-hover: #587bad;
+  --button-primary-active: #425f88;
   --button-primary-text: #ffffff;
-  --attention: #e5a364;
-  --attention-soft: #3b2b20;
+  --attention: #d49a5b;
+  --attention-soft: #382b20;
   --danger: #f08088;
   --danger-soft: #3c242a;
   --success: #69c39c;
   --success-soft: #20382f;
-  --information: #abb2c0;
-  --information-soft: #292f3a;
+  --information: #a5abb3;
+  --information-soft: #262a30;
 
   --shadow-button: none;
   --shadow-raised: 0 8px 20px rgba(5, 8, 14, 0.22);
@@ -234,9 +234,9 @@ pre {
 
 .pg-plan-doctor .el-button--default:not(.is-disabled):hover,
 .pg-plan-doctor .el-button--default:not(.is-disabled):focus-visible {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: var(--primary-soft);
+  border-color: var(--border-strong);
+  color: var(--ink);
+  background: var(--surface-subtle);
 }
 
 /* Cabeçalho */
@@ -285,7 +285,7 @@ pre {
 }
 
 .header-nav__link--active {
-  color: var(--primary);
+  color: var(--ink);
   font-weight: 600;
 }
 
@@ -360,8 +360,9 @@ pre {
 
 .language-menu-button:hover,
 .language-menu-button:focus-visible {
-  border-color: var(--primary);
-  color: var(--primary);
+  border-color: var(--border-strong);
+  color: var(--ink);
+  background: var(--surface-subtle);
 }
 
 .language-menu {
@@ -410,6 +411,7 @@ pre {
   font-size: var(--text-page-title);
   line-height: var(--leading-page-title);
   letter-spacing: var(--tracking-page-title);
+  font-weight: 600;
 }
 
 .input-workspace__header p {
@@ -433,7 +435,7 @@ pre {
   flex: 0 0 auto;
   align-items: center;
   gap: 8px;
-  color: var(--primary);
+  color: var(--ink-muted);
   font-size: 14px;
   font-weight: 700;
   text-decoration: underline;
@@ -467,7 +469,7 @@ pre {
 
 .input-tabs > .el-tabs__header .el-tabs__item.is-active,
 .input-tabs > .el-tabs__header .el-tabs__item:hover {
-  color: var(--primary);
+  color: var(--ink);
 }
 
 .input-tabs > .el-tabs__header .el-tabs__active-bar {
@@ -502,7 +504,7 @@ pre {
 
 .plan-editor__identity > svg {
   flex: 0 0 auto;
-  color: var(--primary);
+  color: var(--ink-muted);
 }
 
 .plan-editor__identity strong {
@@ -531,7 +533,7 @@ pre {
 }
 
 .plan-editor__privacy svg {
-  color: var(--primary);
+  color: var(--ink-faint);
 }
 
 .plan-example-button {
@@ -552,9 +554,9 @@ pre {
 
 .plan-example-button:hover,
 .plan-example-button:focus-visible {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: var(--primary-soft);
+  border-color: var(--border-strong);
+  color: var(--ink);
+  background: var(--surface-subtle);
 }
 
 .plan-example-popper.el-popper {
@@ -583,8 +585,8 @@ pre {
 
 .plan-example-menu .el-dropdown-menu__item:hover,
 .plan-example-menu .el-dropdown-menu__item:focus {
-  color: var(--primary);
-  background: var(--primary-soft);
+  color: var(--ink);
+  background: var(--surface-subtle);
 }
 
 .plan-example-menu__copy {
@@ -740,7 +742,7 @@ pre {
 }
 
 .input-library-panel > header > svg {
-  color: var(--primary);
+  color: var(--ink-muted);
 }
 
 .input-library-panel h2 {
