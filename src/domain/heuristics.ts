@@ -4,6 +4,7 @@ import { locale, translate } from '../i18n'
 export interface HeuristicTip {
   id: string
   title: string
+  metric: string
   node: PlanNode
   evidence: string
   interpretation: string
@@ -75,6 +76,7 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
       tips.push({
         id: `row-estimate-divergence-${node.id}`,
         title: translate('heuristic.r01.title'),
+        metric: `${decimalFormatter.format(qError)}×`,
         node,
         evidence: translate('heuristic.r01.evidence', {
           estimated: integerFormatter.format(node.metrics.estimatedRows),
@@ -109,6 +111,7 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
       tips.push({
         id: `seq-scan-discards-rows-${node.id}`,
         title: translate('heuristic.r02.title'),
+        metric: `${decimalFormatter.format(discardedPercentage)}%`,
         node,
         evidence: translate('heuristic.r02.evidence', {
           relation: node.relation ?? translate('heuristic.unknownRelation'),
@@ -143,6 +146,7 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
       tips.push({
         id: `index-scan-discards-rows-${node.id}`,
         title: translate('heuristic.r03.title'),
+        metric: `${decimalFormatter.format(discardedPercentage)}%`,
         node,
         evidence: translate('heuristic.r03.evidence', {
           relation: node.relation ?? translate('heuristic.unknownRelation'),
@@ -178,6 +182,7 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
       tips.push({
         id: `function-filter-wide-scan-${node.id}`,
         title: translate('heuristic.r04.title'),
+        metric: `${decimalFormatter.format(discardedPercentage)}%`,
         node,
         evidence: translate('heuristic.r04.evidence', {
           relation: node.relation ?? translate('heuristic.unknownRelation'),
@@ -218,6 +223,7 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
         tips.push({
           id: `wide-sort-before-limit-${node.id}`,
           title: translate('heuristic.r05.title'),
+          metric: `${decimalFormatter.format(sortedRows / Math.max(limitedRows, 1))}×`,
           node: sortNode,
           evidence: translate('heuristic.r05.evidence', {
             sorted: integerFormatter.format(sortedRows),
@@ -251,6 +257,7 @@ export function evaluatePlan(plan: PlanNode): HeuristicTip[] {
         tips.push({
           id: `repeated-inner-lookup-${node.id}`,
           title: translate('heuristic.r06.title'),
+          metric: `${integerFormatter.format(innerNode.metrics.loops)}×`,
           node: innerNode,
           evidence: translate('heuristic.r06.evidence', {
             type: innerNode.type,

@@ -3,11 +3,10 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { hierarchy, tree, type HierarchyPointNode } from 'd3-hierarchy'
 import {
   PhArrowCounterClockwise,
-  PhCaretDown,
-  PhCaretUp,
   PhCornersOut,
   PhMagnifyingGlassMinus,
   PhMagnifyingGlassPlus,
+  PhTextAa,
 } from '@phosphor-icons/vue'
 import type { PlanNode } from '../domain/plan'
 import { useI18n } from '../i18n'
@@ -39,14 +38,18 @@ const translateX = ref(0)
 const translateY = ref(0)
 const isPanning = ref(false)
 
-const nodeWidth = 272
-const compactNodeHeight = 126
-const expandedNodeHeight = 260
-const horizontalGap = 116
-const verticalGap = 38
-const paddingX = 64
-const paddingY = 64
-const minimumScale = 0.18
+const nodeWidth = 232
+const compactNodeHeight = 106
+const expandedNodeHeight = 250
+const horizontalGap = 44
+const verticalGap = 18
+const paddingX = 32
+const paddingY = 40
+const outputWidth = 192
+const outputHeight = 80
+const outputGap = 44
+const minimumScale = 0.16
+const readableMinimumScale = 0.95
 const maximumScale = 2.4
 
 const rowFormatter = computed(() => new Intl.NumberFormat(locale.value))
@@ -73,7 +76,7 @@ onMounted(() => {
 
     if (!hasInitialFit && viewportWidth.value > 0 && viewportHeight.value > 0) {
       hasInitialFit = true
-      void nextTick(fitToView)
+      void nextTick(fitForReading)
     }
   })
   resizeObserver.observe(container.value)
@@ -88,7 +91,7 @@ watch(
     hasInitialFit = false
     void nextTick(() => {
       hasInitialFit = true
-      fitToView()
+      fitForReading()
     })
   },
 )
@@ -116,7 +119,7 @@ const layout = computed(() => {
   const maximumTreeY = Math.max(
     ...positionedNodes.map((node) => node.x + nodeHeight(node.data) / 2),
   )
-  const width =
+  const planWidth =
     (maximumDepth + 1) * nodeWidth + maximumDepth * horizontalGap + paddingX * 2
   const height = maximumTreeY - minimumTreeY + paddingY * 2
   const numberById = new Map(
@@ -133,9 +136,17 @@ const layout = computed(() => {
     }
   }
 
+  const rootPoint = point(positionedRoot)
+  const output = {
+    x: rootPoint.x + nodeWidth / 2 + outputGap + outputWidth / 2,
+    y: rootPoint.y,
+  }
+
   return {
-    width,
+    width: planWidth + outputGap + outputWidth,
     height,
+    output,
+    rootPoint,
     nodes: positionedNodes.map((node) => ({
       node,
       number: numberById.get(node.data.id) ?? 0,
@@ -172,6 +183,14 @@ function timeRatio(node: PlanNode): number {
   return Math.min(1, accumulatedTime(node) / planTime.value)
 }
 
+function timeBand(node: PlanNode): 'low' | 'medium' | 'high' | 'dominant' {
+  const ratio = timeRatio(node)
+  if (ratio < 0.1) return 'low'
+  if (ratio < 0.3) return 'medium'
+  if (ratio < 0.6) return 'high'
+  return 'dominant'
+}
+
 function formatTimeValue(value: number): string {
   return value >= 1_000
     ? `${timeFormatter.value.format(value / 1_000)} s`
@@ -198,17 +217,6 @@ function formatCost(node: PlanNode): string {
   return node.metrics.totalCost === undefined
     ? t('tree.notReported')
     : decimalFormatter.value.format(node.metrics.totalCost)
-}
-
-function category(node: PlanNode): string {
-  const labels: Record<PlanNode['kind'], string> = {
-    control: t('tree.category.control'),
-    join: t('tree.category.join'),
-    operation: t('tree.category.operation'),
-    scan: t('tree.category.scan'),
-  }
-
-  return labels[node.kind]
 }
 
 function subtitle(node: PlanNode): string {
@@ -239,7 +247,7 @@ function primaryCondition(node: PlanNode): string | null {
     node.filter ??
     node.sortKeys?.join(', ')
 
-  return condition ? truncate(condition, 44) : null
+  return condition ? truncate(condition, 34) : null
 }
 
 function truncate(value: string, maximumLength: number): string {
@@ -273,16 +281,27 @@ function select(node: PlanNode): void {
 }
 
 function toggleExpanded(node: PlanNode): void {
+  const positionBeforeChange = layout.value.nodes.find((item) => item.node.data.id === node.id)
   const next = new Set(expandedIds.value)
   if (next.has(node.id)) next.delete(node.id)
   else next.add(node.id)
   expandedIds.value = next
   select(node)
-  void nextTick(fitToView)
+  void nextTick(() => {
+    const positionAfterChange = layout.value.nodes.find((item) => item.node.data.id === node.id)
+    if (!positionBeforeChange || !positionAfterChange) return
+
+    translateX.value += (positionBeforeChange.x - positionAfterChange.x) * zoom.value
+    translateY.value += (positionBeforeChange.y - positionAfterChange.y) * zoom.value
+  })
 }
 
 function accessibleLabel(node: PlanNode): string {
   return `${node.type}, ${subtitle(node)}, ${formatRows(node)}, ${formatTime(node)}`
+}
+
+function outputAccessibleLabel(): string {
+  return `${t('tree.outputTitle')}, ${formatRows(props.plan)}`
 }
 
 function clampScale(value: number): number {
@@ -303,10 +322,48 @@ function fitToView(): void {
   translateY.value = (viewportHeight.value - layout.value.height * nextZoom) / 2
 }
 
+function fitForReading(): void {
+  if (viewportWidth.value <= 0 || viewportHeight.value <= 0) return
+
+  const viewportPadding = 40
+  const availableWidth = Math.max(1, viewportWidth.value - viewportPadding * 2)
+  const availableHeight = Math.max(1, viewportHeight.value - viewportPadding * 2)
+  const scaleToFit = Math.min(
+    availableWidth / layout.value.width,
+    availableHeight / layout.value.height,
+    1.15,
+  )
+  const nextZoom = clampScale(Math.max(readableMinimumScale, scaleToFit))
+  const renderedWidth = layout.value.width * nextZoom
+  const renderedHeight = layout.value.height * nextZoom
+
+  zoom.value = nextZoom
+  translateX.value = renderedWidth <= availableWidth
+    ? (viewportWidth.value - renderedWidth) / 2
+    : viewportPadding
+  translateY.value = renderedHeight <= availableHeight
+    ? (viewportHeight.value - renderedHeight) / 2
+    : viewportPadding
+}
+
+function focusNode(nodeId: string): void {
+  const target = layout.value.nodes.find((item) => item.node.data.id === nodeId)
+  if (!target || viewportWidth.value <= 0 || viewportHeight.value <= 0) return
+
+  const nextZoom = Math.max(zoom.value, readableMinimumScale)
+  zoom.value = nextZoom
+  translateX.value = viewportWidth.value / 2 - target.x * nextZoom
+  translateY.value = viewportHeight.value / 2 - target.y * nextZoom
+}
+
 function resetZoom(): void {
   zoom.value = 1
-  translateX.value = (viewportWidth.value - layout.value.width) / 2
-  translateY.value = 32
+  translateX.value = layout.value.width <= viewportWidth.value - 64
+    ? (viewportWidth.value - layout.value.width) / 2
+    : 32
+  translateY.value = layout.value.height <= viewportHeight.value - 64
+    ? (viewportHeight.value - layout.value.height) / 2
+    : 32
 }
 
 function zoomBy(factor: number, originX = viewportWidth.value / 2, originY = viewportHeight.value / 2): void {
@@ -358,6 +415,8 @@ function endPan(event: PointerEvent): void {
     viewport.value.releasePointerCapture(event.pointerId)
   }
 }
+
+defineExpose({ focusNode })
 </script>
 
 <template>
@@ -371,6 +430,9 @@ function endPan(event: PointerEvent): void {
         <PhMagnifyingGlassPlus :size="18" weight="bold" aria-hidden="true" />
       </button>
       <span aria-hidden="true"></span>
+      <button type="button" :aria-label="t('tree.readable')" :title="t('tree.readable')" @click="fitForReading">
+        <PhTextAa :size="18" weight="bold" aria-hidden="true" />
+      </button>
       <button type="button" :aria-label="t('tree.fit')" :title="t('tree.fit')" @click="fitToView">
         <PhCornersOut :size="18" weight="bold" aria-hidden="true" />
       </button>
@@ -384,7 +446,9 @@ function endPan(event: PointerEvent): void {
     <svg
       ref="viewport"
       class="plan-tree"
-      :class="{ 'plan-tree--panning': isPanning }"
+      :class="{
+        'plan-tree--panning': isPanning,
+      }"
       :viewBox="`0 0 ${Math.max(viewportWidth, 1)} ${Math.max(viewportHeight, 1)}`"
       :aria-label="t('tree.aria')"
       @wheel.prevent="onWheel"
@@ -422,18 +486,11 @@ function endPan(event: PointerEvent): void {
               link.parent.y,
             )"
           />
-
-          <g
-            v-for="link in layout.links"
-            :key="`label-${link.child.node.data.id}-${link.parent.node.data.id}`"
-            class="flow-label"
-            :transform="`translate(${(link.child.x + link.parent.x) / 2}, ${(link.child.y + link.parent.y) / 2})`"
-          >
-            <rect x="-50" y="-12" width="100" height="24" rx="12" />
-            <text text-anchor="middle" dominant-baseline="middle">
-              {{ formatRows(link.child.node.data) }}
-            </text>
-          </g>
+          <path
+            class="plan-link plan-output-link"
+            marker-end="url(#plan-flow-arrow)"
+            :d="`M ${layout.rootPoint.x + nodeWidth / 2} ${layout.rootPoint.y} L ${layout.output.x - outputWidth / 2} ${layout.output.y}`"
+          />
         </g>
 
         <g
@@ -451,10 +508,9 @@ function endPan(event: PointerEvent): void {
           :aria-label="accessibleLabel(item.node.data)"
           :aria-pressed="selectedId === item.node.data.id"
           :aria-expanded="expandedIds.has(item.node.data.id)"
-          @click.stop="select(item.node.data)"
-          @dblclick.stop="toggleExpanded(item.node.data)"
-          @keydown.enter="select(item.node.data)"
-          @keydown.space.prevent="select(item.node.data)"
+          @click.stop="toggleExpanded(item.node.data)"
+          @keydown.enter="toggleExpanded(item.node.data)"
+          @keydown.space.prevent="toggleExpanded(item.node.data)"
         >
           <rect
             class="plan-node__surface"
@@ -462,91 +518,80 @@ function endPan(event: PointerEvent): void {
             :y="topOf(item.node.data)"
             :width="nodeWidth"
             :height="nodeHeight(item.node.data)"
-            rx="9"
+            rx="7"
           />
           <rect
             v-if="attentionIds.has(item.node.data.id)"
             class="plan-node__attention-rail"
             :x="-nodeWidth / 2"
             :y="topOf(item.node.data)"
-            width="5"
+            width="4"
             :height="nodeHeight(item.node.data)"
-            rx="2.5"
+            rx="2"
           />
 
-          <text class="plan-node__category" :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 21">
-            #{{ item.number }} · {{ category(item.node.data) }}
+          <text class="plan-node__category" :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 18">
+            #{{ item.number }}
           </text>
           <text
             v-if="attentionIds.has(item.node.data.id)"
             class="plan-node__attention-label"
-            :x="nodeWidth / 2 - 43"
-            :y="topOf(item.node.data) + 21"
+            :x="nodeWidth / 2 - 13"
+            :y="topOf(item.node.data) + 18"
             text-anchor="end"
           >
             ! {{ t('tree.attention') }}
           </text>
-          <text class="plan-node__title" :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 49">
-            {{ item.node.data.type }}
+          <text class="plan-node__title" :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 43">
+            {{ truncate(item.node.data.type, 25) }}
           </text>
-          <text class="plan-node__subtitle" :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 72">
-            {{ truncate(subtitle(item.node.data), 34) }}
+          <text class="plan-node__subtitle" :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 65">
+            {{ truncate(subtitle(item.node.data), 28) }}
           </text>
-          <text class="plan-node__rows" :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 101">
+          <text class="plan-node__rows" :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 89">
             {{ formatRows(item.node.data) }}
           </text>
-          <text class="plan-node__time" :x="nodeWidth / 2 - 16" :y="topOf(item.node.data) + 101" text-anchor="end">
-            {{ formatTime(item.node.data) }} · {{ formatTimeShare(item.node.data) }}
+          <text class="plan-node__time" :x="nodeWidth / 2 - 13" :y="topOf(item.node.data) + 89" text-anchor="end">
+            <tspan>{{ formatTime(item.node.data) }} · </tspan>
+            <tspan :class="`plan-node__time-share plan-node__time-share--${timeBand(item.node.data)}`">
+              {{ formatTimeShare(item.node.data) }}
+            </tspan>
           </text>
 
           <rect
             class="plan-node__time-track"
             :x="-nodeWidth / 2"
-            :y="compactBottom(item.node.data) - 5"
+            :y="compactBottom(item.node.data) - 4"
             :width="nodeWidth"
-            height="5"
+            height="4"
           />
           <rect
-            class="plan-node__time-value"
+            :class="`plan-node__time-value plan-node__time-value--${timeBand(item.node.data)}`"
             :x="-nodeWidth / 2"
-            :y="compactBottom(item.node.data) - 5"
-            :width="Math.max(4, nodeWidth * timeRatio(item.node.data))"
-            height="5"
+            :y="compactBottom(item.node.data) - 4"
+            :width="Math.max(3, nodeWidth * timeRatio(item.node.data))"
+            height="4"
           />
 
-          <g
-            class="plan-node__expand"
-            role="button"
-            tabindex="0"
-            :aria-label="expandedIds.has(item.node.data.id) ? t('tree.collapse') : t('tree.expand')"
-            :transform="`translate(${nodeWidth / 2 - 22}, ${topOf(item.node.data) + 43})`"
-            @click.stop="toggleExpanded(item.node.data)"
-            @keydown.enter.stop="toggleExpanded(item.node.data)"
-            @keydown.space.prevent.stop="toggleExpanded(item.node.data)"
-          >
-            <circle r="14" />
-            <PhCaretUp v-if="expandedIds.has(item.node.data.id)" :size="14" weight="bold" x="-7" y="-7" aria-hidden="true" />
-            <PhCaretDown v-else :size="14" weight="bold" x="-7" y="-7" aria-hidden="true" />
-          </g>
-
           <g v-if="expandedIds.has(item.node.data.id)" class="plan-node__details">
-            <text :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 151" class="plan-node__detail-label">{{ t('tree.estimatedPerExecution') }}</text>
-            <text :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 170" class="plan-node__detail-value">
+            <text :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 127" class="plan-node__detail-label">{{ t('tree.perExecution') }}</text>
+            <text :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 144" class="plan-node__detail-label">{{ t('tree.estimated') }}</text>
+            <text :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 161" class="plan-node__detail-value">
               {{ t(item.node.data.metrics.estimatedRows === 1 ? 'analysis.rows.one' : 'analysis.rows.other', { count: rowFormatter.format(item.node.data.metrics.estimatedRows) }) }}
             </text>
-            <text x="8" :y="topOf(item.node.data) + 151" class="plan-node__detail-label">{{ t('tree.observedPerExecution') }}</text>
-            <text x="8" :y="topOf(item.node.data) + 170" class="plan-node__detail-value">
+            <text x="3" :y="topOf(item.node.data) + 144" class="plan-node__detail-label">{{ t('tree.observed') }}</text>
+            <text x="3" :y="topOf(item.node.data) + 161" class="plan-node__detail-value">
               {{ t(item.node.data.metrics.actualRows === 1 ? 'analysis.rows.one' : 'analysis.rows.other', { count: rowFormatter.format(item.node.data.metrics.actualRows) }) }}
             </text>
 
-            <text :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 198" class="plan-node__detail-label">{{ t('tree.loops') }}</text>
-            <text :x="-nodeWidth / 2 + 16" :y="topOf(item.node.data) + 217" class="plan-node__detail-value">
+            <text :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 188" class="plan-node__detail-label">{{ t('tree.loops') }}</text>
+            <text :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 205" class="plan-node__detail-value">
               {{ rowFormatter.format(item.node.data.metrics.loops) }}
             </text>
-            <text x="8" :y="topOf(item.node.data) + 198" class="plan-node__detail-label">
+            <text x="3" :y="topOf(item.node.data) + 188" class="plan-node__detail-label">
               {{ discardedRows(item.node.data) === null ? t('tree.totalCost') : t('tree.discarded') }}
             </text>
-            <text x="8" :y="topOf(item.node.data) + 217" class="plan-node__detail-value">
+            <text x="3" :y="topOf(item.node.data) + 205" class="plan-node__detail-value">
               {{ discardedRows(item.node.data) === null
                 ? formatCost(item.node.data)
                 : rowFormatter.format(discardedRows(item.node.data) ?? 0) }}
@@ -554,13 +599,35 @@ function endPan(event: PointerEvent): void {
 
             <text
               v-if="primaryCondition(item.node.data)"
-              :x="-nodeWidth / 2 + 16"
-              :y="topOf(item.node.data) + 241"
+              :x="-nodeWidth / 2 + 13"
+              :y="topOf(item.node.data) + 230"
               class="plan-node__condition"
             >
               {{ primaryCondition(item.node.data) }}
             </text>
           </g>
+        </g>
+
+        <g
+          class="plan-output"
+          :transform="`translate(${layout.output.x}, ${layout.output.y})`"
+          role="img"
+          :aria-label="outputAccessibleLabel()"
+        >
+          <rect
+            class="plan-output__surface"
+            :x="-outputWidth / 2"
+            :y="-outputHeight / 2"
+            :width="outputWidth"
+            :height="outputHeight"
+            rx="7"
+          />
+          <text class="plan-output__title" :x="-outputWidth / 2 + 13" y="-4">
+            {{ t('tree.outputTitle') }}
+          </text>
+          <text class="plan-output__rows" :x="-outputWidth / 2 + 13" y="19">
+            {{ formatRows(plan) }}
+          </text>
         </g>
       </g>
     </svg>

@@ -56,19 +56,19 @@ As regras e o parser produzem os mesmos dados independentemente do idioma. Texto
 
 ## Fluxo do plano
 
-`PlanTree.vue` usa o D3 para distribuir os nós em níveis horizontais. As folhas ficam à esquerda e o nó raiz, que representa o resultado final, fica à direita.
+`PlanTree.vue` usa o D3 para distribuir os nós em níveis horizontais. As folhas ficam à esquerda, o nó raiz fica à direita e um nó virtual não interativo explicita o resultado entregue pelo plano.
 
-As setas representam o fluxo dos filhos para os pais. O rótulo de cada ligação informa as linhas produzidas pelo filho considerando seus loops.
+As setas representam o fluxo dos filhos para os pais e terminam no resultado. As métricas permanecem nos próprios nós para evitar informação duplicada nas ligações.
 
-Os nós começam compactos, com operador, relação, linhas e tempo inclusivo. A expansão acontece no próprio nó e revela estimativas, valores observados, loops, descartes ou custo e a condição principal. A barra inferior compara o tempo acumulado (`tempo × loops`) com o tempo do plano raiz. `PlanAnalysis.vue` entrega separadamente os identificadores dos nós marcados pelas heurísticas, mantendo as regras fora do SVG.
+Os nós começam compactos, com operador, relação, linhas e tempo inclusivo. Clique, Enter ou Espaço no próprio card alternam a expansão, que revela estimativas, valores observados, loops, descartes ou custo e a condição principal. A barra inferior compara o tempo acumulado (`tempo × loops`) com o tempo do plano raiz. `PlanAnalysis.vue` entrega separadamente os identificadores dos nós marcados pelas heurísticas, mantendo as regras fora do SVG.
 
-O SVG mantém uma transformação de viewport independente do layout. Roda do mouse e botões controlam o zoom, o arraste do fundo move a árvore e o ajuste à tela recalcula escala e translação. Ao expandir um nó, a árvore é reenquadrada para que os detalhes permaneçam visíveis.
+O SVG mantém uma transformação de viewport independente do layout. Roda do mouse e botões controlam o zoom, o arraste do fundo move a árvore e o ajuste à tela recalcula escala e translação. O zoom altera somente a transformação geométrica: o conteúdo dos nós não é trocado nem ocultado de acordo com a escala. O modo de leitura preserva uma escala mínima legível. Ao expandir um nó, sua posição na tela é preservada em vez de reenquadrar toda a árvore.
 
-Quando um nó é selecionado, `PlanTree.vue` o envia para `PlanAnalysis.vue`. O Vue atualiza o inspetor sem recalcular o parser. O plano original pode ser consultado em um diálogo sem perder a análise.
+Quando um nó é selecionado, `PlanTree.vue` o envia para `PlanAnalysis.vue`. O Vue atualiza o destaque e associa a dica correspondente, quando houver, sem recalcular o parser. À esquerda, o painel alterna entre a lista resumida e o detalhe de uma única dica; cada resumo usa uma métrica calculada pela própria regra, sem criar pontuações artificiais. O painel pode ser recolhido sem alterar a câmera da árvore, e o plano original pode ser consultado em um diálogo sem perder a análise.
 
 ## Heurísticas
 
-As seis regras do MVP ficam em `domain/heuristics.ts` e percorrem a árvore recursivamente. Cada resultado mantém uma referência ao nó que produziu o sinal.
+As regras heurísticas do MVP ficam em `domain/heuristics.ts` e percorrem a árvore recursivamente. Cada resultado mantém uma referência ao nó que produziu o sinal.
 
 Uma regra não afirma que determinada alteração resolverá o problema. O conteúdo é dividido em evidência, interpretação, próximo passo e forma de validação. Termos técnicos possuem explicação curta e link para a documentação oficial.
 

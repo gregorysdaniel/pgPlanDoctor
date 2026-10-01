@@ -4,7 +4,7 @@ Aplicação frontend didática para carregar e visualizar um plano de execução
 
 ## Objetivo
 
-Receber uma saída de `EXPLAIN (ANALYZE, FORMAT JSON)` e renderizar seu fluxo no navegador. A experiência separa entrada e análise, permite selecionar operadores, apresenta sinais produzidos pelas seis heurísticas do MVP e oferece conteúdos introdutórios e um glossário para apoiar a interpretação de planos.
+Receber uma saída de `EXPLAIN (ANALYZE, FORMAT JSON)` e renderizar seu fluxo no navegador. A experiência separa entrada e análise, permite selecionar operadores, apresenta sinais produzidos pelas heurísticas avaliadas e oferece conteúdos introdutórios e um glossário para apoiar a interpretação de planos.
 
 Ainda não fazem parte desta etapa:
 
@@ -43,7 +43,7 @@ src/
 ├── components/ProjectInfo.vue   # projeto, validações e feedback
 ├── components/LanguageSwitcher.vue # idiomas português e inglês
 ├── components/PlanInput.vue     # entrada do EXPLAIN JSON
-├── components/PlanAnalysis.vue  # resumo, grafo e inspetor
+├── components/PlanAnalysis.vue  # contexto, grafo e dicas
 ├── components/PlanTree.vue      # árvore SVG horizontal, expansão e zoom
 ├── composables/useRecentPlans.ts # histórico local dos planos analisados
 ├── composables/usePlanSession.ts # estado temporário do plano entre as rotas
@@ -53,7 +53,7 @@ src/
 ├── data/rowEstimateExample.json # estimativa de linhas divergente
 ├── data/repeatedWorkExample.json # trabalho interno repetido
 ├── data/planData.ts             # catálogo dos exemplos disponíveis
-├── domain/heuristics.ts         # seis regras do MVP
+├── domain/heuristics.ts         # regras heurísticas do MVP
 ├── domain/plan.ts               # tipos TypeScript
 ├── domain/planParser.ts         # conversão recursiva do JSON
 ├── i18n/index.ts                # estado do idioma e mensagens da interface
@@ -89,21 +89,26 @@ npm run build
 1. A entrada e a análise aparecem como momentos separados.
 2. O JSON de `EXPLAIN ANALYZE` pode ser colado e analisado.
 3. O fluxo segue da esquerda para a direita, das folhas ao resultado.
-4. Selecionar um nó atualiza o inspetor.
+4. Selecionar um nó o destaca e, quando aplicável, abre sua dica correspondente.
 5. Pontos de atenção aparecem no nó correspondente.
 6. O tema escuro suave mantém contraste e legibilidade em todas as páginas.
 7. O TypeScript rejeita dados incompatíveis com `PlanNode`.
-8. As ligações mostram a direção do fluxo e as linhas produzidas.
+8. As ligações mostram a direção do fluxo sem repetir métricas já exibidas nos nós.
 9. As heurísticas exibem evidência, interpretação, próximo passo e validação.
-10. A página do projeto apresenta como as seis heurísticas foram avaliadas.
+10. A página do projeto apresenta como as heurísticas foram avaliadas.
 11. A área Aprender apresenta os quatro conteúdos e pode ser acessada pelo contexto do analisador.
 12. Voltar, avançar e abrir diretamente uma URL preservam a página esperada.
 13. O build funciona sem backend.
 14. Planos analisados recentemente podem ser reabertos após recarregar a aplicação.
 15. Cada cenário do menu `Carregar exemplo` preenche o editor e pode ser analisado normalmente.
 16. Cada nó apresenta um resumo compacto e pode ser expandido no próprio grafo.
-17. O grafo permite zoom, pan, ajuste à tela e retorno a 100%.
-18. O resumo apresenta métricas globais disponíveis no documento do `EXPLAIN`.
-19. Português e inglês atualizam interface, análise, heurísticas, conteúdos e formatos regionais sem recarregar a página.
-20. O idioma escolhido persiste no navegador e atualiza `lang`, título e descrição do documento.
-21. O glossário permite buscar termos em português e inglês e pode ser aberto pelo contexto das heurísticas.
+17. O grafo permite zoom, pan, enquadramento completo, ajuste para leitura e retorno a 100%.
+18. Alterar o zoom preserva o mesmo conteúdo nos nós, sem trocar ou ocultar textos em escalas menores.
+19. Um nó virtual e não interativo identifica o resultado final sem alterar o plano analisado.
+20. A barra e a porcentagem de tempo usam uma escala sequencial neutro–azul; laranja continua reservado às heurísticas.
+21. Execução, resultado, estrutura e quantidade de pontos de atenção aparecem como contexto discreto junto à legenda inferior.
+22. O painel de dicas fica à esquerda, separa lista e detalhe e pode ser recolhido para ampliar o grafo.
+23. Cada resumo mostra uma métrica observável; selecionar uma dica abre seu detalhe e centraliza o nó relacionado.
+24. Português e inglês atualizam interface, análise, heurísticas, conteúdos e formatos regionais sem recarregar a página.
+25. O idioma escolhido persiste no navegador e atualiza `lang`, título e descrição do documento.
+26. O glossário permite buscar termos em português e inglês e pode ser aberto pelo contexto das heurísticas.

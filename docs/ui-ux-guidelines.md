@@ -24,7 +24,7 @@ Estes são requisitos do produto e não devem ser modificados para aproximar a a
 - aplicação gratuita e didática;
 - entrada de `EXPLAIN (ANALYZE, FORMAT JSON)`;
 - parser recursivo;
-- seis heurísticas do MVP;
+- heurísticas do MVP;
 - separação entre evidência, interpretação e forma de validação;
 - visualização do fluxo das linhas;
 - seleção e inspeção de operadores;
@@ -65,14 +65,14 @@ A densidade deve se aproximar do cabeçalho sem comprometer textos de leitura ou
 - controles principais: 40 px no desktop; controles do cabeçalho podem usar 34 px;
 - no celular, ações essenciais preservam alvo de toque de pelo menos 44 px.
 
-Rótulos menores do SVG podem usar 8–11 px quando forem complementares e a mesma informação estiver disponível no nó ou no inspetor.
+Rótulos menores do SVG podem usar 8–11 px quando forem complementares e a informação completa estiver disponível no nó expandido.
 
 ### 4.2 Conteúdo largo
 
 - cabeçalho, entrada e páginas informativas compartilham um contêiner externo de até 1360 px;
 - o contêiner mantém 32 px de margem lateral no desktop, 20 px em notebooks e 16 px no celular;
 - limites de leitura pertencem às colunas internas, não criam uma margem externa diferente em cada página;
-- a tela de análise é a exceção: resumo, grafo e inspetor usam a largura total disponível;
+- a tela de análise é a exceção: grafo e painel de dicas usam a largura total disponível;
 - a entrada usa o editor em largura integral dentro do contêiner;
 - componentes importantes ocupam espaço proporcional à sua função;
 - não centralize uma coluna estreita em um monitor amplo.
@@ -129,10 +129,10 @@ Não use uma escala verde–amarelo–vermelho para classificar o plano.
 Em telas desktop, a tarefa principal deve aparecer inteira sem rolagem vertical.
 
 - na entrada, mantenha título, instrução, editor, ações e orientações operacionais no primeiro viewport;
-- na análise, mantenha resumo, grafo, legenda e início do inspetor visíveis;
+- na análise, mantenha contexto, grafo, legenda e início das dicas visíveis;
 - adapte a altura das áreas de trabalho com `dvh`, `minmax()` e `clamp()`;
 - somente conteúdo realmente adicional, um painel expandido ou uma mensagem de erro pode continuar abaixo da dobra;
-- painéis extensos, como o inspetor, podem ter rolagem própria;
+- painéis extensos, como a lista de dicas, podem ter rolagem própria;
 - em tablets, celulares ou janelas muito baixas, preserve o tamanho legível e aceite a rolagem da página.
 
 Não reduza tipografia ou alvos de toque apenas para eliminar a rolagem.
@@ -189,6 +189,11 @@ As cores podem diferir do Exercism, mas contraste, distribuição e hierarquia d
   --button-primary-hover: #587bad;
   --button-primary-active: #425f88;
   --button-primary-text: #ffffff;
+
+  --time-low: #77818e;
+  --time-medium: #6f89ad;
+  --time-high: #7898ca;
+  --time-dominant: #a2b9dd;
 
   --attention: #d49a5b;
   --attention-soft: #382b20;
@@ -337,50 +342,60 @@ A tela de análise reaproveita a linguagem do Exercism em um ambiente de ferrame
 
 ```text
 ┌ cabeçalho ──────────────────────────────────────────────────────────┐
-├ resumo da execução ─────────────────────────────────────────────────┤
-├ grafo ───────────────────────────────────────┬ inspetor do nó ─────┤
-│                                              │                      │
-│ operadores e ligações                        │ métricas              │
-│                                              │ ponto de atenção      │
-└──────────────────────────────────────────────┴──────────────────────┘
+├ dicas ───────────────┬ grafo ───────────────────────────────────────┤
+│ lista resumida       │                                              │
+│ ou detalhe           │ operadores e ligações                        │
+│ selecionado          │                                              │
+│                      ├ contexto e legenda ──────────────────────────┤
+└──────────────────────┴──────────────────────────────────────────────┘
 ```
 
-### 10.1 Resumo
+### 10.1 Contexto
 
-- altura entre 60 e 76 px;
-- pares claros de rótulo e valor;
-- tempo, linhas, sinais e relações;
-- fonte técnica somente nos valores;
-- divisórias simples;
-- não usar uma coleção de pílulas coloridas.
+- o cabeçalho local usa uma única linha com título e direção; instruções óbvias sobre o fluxo não ocupam uma segunda linha permanente;
+- execução, resultado, estrutura e quantidade de sinais aparecem em uma linha compacta junto à legenda inferior do grafo;
+- os valores complementam a visualização sem competir com ela;
+- fonte técnica somente nos valores e sem pílulas coloridas ou faixa exclusiva.
 
 ### 10.2 Grafo
 
 - fluxo horizontal da esquerda para a direita: folhas no início e resultado no fim;
-- superfície clara e ampla;
+- superfície grafite neutra e ampla, distinta do cabeçalho global;
 - padrão geométrico sutil;
 - nós compactos com expansão local para métricas adicionais;
-- largura próxima de 272 px para preservar a leitura dos valores;
-- título do operador entre 16 e 18 px;
-- relação e métricas entre 13 e 15 px;
-- barra inferior para tempo relativo;
+- clique, Enter ou Espaço no card alternam diretamente sua expansão, sem um controle de seta separado;
+- largura próxima de 232 px no estado compacto;
+- título do operador em torno de 16 px;
+- relação e métricas entre 11 e 12 px, sempre com os valores completos disponíveis no estado expandido;
+- barra inferior e porcentagem com escala sequencial cinza–azul para o tempo relativo;
+- a intensidade do tempo comunica participação, não gravidade; vermelho e laranja não pertencem a essa escala;
+- nó terminal menor e não interativo depois do operador raiz, identificando o resultado sem alterar o plano analisado;
 - marcador laranja para ponto de atenção;
 - borda primária para seleção;
-- pan, zoom, retorno a 100% e ajuste à tela;
-- reenquadramento após expandir ou recolher um nó.
+- conexões sem repetir, por padrão, a quantidade de linhas que já aparece no nó de origem;
+- pan, zoom, retorno a 100%, enquadramento completo e ajuste para leitura;
+- o zoom é apenas geométrico: não trocar, ampliar seletivamente ou ocultar textos com base na escala;
+- a visualização inicia em escala legível; quando o plano excede a área, navega-se por pan;
+- expandir ou recolher preserva a posição visual do nó acionado e não reenquadra toda a árvore.
 
 Não usar mapa de calor. Cor forte em todo o nó prejudica leitura e aproxima a interface de um monitor de infraestrutura.
 
-### 10.3 Inspetor
+### 10.3 Dicas
 
-- largura entre 400 e 480 px;
-- superfície contínua, não pilha de cards;
-- operação e relação no topo;
-- métricas principais em duas colunas;
-- evidência, interpretação e validação em blocos separados;
-- propriedades avançadas recolhidas;
+- painel à esquerda, por acompanhar o início natural da leitura, com largura entre 400 e 460 px no desktop;
+- quando recolhido, o controle para reabrir o painel permanece à esquerda, antes do título do grafo;
+- a lista e o detalhe são estados separados: escolher uma dica substitui a lista pelo documento e oferece retorno explícito;
+- abrir ou recolher o painel preserva a posição atual da câmera da árvore;
+- título e quantidade de dicas compartilham uma única barra, sem repetir “Dicas encontradas” como subtítulo permanente;
+- botão de recolher sem moldura permanente; cor de fundo aparece somente na interação;
+- lista contínua, alinhada às bordas do painel, sem transformar cada dica em um card flutuante;
+- cada dica apresenta título, métrica observável, operador e uma evidência curta antes de abrir o detalhe;
+- laranja fica restrito ao contador, ao marcador da seleção e ao ponto de atenção no grafo; o detalhe usa texto neutro;
+- selecionar uma dica centraliza o nó correspondente;
+- evidência, interpretação, próximo passo e validação aparecem somente para a dica selecionada;
+- não repetir no painel métricas que já estão disponíveis no nó compacto ou expandido;
 - rolagem própria quando o conteúdo ultrapassar a altura disponível;
-- corpo entre 14 e 16 px.
+- corpo entre 13 e 14 px para preservar uma largura e um ritmo de leitura confortáveis.
 
 ## 11. Página de informações
 
@@ -518,13 +533,13 @@ O pgPlanDoctor usa um único tema escuro suave.
 
 - contêiner externo de até 1360 px, alinhado entre cabeçalho e páginas;
 - entrada e páginas informativas alinhadas ao mesmo contêiner do cabeçalho;
-- grafo e inspetor lado a lado;
+- grafo e ferramentas lado a lado;
 - componentes não diminuem porque existe mais espaço.
 
 ### Notebook e tablet
 
 - abaixo de aproximadamente 1024 px, áreas lado a lado podem empilhar;
-- inspetor pode ir abaixo do grafo ou virar drawer;
+- dicas podem ir abaixo do grafo ou permanecer recolhidas;
 - tamanhos de fonte são preservados;
 - grafo usa rolagem e zoom antes de reduzir os nós.
 
