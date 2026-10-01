@@ -45,6 +45,7 @@ src/
 ├── components/PlanInput.vue     # entrada do EXPLAIN JSON
 ├── components/PlanAnalysis.vue  # contexto, grafo e pontos de atenção
 ├── components/PlanTree.vue      # árvore SVG horizontal, expansão e zoom
+├── components/PlanNodeDetails.vue # tabelas e abas dos operadores expandidos
 ├── composables/useRecentPlans.ts # histórico local dos planos analisados
 ├── composables/usePlanSession.ts # estado temporário do plano entre as rotas
 ├── content/learningContent.ts   # textos e referências da área Aprender
@@ -101,7 +102,7 @@ npm run build
 13. O build funciona sem backend.
 14. Planos analisados recentemente podem ser reabertos após recarregar a aplicação.
 15. Cada cenário do menu `Carregar exemplo` preenche o editor e pode ser analisado normalmente.
-16. Cada nó apresenta um resumo compacto e pode ser expandido no próprio grafo.
+16. Cada nó apresenta um resumo compacto e pode ser expandido no próprio grafo para comparar métricas observadas e estimadas em uma tabela.
 17. O grafo permite zoom, pan, enquadramento completo, ajuste para leitura e retorno a 100%.
 18. Alterar o zoom preserva o mesmo conteúdo nos nós, sem trocar ou ocultar textos em escalas menores.
 19. Um nó virtual e não interativo identifica o resultado final sem alterar o plano analisado.
@@ -112,3 +113,7 @@ npm run build
 24. Português e inglês atualizam interface, análise, heurísticas, conteúdos e formatos regionais sem recarregar a página.
 25. O idioma escolhido persiste no navegador e atualiza `lang`, título e descrição do documento.
 26. O glossário permite buscar termos em português e inglês e pode ser aberto pelo contexto das heurísticas.
+27. Nós expandidos distinguem valores por execução de totais calculados com loops e apresentam os custos separadamente dos tempos.
+28. Condições, buffers e saída aparecem em abas quando informados; expressões completas permanecem disponíveis, com rolagem para conteúdo extenso.
+29. Alternar abas por clique ou teclado, expandir vários nós e alterar o idioma preservam o layout sem sobreposição entre os operadores.
+30. Contadores de buffers informados como zero continuam disponíveis; métricas ausentes não geram abas vazias.

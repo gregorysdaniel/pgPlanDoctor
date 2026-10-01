@@ -166,6 +166,7 @@ const portugueseLearningArticles: LearningArticle[] = [
         paragraphs: [
           'A documentação do EXPLAIN apresenta estimativas do planner e, quando <code>ANALYZE</code> é usado, valores observados na execução.',
           'A comparação entre essas duas perspectivas ajuda a verificar se o planner trabalhou com uma previsão próxima do que aconteceu.',
+          'A estimativa de um nó assume que ele será consumido por completo. Um <code>LIMIT</code> em um nó superior pode encerrar esse consumo antes do fim; nesse caso, a quantidade observada pode ficar abaixo da estimativa sem indicar um erro de previsão.',
         ],
         bullets: [
           '<code>Plan Rows</code>: estimativa de linhas produzidas pelo nó.',
@@ -180,9 +181,9 @@ const portugueseLearningArticles: LearningArticle[] = [
         title: 'Quando um nó possui vários loops',
         paragraphs: [
           'Um nó pode ser executado mais de uma vez. Nesses casos, a documentação informa que os valores reais de linhas e tempo são apresentados como médias por execução.',
-          'Para estimar o total associado ao nó, é necessário considerar também o valor de <code>Actual Loops</code>.',
+          'Para estimar o total associado ao nó, multiplique os valores por execução por <code>Actual Loops</code>. Os resultados são aproximados, pois os valores apresentados pelo EXPLAIN têm precisão limitada.',
         ],
-        code: 'linhas por execução × loops = linhas acumuladas',
+        code: 'linhas por execução × loops ≈ linhas acumuladas\ntempo por execução × loops ≈ tempo acumulado',
         callout: {
           title: 'Compare valores na mesma escala',
           text: 'Um valor por execução não deve ser comparado diretamente com outro valor já acumulado.',
@@ -195,7 +196,8 @@ const portugueseLearningArticles: LearningArticle[] = [
         title: 'Custo e tempo são medidas diferentes',
         paragraphs: [
           'Os valores de <code>cost</code> são estimativas expressas nas unidades usadas pelo planner. Os valores de <code>actual time</code> são medidas da execução em milissegundos.',
-          'Também é importante observar a posição do nó: valores de nós superiores podem refletir o trabalho realizado pelos nós filhos.',
+          'O tempo de um nó inclui o trabalho dos seus filhos. Por isso, somar os tempos de todos os nós conta esse trabalho mais de uma vez.',
+          'O tempo relativo à raiz compara o tempo acumulado do operador com o tempo acumulado do nó raiz: tempo do operador ÷ tempo da raiz × 100. Como ambos incluem seus filhos, esse percentual não representa a parcela de tempo exclusiva do operador.',
         ],
         source: usingExplainReference,
       },
@@ -398,6 +400,7 @@ const englishLearningArticles: LearningArticle[] = [
         paragraphs: [
           'EXPLAIN documentation presents planner estimates and, when <code>ANALYZE</code> is used, values observed during execution.',
           'Comparing these perspectives helps determine whether the planner worked with a forecast close to what actually happened.',
+          'A node estimate assumes that the node will be consumed completely. A <code>LIMIT</code> on a parent node may stop consumption early; in that case, the observed row count may be below the estimate without indicating a prediction error.',
         ],
         bullets: [
           '<code>Plan Rows</code>: estimated rows produced by the node.',
@@ -412,9 +415,9 @@ const englishLearningArticles: LearningArticle[] = [
         title: 'When a node has several loops',
         paragraphs: [
           'A node may run more than once. In these cases, the documentation states that actual row and time values are shown as averages per execution.',
-          'To estimate the total associated with the node, you must also consider <code>Actual Loops</code>.',
+          'To estimate the total associated with the node, multiply per-execution values by <code>Actual Loops</code>. Results are approximate because EXPLAIN reports values with limited precision.',
         ],
-        code: 'rows per execution × loops = accumulated rows',
+        code: 'rows per execution × loops ≈ accumulated rows\ntime per execution × loops ≈ accumulated time',
         callout: {
           title: 'Compare values on the same scale',
           text: 'A per-execution value should not be compared directly with an already accumulated value.',
@@ -427,7 +430,8 @@ const englishLearningArticles: LearningArticle[] = [
         title: 'Cost and time are different measures',
         paragraphs: [
           '<code>cost</code> values are estimates expressed in planner units. <code>actual time</code> values are execution measurements in milliseconds.',
-          'Node position also matters: values on higher nodes may reflect work performed by their children.',
+          'A node’s time includes work performed by its children. Adding the times of all nodes therefore counts that work more than once.',
+          'Time relative to the root compares the operator’s accumulated time with the root node’s accumulated time: operator time ÷ root time × 100. Since both include their children, this percentage does not represent the operator’s exclusive share of time.',
         ],
         source: usingExplainReferenceEn,
       },

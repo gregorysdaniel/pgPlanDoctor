@@ -146,7 +146,11 @@ function parseBuffers(object: JsonObject, path: string): PlanBuffers | undefined
     tempWritten: optionalNumber(object, 'Temp Written Blocks', path) ?? 0,
   }
 
-  return Object.values(values).some((value) => value > 0) ? values : undefined
+  const hasBufferMetrics = [
+    'Shared Hit Blocks', 'Shared Read Blocks', 'Shared Dirtied Blocks',
+    'Shared Written Blocks', 'Temp Read Blocks', 'Temp Written Blocks',
+  ].some(key => object[key] !== undefined)
+  return hasBufferMetrics ? values : undefined
 }
 
 function classifyNode(type: string): PlanNodeKind {

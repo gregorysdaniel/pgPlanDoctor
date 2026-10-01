@@ -377,9 +377,9 @@ A tela de análise reaproveita a linguagem do Exercism em um ambiente de ferrame
 - superfície grafite neutra e ampla, distinta do cabeçalho global;
 - padrão geométrico sutil;
 - nós compactos com expansão local para métricas adicionais;
-- clique, Enter ou Espaço no card alternam diretamente sua expansão, sem um controle de seta separado;
+- clique, Enter ou Espaço no card compacto o expandem; o cabeçalho expandido oferece um botão explícito para recolher, preservando seleção de texto e interação com as abas;
 - largura próxima de 232 px no estado compacto;
-- título do operador em torno de 16 px;
+- título do operador em torno de 14 px, com peso 600;
 - relação e métricas entre 11 e 12 px, sempre com os valores completos disponíveis no estado expandido;
 - barra inferior e porcentagem com escala sequencial cinza–azul para o tempo relativo;
 - a intensidade do tempo comunica participação, não gravidade; vermelho e laranja não pertencem a essa escala;
@@ -391,6 +391,10 @@ A tela de análise reaproveita a linguagem do Exercism em um ambiente de ferrame
 - o zoom é apenas geométrico: não trocar, ampliar seletivamente ou ocultar textos com base na escala;
 - a visualização inicia em escala legível; quando o plano excede a área, navega-se por pan;
 - expandir ou recolher preserva a posição visual do nó acionado e não reenquadra toda a árvore.
+
+Nós expandidos seguem uma estrutura documental de 420 px, com borda discreta e raio de 4 px. O cabeçalho mantém o nome completo do operador, relação, índice e tipo de junção quando informados, seguido de uma explicação curta. A aba Geral usa uma tabela com colunas Métrica, Observado e Estimado, unidades próximas dos valores e um link contextual para o artigo Métricas essenciais em outra aba. Explicações extensas sobre interpretação ficam na área Aprender. Valores por execução, totais calculados e custos do planejamento são grupos distintos.
+
+Condições, Buffers e Saída aparecem como abas somente quando existem dados. As condições e colunas não são truncadas; conteúdo extenso usa rolagem dentro do nó. Buffers são contadores de blocos, sem multiplicação por loops. Operadores com zero loops são identificados como não executados. A largura de cada nível e a separação vertical se adaptam aos nós expandidos para evitar sobreposição. As abas suportam setas, Home e End, e o zoom mantém o mesmo conteúdo.
 
 Não usar mapa de calor. Cor forte em todo o nó prejudica leitura e aproxima a interface de um monitor de infraestrutura.
 
@@ -591,6 +595,7 @@ src/
 │   ├── PlanInput.vue
 │   ├── PlanAnalysis.vue
 │   ├── PlanTree.vue
+│   ├── PlanNodeDetails.vue
 │   ├── LearningIndex.vue
 │   ├── LearningArticle.vue
 │   ├── Glossary.vue

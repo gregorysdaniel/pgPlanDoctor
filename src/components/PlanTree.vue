@@ -9,6 +9,7 @@ import {
   PhTextAa,
 } from '@phosphor-icons/vue'
 import type { PlanNode } from '../domain/plan'
+import PlanNodeDetails from './PlanNodeDetails.vue'
 import { useI18n } from '../i18n'
 
 const props = withDefaults(
@@ -33,14 +34,16 @@ const viewport = ref<SVGSVGElement | null>(null)
 const viewportWidth = ref(0)
 const viewportHeight = ref(0)
 const expandedIds = ref<Set<string>>(new Set())
+const expandedHeights = ref<Map<string, number>>(new Map())
 const zoom = ref(1)
 const translateX = ref(0)
 const translateY = ref(0)
 const isPanning = ref(false)
 
 const nodeWidth = 232
+const expandedNodeWidth = 420
 const compactNodeHeight = 106
-const expandedNodeHeight = 250
+const expandedNodeHeight = 520
 const horizontalGap = 44
 const verticalGap = 18
 const paddingX = 32
@@ -66,6 +69,7 @@ const timeFormatter = computed(
 let resizeObserver: ResizeObserver | null = null
 let dragOrigin: { clientX: number; clientY: number; x: number; y: number } | null = null
 let hasInitialFit = false
+let resizeAnchor: { id: string; x: number; y: number } | null = null
 
 onMounted(() => {
   if (!container.value) return
@@ -88,6 +92,8 @@ watch(
   () => props.plan,
   () => {
     expandedIds.value = new Set()
+    expandedHeights.value = new Map()
+    resizeAnchor = null
     hasInitialFit = false
     void nextTick(() => {
       hasInitialFit = true
@@ -99,7 +105,13 @@ watch(
 const attentionIds = computed(() => new Set(props.attentionNodeIds))
 
 function nodeHeight(node: PlanNode): number {
-  return expandedIds.value.has(node.id) ? expandedNodeHeight : compactNodeHeight
+  return expandedIds.value.has(node.id)
+    ? expandedHeights.value.get(node.id) ?? expandedNodeHeight
+    : compactNodeHeight
+}
+
+function widthOf(node: PlanNode): number {
+  return expandedIds.value.has(node.id) ? expandedNodeWidth : nodeWidth
 }
 
 const layout = computed(() => {
@@ -119,8 +131,18 @@ const layout = computed(() => {
   const maximumTreeY = Math.max(
     ...positionedNodes.map((node) => node.x + nodeHeight(node.data) / 2),
   )
-  const planWidth =
-    (maximumDepth + 1) * nodeWidth + maximumDepth * horizontalGap + paddingX * 2
+  const columnWidths = new Map<number, number>()
+  for (const node of positionedNodes) {
+    columnWidths.set(node.depth, Math.max(columnWidths.get(node.depth) ?? 0, widthOf(node.data)))
+  }
+  const columnCenters = new Map<number, number>()
+  let nextColumnX = paddingX
+  for (let depth = maximumDepth; depth >= 0; depth--) {
+    const width = columnWidths.get(depth) ?? nodeWidth
+    columnCenters.set(depth, nextColumnX + width / 2)
+    nextColumnX += width + (depth === 0 ? 0 : horizontalGap)
+  }
+  const planWidth = nextColumnX + paddingX
   const height = maximumTreeY - minimumTreeY + paddingY * 2
   const numberById = new Map(
     positionedNodes.map((node, index) => [node.data.id, index + 1]),
@@ -128,17 +150,14 @@ const layout = computed(() => {
 
   function point(node: HierarchyPointNode<PlanNode>) {
     return {
-      x:
-        paddingX +
-        nodeWidth / 2 +
-        (maximumDepth - node.depth) * (nodeWidth + horizontalGap),
+      x: columnCenters.get(node.depth) ?? paddingX + nodeWidth / 2,
       y: node.x - minimumTreeY + paddingY,
     }
   }
 
   const rootPoint = point(positionedRoot)
   const output = {
-    x: rootPoint.x + nodeWidth / 2 + outputGap + outputWidth / 2,
+    x: rootPoint.x + widthOf(props.plan) / 2 + outputGap + outputWidth / 2,
     y: rootPoint.y,
   }
 
@@ -171,11 +190,6 @@ function accumulatedTime(node: PlanNode): number {
 
 function accumulatedRows(node: PlanNode): number {
   return node.metrics.actualRows * node.metrics.loops
-}
-
-function discardedRows(node: PlanNode): number | null {
-  if (node.metrics.rowsRemovedByFilter === undefined) return null
-  return node.metrics.rowsRemovedByFilter * node.metrics.loops
 }
 
 function timeRatio(node: PlanNode): number {
@@ -213,12 +227,6 @@ function formatRows(node: PlanNode): string {
   })
 }
 
-function formatCost(node: PlanNode): string {
-  return node.metrics.totalCost === undefined
-    ? t('tree.notReported')
-    : decimalFormatter.value.format(node.metrics.totalCost)
-}
-
 function subtitle(node: PlanNode): string {
   if (node.relation) return node.indexName ? `${node.relation} · ${node.indexName}` : node.relation
   if (node.indexName) return node.indexName
@@ -235,19 +243,6 @@ function subtitle(node: PlanNode): string {
   }
 
   return descriptions[node.type] ?? t('tree.subtitle.default')
-}
-
-function primaryCondition(node: PlanNode): string | null {
-  const condition =
-    node.indexCondition ??
-    node.hashCondition ??
-    node.mergeCondition ??
-    node.recheckCondition ??
-    node.joinFilter ??
-    node.filter ??
-    node.sortKeys?.join(', ')
-
-  return condition ? truncate(condition, 34) : null
 }
 
 function truncate(value: string, maximumLength: number): string {
@@ -269,9 +264,11 @@ function linkPath(
   childY: number,
   parentX: number,
   parentY: number,
+  child: PlanNode,
+  parent: PlanNode,
 ): string {
-  const startX = childX + nodeWidth / 2
-  const endX = parentX - nodeWidth / 2
+  const startX = childX + widthOf(child) / 2
+  const endX = parentX - widthOf(parent) / 2
   const middleX = (startX + endX) / 2
   return `M ${startX} ${childY} C ${middleX} ${childY}, ${middleX} ${parentY}, ${endX} ${parentY}`
 }
@@ -293,6 +290,32 @@ function toggleExpanded(node: PlanNode): void {
 
     translateX.value += (positionBeforeChange.x - positionAfterChange.x) * zoom.value
     translateY.value += (positionBeforeChange.y - positionAfterChange.y) * zoom.value
+    const element = [...(viewport.value?.querySelectorAll<SVGElement>('.plan-node') ?? [])]
+      .find(candidate => candidate.dataset.nodeId === node.id)
+    if (next.has(node.id)) element?.querySelector<HTMLButtonElement>('.plan-node-inspector__toggle')?.focus({ preventScroll: true })
+    else element?.focus({ preventScroll: true })
+  })
+}
+
+function resizeExpanded(node: PlanNode, height: number): void {
+  if (expandedHeights.value.get(node.id) === height) return
+  const scheduleAnchor = resizeAnchor === null
+  if (scheduleAnchor) {
+    const selected = layout.value.nodes.find(item => item.node.data.id === props.selectedId)
+    if (selected) resizeAnchor = { id: props.selectedId, x: selected.x, y: selected.y }
+  }
+  const next = new Map(expandedHeights.value)
+  next.set(node.id, height)
+  expandedHeights.value = next
+  if (!scheduleAnchor || !resizeAnchor) return
+  const before = resizeAnchor
+  void nextTick(() => {
+    if (resizeAnchor !== before) return
+    resizeAnchor = null
+    const after = layout.value.nodes.find(item => item.node.data.id === before.id)
+    if (!after) return
+    translateX.value += (before.x - after.x) * zoom.value
+    translateY.value += (before.y - after.y) * zoom.value
   })
 }
 
@@ -484,12 +507,14 @@ defineExpose({ focusNode })
               link.child.y,
               link.parent.x,
               link.parent.y,
+              link.child.node.data,
+              link.parent.node.data,
             )"
           />
           <path
             class="plan-link plan-output-link"
             marker-end="url(#plan-flow-arrow)"
-            :d="`M ${layout.rootPoint.x + nodeWidth / 2} ${layout.rootPoint.y} L ${layout.output.x - outputWidth / 2} ${layout.output.y}`"
+            :d="`M ${layout.rootPoint.x + widthOf(plan) / 2} ${layout.rootPoint.y} L ${layout.output.x - outputWidth / 2} ${layout.output.y}`"
           />
         </g>
 
@@ -497,39 +522,41 @@ defineExpose({ focusNode })
           v-for="item in layout.nodes"
           :key="item.node.data.id"
           class="plan-node"
+          :data-node-id="item.node.data.id"
           :class="{
             'plan-node--selected': selectedId === item.node.data.id,
             'plan-node--attention': attentionIds.has(item.node.data.id),
             'plan-node--expanded': expandedIds.has(item.node.data.id),
           }"
           :transform="`translate(${item.x}, ${item.y})`"
-          role="button"
-          tabindex="0"
+          :role="expandedIds.has(item.node.data.id) ? 'group' : 'button'"
+          :tabindex="expandedIds.has(item.node.data.id) ? undefined : 0"
           :aria-label="accessibleLabel(item.node.data)"
-          :aria-pressed="selectedId === item.node.data.id"
-          :aria-expanded="expandedIds.has(item.node.data.id)"
-          @click.stop="toggleExpanded(item.node.data)"
-          @keydown.enter="toggleExpanded(item.node.data)"
-          @keydown.space.prevent="toggleExpanded(item.node.data)"
+          :aria-pressed="expandedIds.has(item.node.data.id) ? undefined : selectedId === item.node.data.id"
+          :aria-expanded="expandedIds.has(item.node.data.id) ? undefined : false"
+          @click.stop="!expandedIds.has(item.node.data.id) && toggleExpanded(item.node.data)"
+          @keydown.enter.prevent="!expandedIds.has(item.node.data.id) && toggleExpanded(item.node.data)"
+          @keydown.space.prevent="!expandedIds.has(item.node.data.id) && toggleExpanded(item.node.data)"
         >
           <rect
             class="plan-node__surface"
-            :x="-nodeWidth / 2"
+            :x="-widthOf(item.node.data) / 2"
             :y="topOf(item.node.data)"
-            :width="nodeWidth"
+            :width="widthOf(item.node.data)"
             :height="nodeHeight(item.node.data)"
-            rx="7"
+            rx="4"
           />
           <rect
             v-if="attentionIds.has(item.node.data.id)"
             class="plan-node__attention-rail"
-            :x="-nodeWidth / 2"
+            :x="-widthOf(item.node.data) / 2"
             :y="topOf(item.node.data)"
             width="4"
             :height="nodeHeight(item.node.data)"
             rx="2"
           />
 
+          <template v-if="!expandedIds.has(item.node.data.id)">
           <text class="plan-node__category" :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 18">
             #{{ item.number }}
           </text>
@@ -573,39 +600,25 @@ defineExpose({ focusNode })
             height="4"
           />
 
-          <g v-if="expandedIds.has(item.node.data.id)" class="plan-node__details">
-            <text :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 127" class="plan-node__detail-label">{{ t('tree.perExecution') }}</text>
-            <text :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 144" class="plan-node__detail-label">{{ t('tree.estimated') }}</text>
-            <text :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 161" class="plan-node__detail-value">
-              {{ t(item.node.data.metrics.estimatedRows === 1 ? 'analysis.rows.one' : 'analysis.rows.other', { count: rowFormatter.format(item.node.data.metrics.estimatedRows) }) }}
-            </text>
-            <text x="3" :y="topOf(item.node.data) + 144" class="plan-node__detail-label">{{ t('tree.observed') }}</text>
-            <text x="3" :y="topOf(item.node.data) + 161" class="plan-node__detail-value">
-              {{ t(item.node.data.metrics.actualRows === 1 ? 'analysis.rows.one' : 'analysis.rows.other', { count: rowFormatter.format(item.node.data.metrics.actualRows) }) }}
-            </text>
+          </template>
 
-            <text :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 188" class="plan-node__detail-label">{{ t('tree.loops') }}</text>
-            <text :x="-nodeWidth / 2 + 13" :y="topOf(item.node.data) + 205" class="plan-node__detail-value">
-              {{ rowFormatter.format(item.node.data.metrics.loops) }}
-            </text>
-            <text x="3" :y="topOf(item.node.data) + 188" class="plan-node__detail-label">
-              {{ discardedRows(item.node.data) === null ? t('tree.totalCost') : t('tree.discarded') }}
-            </text>
-            <text x="3" :y="topOf(item.node.data) + 205" class="plan-node__detail-value">
-              {{ discardedRows(item.node.data) === null
-                ? formatCost(item.node.data)
-                : rowFormatter.format(discardedRows(item.node.data) ?? 0) }}
-            </text>
-
-            <text
-              v-if="primaryCondition(item.node.data)"
-              :x="-nodeWidth / 2 + 13"
-              :y="topOf(item.node.data) + 230"
-              class="plan-node__condition"
-            >
-              {{ primaryCondition(item.node.data) }}
-            </text>
-          </g>
+          <foreignObject
+            v-if="expandedIds.has(item.node.data.id)"
+            :x="-expandedNodeWidth / 2"
+            :y="topOf(item.node.data)"
+            :width="expandedNodeWidth"
+            :height="nodeHeight(item.node.data)"
+          >
+            <PlanNodeDetails
+              :node="item.node.data"
+              :number="item.number"
+              :attention="attentionIds.has(item.node.data.id)"
+              :time-share="formatTimeShare(item.node.data)"
+              @toggle="toggleExpanded(item.node.data)"
+              @select="select(item.node.data)"
+              @resize="resizeExpanded(item.node.data, $event)"
+            />
+          </foreignObject>
         </g>
 
         <g

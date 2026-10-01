@@ -20,6 +20,7 @@ App.vue
     ├── PlanAnalysisView.vue
     │   └── PlanAnalysis.vue
     │       └── PlanTree.vue
+    │           └── PlanNodeDetails.vue
     ├── LearningIndex.vue
     ├── Glossary.vue
     ├── LearningArticleView.vue
@@ -60,7 +61,11 @@ As regras e o parser produzem os mesmos dados independentemente do idioma. Texto
 
 As setas representam o fluxo dos filhos para os pais e terminam no resultado. As métricas permanecem nos próprios nós para evitar informação duplicada nas ligações.
 
-Os nós começam compactos, com operador, relação, linhas e tempo inclusivo. Clique, Enter ou Espaço no próprio card alternam a expansão, que revela estimativas, valores observados, loops, descartes ou custo e a condição principal. A barra inferior compara o tempo acumulado (`tempo × loops`) com o tempo do plano raiz. `PlanAnalysis.vue` entrega separadamente os identificadores dos nós marcados pelas heurísticas, mantendo as regras fora do SVG.
+Os nós começam compactos, com operador, relação, linhas e tempo inclusivo. Clique, Enter ou Espaço abre o nó; o botão no cabeçalho expandido o recolhe. A barra do resumo compara o tempo acumulado (`tempo × loops`) com o tempo do plano raiz. `PlanAnalysis.vue` entrega separadamente os identificadores dos nós marcados pelas heurísticas, mantendo as regras fora do SVG.
+
+`PlanNodeDetails.vue` apresenta o operador expandido como HTML dentro de um `foreignObject` do SVG. A aba Geral compara linhas observadas e estimadas, apresenta tempos e loops, separa totais calculados e dados do planejamento e oferece um link para o artigo Métricas essenciais em outra aba, preservando o contexto da análise. Condições, Buffers e Saída são abas condicionais; todas as expressões permanecem completas e o conteúdo extenso tem rolagem interna. Os buffers usam os contadores originais, sem multiplicação por loops; o parser preserva também os contadores informados como zero.
+
+O nó expandido tem 420 px de largura e altura medida por `ResizeObserver`. Cada coluna da árvore reserva a largura do maior nó daquele nível, e a separação vertical considera as alturas medidas. As conexões usam as bordas reais dos nós. Atualizações de altura preservam a posição do operador selecionado; abas, seleção de texto e rolagem no conteúdo não acionam expansão nem pan/zoom. A expansão transfere o foco ao cabeçalho; recolher devolve o foco ao card compacto. Conteúdo extenso também pode ser rolado por toque. As linhas e os tempos médios, os custos e os buffers seguem a [documentação do PostgreSQL 17](https://www.postgresql.org/docs/17/using-explain.html).
 
 O SVG mantém uma transformação de viewport independente do layout. Roda do mouse e botões controlam o zoom, o arraste do fundo move a árvore e o ajuste à tela recalcula escala e translação. O zoom altera somente a transformação geométrica: o conteúdo dos nós não é trocado nem ocultado de acordo com a escala. O modo de leitura preserva uma escala mínima legível. Ao expandir um nó, sua posição na tela é preservada em vez de reenquadrar toda a árvore.
 

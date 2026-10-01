@@ -1167,8 +1167,8 @@ pre {
 
 .plan-node__title {
   fill: var(--ink);
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: var(--weight-title);
 }
 
 .plan-node__subtitle {
@@ -1207,33 +1207,297 @@ pre {
   fill: var(--time-dominant);
 }
 
-.plan-node__details {
-  pointer-events: none;
+.plan-node--expanded {
+  cursor: default;
 }
 
-.plan-node__detail-label,
-.plan-node__detail-value,
-.plan-node__condition {
+.plan-node-inspector {
+  margin: 1px;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1.5;
+  cursor: auto;
+  user-select: text;
+}
+
+.plan-node-inspector__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 12px 4px 6px;
+}
+
+.plan-node-inspector__toggle {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 32px;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 6px;
+  border: 0;
+  border-radius: 3px;
+  color: var(--ink);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.plan-node-inspector__toggle:hover {
+  background: var(--surface-subtle);
+}
+
+.plan-node-inspector__toggle > svg {
+  flex: 0 0 auto;
+  color: var(--ink-muted);
+}
+
+.plan-node-inspector__toggle strong {
+  font-size: 14px;
+  font-weight: var(--weight-title);
+  overflow-wrap: anywhere;
+}
+
+.plan-node-inspector__identity {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-muted);
   font-family: var(--font-code);
-}
-
-.plan-node__detail-label {
-  fill: var(--ink-faint);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.035em;
-}
-
-.plan-node__detail-value {
-  fill: var(--ink);
   font-size: 11px;
-  font-weight: 600;
 }
 
-.plan-node__condition {
-  fill: var(--primary);
-  font-size: 9px;
-  font-weight: 600;
+.plan-node-inspector__attention {
+  color: var(--attention);
+}
+
+.plan-node-inspector__context {
+  margin: 0;
+  padding: 0 12px 8px;
+}
+
+.plan-node-inspector__context > div {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.plan-node-inspector__context dt {
+  color: var(--ink-muted);
+  font-size: 11px;
+}
+
+.plan-node-inspector dd {
+  margin: 0;
+}
+
+.plan-node-inspector__context code,
+.plan-node-inspector__conditions code,
+.plan-node-inspector__output code {
+  font-size: 11px;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.plan-node-inspector__description {
+  margin: 0;
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+  color: var(--ink-muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.plan-node-inspector__tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.plan-node-inspector__tabs button {
+  min-height: 34px;
+  padding: 4px 9px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--ink-muted);
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.plan-node-inspector__tabs button:hover {
+  color: var(--ink);
+}
+
+.plan-node-inspector__tabs button[aria-selected="true"] {
+  border-bottom-color: var(--primary);
+  color: var(--ink);
+  font-weight: var(--weight-control);
+}
+
+.plan-node-inspector__body {
+  max-height: 360px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 10px 12px 12px;
+  scrollbar-width: thin;
+}
+
+.plan-node-inspector__body:focus-visible {
+  outline-offset: -3px;
+}
+
+.plan-node-inspector table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.plan-node-inspector caption,
+.plan-node-inspector h4 {
+  margin: 14px 0 5px;
+  font-size: 12px;
+  font-weight: var(--weight-title);
+  text-align: left;
+}
+
+.plan-node-inspector caption {
+  margin: 0;
+  padding-bottom: 5px;
+}
+
+.plan-node-inspector th,
+.plan-node-inspector td {
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.plan-node-inspector th {
+  padding-right: 8px;
+  font-weight: var(--weight-body);
+  text-align: left;
+}
+
+.plan-node-inspector thead th {
+  color: var(--ink-muted);
+  font-size: 11px;
+}
+
+.plan-node-inspector__metrics th:first-child {
+  width: 44%;
+}
+
+.plan-node-inspector__metrics thead th:not(:first-child),
+.plan-node-inspector td {
+  padding-left: 8px;
+  padding-right: 0;
+  text-align: right;
+}
+
+.plan-node-inspector td,
+.plan-node-inspector__values dd {
+  font-family: var(--font-code);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.plan-node-inspector__metrics td:last-child {
+  color: var(--ink-muted);
+}
+
+.plan-node-inspector__values {
+  margin: 8px 0 0;
+}
+
+.plan-node-inspector__values > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  align-items: baseline;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.plan-node-inspector__values dt {
+  font-size: 12px;
+}
+
+.plan-node-inspector__values dd {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.plan-node-inspector__note {
+  margin: 8px 0;
+  color: var(--ink-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.plan-node-inspector__note:last-child {
+  margin-bottom: 0;
+}
+
+.plan-node-inspector__learning-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  min-height: 24px;
+  color: var(--primary);
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.plan-node-inspector__learning-link:hover {
+  color: var(--primary-hover);
+}
+
+.plan-node-inspector__conditions {
+  margin: 0;
+}
+
+.plan-node-inspector__conditions > div {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.plan-node-inspector__conditions dt {
+  margin-bottom: 3px;
+  color: var(--ink-muted);
+}
+
+.plan-node-inspector__buffers th {
+  width: 78%;
+}
+
+.plan-node-inspector__output {
+  margin: 0;
+  padding-left: 24px;
+}
+
+.plan-node-inspector__output li {
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.plan-node-inspector__section-heading {
+  margin-top: 0 !important;
+}
+
+@media (max-width: 760px) {
+  .plan-node-inspector__toggle,
+  .plan-node-inspector__tabs button,
+  .plan-node-inspector__learning-link {
+    min-height: 44px;
+  }
 }
 
 .plan-output {
@@ -1252,8 +1516,8 @@ pre {
 
 .plan-output__title {
   fill: var(--ink);
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: var(--weight-title);
 }
 
 .plan-output__rows {
