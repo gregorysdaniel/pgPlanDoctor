@@ -101,7 +101,7 @@ npm run build
 12. Voltar, avançar e abrir diretamente uma URL preservam a página esperada.
 13. O build funciona sem backend.
 14. Planos analisados recentemente podem ser reabertos após recarregar a aplicação.
-15. Cada cenário do menu `Carregar exemplo` preenche o editor e pode ser analisado normalmente.
+15. Cada cenário do seletor de exemplos no cabeçalho do editor preenche e focaliza o editor, sem analisar automaticamente.
 16. Cada nó apresenta um resumo compacto e pode ser expandido no próprio grafo para comparar métricas observadas e estimadas em uma tabela.
 17. O grafo permite zoom, pan, enquadramento completo, ajuste para leitura e retorno a 100%.
 18. Alterar o zoom preserva o mesmo conteúdo nos nós, sem trocar ou ocultar textos em escalas menores.
@@ -117,3 +117,5 @@ npm run build
 28. Condições, buffers e saída aparecem em abas quando informados; expressões completas permanecem disponíveis, com rolagem para conteúdo extenso.
 29. Alternar abas por clique ou teclado, expandir vários nós e alterar o idioma preservam o layout sem sobreposição entre os operadores.
 30. Contadores de buffers informados como zero continuam disponíveis; métricas ausentes não geram abas vazias.
+31. A entrada mantém o editor visível em toda a largura disponível, com o seletor `Carregar exemplo` no cabeçalho em todas as telas. Planos recentes têm uma seção própria abaixo da entrada, exibem os dez últimos com rolagem normal da página e oferecem um botão para abrir cada plano. O aviso de execução fica acima do editor.
+32. Linhas longas usam rolagem horizontal; a numeração acompanha a rolagem vertical e os erros ficam associados ao campo sem apagar o conteúdo.

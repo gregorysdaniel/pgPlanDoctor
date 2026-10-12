@@ -17,6 +17,8 @@ App.vue
 └── RouterView
     ├── PlanInputView.vue
     │   └── PlanInput.vue
+    │       ├── PlanJsonEditor.vue
+    │       └── RecentPlanList.vue
     ├── PlanAnalysisView.vue
     │   └── PlanAnalysis.vue
     │       └── PlanTree.vue
@@ -42,6 +44,8 @@ O histórico por hash permite abrir e atualizar essas URLs sem exigir que o serv
 ## Estado da sessão
 
 `composables/usePlanSession.ts` mantém o JSON informado, o plano convertido e a mensagem de erro enquanto a aplicação está aberta. Isso permite navegar entre entrada e análise sem colocar esses dados na URL e sem atribuir ao `App.vue` a responsabilidade pelo parser.
+
+`PlanInput.vue` apresenta o aviso de execução acima do editor, que ocupa toda a largura disponível. `PlanJsonEditor.vue` concentra o textarea, a numeração, o seletor de exemplos no cabeçalho em todas as telas e o erro associado ao campo. A numeração acompanha o deslocamento vertical do textarea por transformação visual; linhas longas têm rolagem horizontal. `RecentPlanList.vue` ocupa uma seção própria abaixo da entrada em todas as telas: mostra todos os planos disponíveis, limitados aos dez últimos, com rolagem normal da página e um botão para abrir cada plano. Carregar um exemplo preenche e focaliza o campo sem iniciar a análise; a análise é iniciada pelo botão abaixo do editor.
 
 `PlanInputView.vue` converte o JSON e abre a rota de análise somente depois de obter um `PlanNode` válido. A rota `#/analise` também possui uma guarda: quando nenhum plano foi carregado na sessão, o acesso direto volta para a entrada.
 

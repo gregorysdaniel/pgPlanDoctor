@@ -294,31 +294,33 @@ O pgPlanDoctor usa **Phosphor Icons** por meio de `@phosphor-icons/vue`. Essa é
 
 ### 9.1 Composição
 
-A entrada é um workspace operacional. O editor é a superfície principal e divide a página com o histórico e os exemplos por meio de abas:
+A entrada mantém o editor sempre visível, ocupando a largura disponível. O seletor `Carregar exemplo` fica no cabeçalho do próprio editor, tanto no desktop quanto no celular. Planos recentes ocupam uma seção própria abaixo da entrada:
 
 ```text
 Analisar plano de execução
-Instrução curta sobre a entrada                         Como obter o JSON
-
-Novo plano         Planos recentes
-─────────────────────────────────────────────────────────────────────
-┌ editor JSON ───────────────────────────────────────────────────────┐
-│ EXPLAIN JSON       Processado no navegador   Carregar exemplo ▾    │
-│                                                                    │
-│ JSON                                                               │
-│                                                                    │
-│ atalho                                             analisar         │
-└────────────────────────────────────────────────────────────────────┘
+Instrução de entrada e processamento local          Como obter o JSON
 Aviso de execução
+
+┌ Plano em JSON ────────────────────────────── Carregar exemplo ▾ ┐
+│                                                                │
+│ JSON                                                           │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+                                                         Analisar
+
+Planos recentes
+Nome do plano · operadores e achados            Data        Abrir plano
 ```
 
 - largura máxima de 1360 px, compartilhada com as demais páginas;
-- editor ocupa toda a largura do workspace;
+- editor ocupa a largura disponível, sem coluna lateral de exemplos;
 - título entre 24 e 28 px, alinhado ao editor;
-- cabeçalho contém título, instrução e acesso à ajuda para gerar o JSON;
-- as abas separam somente a entrada e o histórico local;
-- exemplos são atalhos que preenchem o editor e ficam em um menu na toolbar, não em uma aba própria;
-- editor e ações essenciais permanecem no primeiro viewport do desktop;
+- cabeçalho contém título, instrução, informação de processamento local e acesso à ajuda para gerar o JSON;
+- exemplos ficam em um seletor no cabeçalho do editor, com título e descrição de cada cenário; selecionar um deles preenche o campo e devolve o foco, sem iniciar a análise;
+- o histórico mostra todos os planos disponíveis, limitado aos dez últimos, com rolagem normal da página e botão `Abrir plano` em cada linha;
+- no celular, o seletor permanece junto ao campo e o histórico abaixo da entrada;
+- o aviso sobre `EXPLAIN ANALYZE` aparece antes do editor;
+- editor e ação principal permanecem no primeiro viewport do desktop;
 - fundo plano, sem padrão decorativo;
 - título literal, sem slogan, hero, eyebrow ou marca-texto decorativo.
 
@@ -337,13 +339,15 @@ Não inclua lista de funcionalidades, métricas do resultado ou roteiro “cole,
 
 - aparência de editor integrada ao tema escuro suave;
 - fonte técnica entre 14 e 16 px;
-- numeração de linhas;
-- quebra de linha preservada;
-- barra inferior com atalho e ações;
+- numeração somente das linhas existentes, sincronizada com a rolagem vertical;
+- linhas longas usam rolagem horizontal, sem quebra visual que desalinhe a numeração;
+- altura adaptada ao espaço disponível;
+- ação primária abaixo do campo, sem atalho de teclado;
 - ajuda para obter o JSON visível no cabeçalho da página;
 - `Analisar plano` como ação primária;
-- carregamento de exemplos pelo menu `Carregar exemplo` na toolbar do editor;
-- erro específico junto ao editor;
+- carregamento de exemplos pelo seletor `Carregar exemplo` no cabeçalho do editor em todas as telas;
+- erro específico entre o campo e a ação, associado ao textarea por `aria-describedby`, com `aria-invalid` e foco no campo;
+- superfície com borda discreta e raio de 4 px, seguindo os nós expandidos;
 - apenas `JSON` deve aparecer enquanto o parser textual não existir.
 
 O editor é uma superfície do produto, não um terminal cenográfico. Diferencie-o das demais superfícies sem usar preto puro.
