@@ -2394,8 +2394,11 @@ pre {
   scroll-margin-top: 72px;
 }
 
-.glossary-list article:target,
 .glossary-list article:focus-visible {
+  outline: 0;
+}
+
+.glossary-list article:target {
   padding-inline: 18px;
   border-bottom-color: var(--primary);
   background: var(--primary-soft);

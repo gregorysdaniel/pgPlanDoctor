@@ -34,39 +34,39 @@ export interface LearningArticle {
 const queryPathReference: LearningReference = {
   label: 'PostgreSQL 17 — The Path of a Query',
   url: 'https://www.postgresql.org/docs/17/query-path.html',
-  description: 'Visão geral oficial das etapas entre o recebimento da consulta e a execução do plano.',
+  description: 'Visão geral das etapas da consulta e dos papéis do parser, da reescrita, do planner e do executor.',
 }
 
 const usingExplainReference: LearningReference = {
   label: 'PostgreSQL 17 — Using EXPLAIN',
   url: 'https://www.postgresql.org/docs/17/using-explain.html',
-  description: 'Introdução oficial à estrutura dos planos, aos campos principais e ao EXPLAIN ANALYZE.',
+  description: 'Exemplos para aprofundar a leitura da árvore, das estimativas e dos valores observados na execução.',
 }
 
 const explainCommandReference: LearningReference = {
   label: 'PostgreSQL 17 — comando EXPLAIN',
   url: 'https://www.postgresql.org/docs/17/sql-explain.html',
-  description: 'Sintaxe, opções disponíveis e cuidados ao executar o comando.',
+  description: 'Referência de sintaxe, opções como ANALYZE e FORMAT e cuidados ao executar o comando.',
 }
 
 const plannerStatisticsReference: LearningReference = {
   label: 'PostgreSQL 17 — Statistics Used by the Planner',
   url: 'https://www.postgresql.org/docs/17/planner-stats.html',
-  description: 'Explicação oficial sobre as estatísticas usadas para estimar a quantidade de linhas.',
+  description: 'Explicação das estatísticas usadas nas estimativas de linhas, incluindo a seção Single-Column Statistics.',
 }
 
 const portugueseLearningArticles: LearningArticle[] = [
   {
     slug: 'da-consulta-ao-plano',
     title: 'Da consulta ao plano',
-    summary: 'Reconheça as etapas básicas percorridas por uma consulta no PostgreSQL.',
+    summary: 'Uma visão inicial das etapas de uma consulta e da relação entre planejamento e execução.',
     sections: [
       {
         id: 'visao-geral',
         title: 'Visão geral',
         paragraphs: [
-          'Antes de devolver um resultado, o PostgreSQL interpreta a consulta, prepara um plano e executa as operações descritas nesse plano.',
-          'Depois que a consulta é analisada e reescrita, o planner considera caminhos que podem produzir o mesmo resultado. Ele estima o custo desses caminhos e entrega um plano ao executor, que percorre a árvore para buscar e processar as linhas.',
+          'Antes de devolver um resultado, o PostgreSQL interpreta a consulta, prepara um plano e executa as operações descritas nesse plano. O planejamento e a execução têm responsabilidades diferentes nesse caminho.',
+          'Depois que a consulta é analisada e reescrita, o planner estima os custos dos caminhos disponíveis e escolhe um plano. O executor percorre esse plano para buscar e processar as linhas.',
         ],
         source: queryPathReference,
       },
@@ -74,7 +74,7 @@ const portugueseLearningArticles: LearningArticle[] = [
         id: 'termos-principais',
         title: 'Termos para reconhecer',
         paragraphs: [
-          'Ao estudar o caminho de uma consulta, estes termos aparecem com frequência:',
+          'As descrições abaixo oferecem um primeiro contato com os termos usados para explicar cada etapa:',
         ],
         bullets: [
           '<strong>Parser:</strong> verifica a sintaxe e cria uma representação da consulta.',
@@ -88,21 +88,21 @@ const portugueseLearningArticles: LearningArticle[] = [
         id: 'caminhos-possiveis',
         title: 'Um resultado pode ter caminhos diferentes',
         paragraphs: [
-          'Quando existe um índice, por exemplo, o planner pode considerar uma leitura sequencial ou uma leitura pelo índice. A escolha depende das estimativas disponíveis para aquela consulta.',
-          'O plano exibido pelo <code>EXPLAIN</code> é o caminho escolhido, não uma lista de todas as alternativas consideradas.',
+          'Quando existe um índice, o planner pode considerar uma leitura sequencial ou uma leitura por índice. A escolha depende dos custos estimados para os caminhos disponíveis; a existência do índice, por si só, não determina seu uso.',
+          'O <code>EXPLAIN</code> mostra o plano escolhido. Observar o operador que acessa os dados em um exemplo pode ajudar a entender como as linhas chegam às operações seguintes.',
         ],
         source: queryPathReference,
       },
       {
         id: 'perguntas-iniciais',
-        title: 'Perguntas para orientar o estudo',
+        title: 'Perguntas que podem ajudar',
         paragraphs: [
-          'Ao abrir um plano pela primeira vez, não é necessário entender todos os campos. Comece com perguntas simples:',
+          'Algumas perguntas podem apoiar a leitura de um plano e indicar pontos que merecem mais atenção:',
         ],
         bullets: [
-          'Quais operadores aparecem na árvore?',
-          'Quais nós produzem linhas para os nós seguintes?',
-          'Quais valores são estimativas e quais foram observados na execução?',
+          'Qual é a responsabilidade do planner e qual é a do executor?',
+          'Quais operadores acessam os dados no plano observado?',
+          'Por que o caminho escolhido pode mudar mesmo quando a consulta busca o mesmo resultado?',
         ],
       },
     ],
@@ -111,14 +111,14 @@ const portugueseLearningArticles: LearningArticle[] = [
   {
     slug: 'como-gerar-e-percorrer-um-plano',
     title: 'Como gerar e percorrer um plano',
-    summary: 'Conheça o comando EXPLAIN e a estrutura básica de uma árvore de execução.',
+    summary: 'Uma introdução ao EXPLAIN, à saída JSON e às relações entre os nós de um plano.',
     sections: [
       {
         id: 'explain-e-analyze',
         title: 'EXPLAIN e EXPLAIN ANALYZE',
         paragraphs: [
-          '<code>EXPLAIN</code> mostra o plano criado pelo planner e os valores estimados para seus nós. A consulta não é executada apenas para produzir esse plano.',
-          'A opção <code>ANALYZE</code> muda esse comportamento: o comando é executado e o resultado passa a incluir medidas como linhas e tempos observados.',
+          'O <code>EXPLAIN</code> mostra o plano criado pelo planner e seus valores estimados. Com a opção <code>ANALYZE</code>, a consulta também é executada e a saída inclui medidas como linhas, tempos e loops observados.',
+          'Comparar as duas saídas de uma mesma consulta de leitura, em um ambiente de estudo, pode tornar mais clara a distinção entre previsão e execução.',
         ],
         callout: {
           title: 'ANALYZE executa o comando',
@@ -131,8 +131,8 @@ const portugueseLearningArticles: LearningArticle[] = [
         id: 'formato-json',
         title: 'Saída em JSON',
         paragraphs: [
-          'O PostgreSQL oferece formatos legíveis por programas, entre eles JSON. O comando abaixo combina a execução da consulta com esse formato de saída.',
-          'A hierarquia do JSON preserva a relação entre os nós do plano e facilita o processamento por outras ferramentas.',
+          'A opção <code>FORMAT JSON</code> produz uma saída que pode ser processada por ferramentas. O campo <code>Node Type</code> identifica o operador e a lista <code>Plans</code>, quando presente, reúne seus nós filhos.',
+          'O modelo abaixo combina esse formato com <code>ANALYZE</code>; <code>SELECT ...</code> representa a consulta de leitura a ser analisada. A saída pode ser aberta na ferramenta, e os exemplos disponíveis também permitem explorar a relação entre o JSON e a árvore sem gerar um plano próprio.',
         ],
         code: 'EXPLAIN (ANALYZE, FORMAT JSON)\nSELECT ...;',
         source: explainCommandReference,
@@ -141,14 +141,14 @@ const portugueseLearningArticles: LearningArticle[] = [
         id: 'arvore',
         title: 'A estrutura é uma árvore',
         paragraphs: [
-          'Um plano é formado por nós. Os nós inferiores normalmente fornecem linhas para operações que aparecem acima deles, como junções, agregações ou ordenações.',
-          'No exemplo abaixo, o <code>Seq Scan</code> produz linhas para o <code>Sort</code>; depois, o <code>Limit</code> recebe a saída ordenada.',
+          'Um plano é formado por nós ligados em uma árvore. Os nós que acessam os dados fornecem linhas para outras operações, como ordenações, junções ou agregações.',
+          'No esquema abaixo, o <code>Seq Scan</code> fornece linhas ao <code>Sort</code>, e o <code>Limit</code> recebe a saída ordenada. Acompanhar essas relações pode ajudar a entender o papel de cada operação.',
         ],
         code: 'Limit\n└─ Sort\n   └─ Seq Scan',
         bullets: [
-          'Identifique primeiro os nós que acessam os dados.',
-          'Observe qual nó recebe a saída de cada operação.',
-          'Consulte a documentação do operador quando seu papel ainda não estiver claro.',
+          'Quais nós acessam os dados e quais transformam as linhas recebidas?',
+          'Qual operação recebe a saída de cada nó?',
+          'Que relação existe entre os nós filhos no JSON e as conexões da árvore?',
         ],
         source: usingExplainReference,
       },
@@ -158,21 +158,20 @@ const portugueseLearningArticles: LearningArticle[] = [
   {
     slug: 'metricas-essenciais',
     title: 'Métricas essenciais',
-    summary: 'Reconheça os campos básicos antes de aprofundar a análise de um plano.',
+    summary: 'Conceitos e pontos de atenção para interpretar estimativas, linhas, loops e tempos.',
     sections: [
       {
         id: 'campos-principais',
         title: 'Campos para reconhecer',
         paragraphs: [
-          'A documentação do EXPLAIN apresenta estimativas do planner e, quando <code>ANALYZE</code> é usado, valores observados na execução.',
-          'A comparação entre essas duas perspectivas ajuda a verificar se o planner trabalhou com uma previsão próxima do que aconteceu.',
-          'A estimativa de um nó assume que ele será consumido por completo. Um <code>LIMIT</code> em um nó superior pode encerrar esse consumo antes do fim; nesse caso, a quantidade observada pode ficar abaixo da estimativa sem indicar um erro de previsão.',
+          'Um plano com <code>ANALYZE</code> reúne estimativas do planner e medidas da execução. Comparar <code>Plan Rows</code> e <code>Actual Rows</code> do mesmo nó ajuda a observar a proximidade entre a previsão e o que ocorreu.',
+          'Essa comparação depende do contexto. A estimativa considera o consumo completo do nó, enquanto um <code>LIMIT</code> acima dele pode interrompê-lo antes do fim. Entre os campos básicos estão:',
         ],
         bullets: [
           '<code>Plan Rows</code>: estimativa de linhas produzidas pelo nó.',
-          '<code>Actual Rows</code>: linhas observadas durante a execução.',
+          '<code>Actual Rows</code>: média de linhas produzidas por execução do nó.',
           '<code>Actual Loops</code>: quantidade de execuções do nó.',
-          '<code>Actual Total Time</code>: tempo informado para o nó.',
+          '<code>Actual Total Time</code>: tempo médio por execução do nó, em milissegundos.',
         ],
         source: usingExplainReference,
       },
@@ -180,8 +179,8 @@ const portugueseLearningArticles: LearningArticle[] = [
         id: 'loops',
         title: 'Quando um nó possui vários loops',
         paragraphs: [
-          'Um nó pode ser executado mais de uma vez. Nesses casos, a documentação informa que os valores reais de linhas e tempo são apresentados como médias por execução.',
-          'Para estimar o total associado ao nó, multiplique os valores por execução por <code>Actual Loops</code>. Os resultados são aproximados, pois os valores apresentados pelo EXPLAIN têm precisão limitada.',
+          'Um nó pode ser executado mais de uma vez. Nesses casos, as linhas e os tempos reais são apresentados como médias por execução. A multiplicação por <code>Actual Loops</code> permite estimar os valores acumulados, com as limitações de precisão da saída.',
+          'Por exemplo, 2 linhas por execução em 10 loops correspondem a aproximadamente 20 linhas acumuladas.',
         ],
         code: 'linhas por execução × loops ≈ linhas acumuladas\ntempo por execução × loops ≈ tempo acumulado',
         callout: {
@@ -195,23 +194,22 @@ const portugueseLearningArticles: LearningArticle[] = [
         id: 'custo-e-tempo',
         title: 'Custo e tempo são medidas diferentes',
         paragraphs: [
-          'Os valores de <code>cost</code> são estimativas expressas nas unidades usadas pelo planner. Os valores de <code>actual time</code> são medidas da execução em milissegundos.',
-          'O tempo de um nó inclui o trabalho dos seus filhos. Por isso, somar os tempos de todos os nós conta esse trabalho mais de uma vez.',
-          'O tempo relativo à raiz compara o tempo acumulado do operador com o tempo acumulado do nó raiz: tempo do operador ÷ tempo da raiz × 100. Como ambos incluem seus filhos, esse percentual não representa a parcela de tempo exclusiva do operador.',
+          'Os custos são estimativas nas unidades usadas pelo planner; os tempos reais são medidas em milissegundos. Por isso, <code>Total Cost</code> e <code>Actual Total Time</code> não representam a mesma grandeza.',
+          'O tempo de um nó inclui o trabalho dos filhos, e somar os tempos pode contar esse trabalho mais de uma vez. Na ferramenta, o tempo relativo à raiz também usa tempos que incluem os filhos: ele ajuda a localizar pontos de atenção, mas não representa o tempo exclusivo do operador.',
         ],
         source: usingExplainReference,
       },
       {
         id: 'perguntas',
-        title: 'Perguntas para orientar o estudo',
+        title: 'Perguntas que podem ajudar',
         paragraphs: [
-          'Use estas perguntas como ponto de partida e consulte a documentação para interpretar os valores encontrados:',
+          'Estas perguntas oferecem pontos de partida para interpretar as medidas, considerando a escala dos valores e o contexto do plano:',
         ],
         bullets: [
-          'A quantidade estimada ficou próxima da quantidade observada?',
-          'O nó foi executado mais de uma vez?',
-          'Há linhas removidas por algum filtro?',
-          'O valor observado pertence somente ao nó ou também inclui seus filhos?',
+          'A estimativa ficou próxima das linhas reais por execução? Há um LIMIT que possa afetar essa leitura?',
+          'O valor observado é por execução ou já está acumulado?',
+          'Há linhas removidas por filtro, indicadas por Rows Removed by Filter?',
+          'O tempo inclui o trabalho de outros nós?',
         ],
       },
     ],
@@ -220,14 +218,14 @@ const portugueseLearningArticles: LearningArticle[] = [
   {
     slug: 'heuristicas-nao-sao-diagnosticos',
     title: 'Heurísticas não são diagnósticos',
-    summary: 'Use um sinal do plano como ponto de partida para uma investigação.',
+    summary: 'Como os sinais do plano podem apoiar uma investigação, considerando o contexto e as limitações da análise.',
     sections: [
       {
         id: 'papel-da-heuristica',
         title: 'O papel de uma heurística',
         paragraphs: [
-          'Uma heurística chama atenção para uma combinação de valores no plano. Ela ajuda a formular uma pergunta, mas não determina sozinha a causa nem a melhor alteração.',
-          'A própria documentação do PostgreSQL observa que números e estratégias podem variar conforme os dados, as estatísticas, a plataforma e a versão utilizada.',
+          'Uma heurística destaca uma combinação de valores que pode merecer atenção. Esse sinal ajuda a levantar perguntas, mas a causa e a utilidade de uma possível alteração dependem da consulta, dos dados e do ambiente.',
+          'Os sinais abaixo são exemplos de pontos para investigação. As indicações da ferramenta podem ajudar a localizá-los e a levantar explicações possíveis.',
         ],
         bullets: [
           'Diferença entre linhas estimadas e observadas.',
@@ -238,29 +236,30 @@ const portugueseLearningArticles: LearningArticle[] = [
       },
       {
         id: 'evidencia-e-hipotese',
-        title: 'Separe evidência e hipótese',
+        title: 'Evidência e hipótese',
         paragraphs: [
-          'Registre primeiro o que está presente no plano. Depois formule uma hipótese que possa ser comparada em um ambiente controlado.',
+          'Uma diferença entre linhas estimadas e reais é uma observação do plano. Uma possível relação com as estatísticas é uma hipótese, que ainda depende de outras informações para ser avaliada.',
+          'Separar essas duas ideias pode ajudar a evitar conclusões apressadas. Uma forma de organizar a investigação é relacionar a evidência a uma explicação possível e a uma comparação que permita avaliar essa explicação:',
         ],
         code: 'Evidência observada → hipótese → verificação',
         bullets: [
-          'Evidência: valor ou relação encontrada no plano.',
-          'Hipótese: explicação possível para aquele sinal.',
-          'Verificação: comparação realizada antes e depois de uma alteração controlada.',
+          'Evidência: valores ou relações observados no plano.',
+          'Hipótese: uma explicação possível para o sinal encontrado.',
+          'Verificação: uma comparação controlada que possa sustentar ou enfraquecer a hipótese.',
         ],
       },
       {
         id: 'antes-de-concluir',
         title: 'Antes de concluir',
         paragraphs: [
-          'Quando um sinal envolver estimativas, formas de acesso ou operadores específicos, consulte a seção correspondente na documentação antes de formular uma conclusão.',
-          'As estimativas dependem das estatísticas disponíveis. Mesmo atualizadas, elas continuam sendo aproximações usadas pelo planner para tomar decisões antes da execução.',
+          'O contexto da consulta importa na avaliação de um sinal. Mesmo estatísticas atualizadas produzem aproximações, e uma diferença isolada não explica todo o comportamento observado.',
+          'As perguntas abaixo podem apoiar uma investigação e a avaliação de sugestões da ferramenta:',
         ],
         bullets: [
-          'A consulta continua produzindo o mesmo resultado?',
-          'Os dados e parâmetros da comparação foram mantidos?',
-          'A documentação da versão utilizada foi consultada?',
-          'Outros custos da alteração também foram considerados?',
+          'Que evidência sustenta a hipótese e que resultado faria você reconsiderá-la?',
+          'Os dados e parâmetros são comparáveis? A consulta continua produzindo o mesmo resultado?',
+          'O que a documentação da versão utilizada informa sobre esse comportamento?',
+          'Que outros custos uma possível alteração pode introduzir?',
         ],
         source: plannerStatisticsReference,
       },
@@ -272,46 +271,46 @@ const portugueseLearningArticles: LearningArticle[] = [
 const queryPathReferenceEn: LearningReference = {
   label: 'PostgreSQL 17 — The Path of a Query',
   url: 'https://www.postgresql.org/docs/17/query-path.html',
-  description: 'Official overview of the stages between receiving a query and executing its plan.',
+  description: 'Overview of query stages and the roles of the parser, rewrite system, planner, and executor.',
 }
 
 const usingExplainReferenceEn: LearningReference = {
   label: 'PostgreSQL 17 — Using EXPLAIN',
   url: 'https://www.postgresql.org/docs/17/using-explain.html',
-  description: 'Official introduction to plan structure, key fields, and EXPLAIN ANALYZE.',
+  description: 'Examples for exploring plan trees, estimates, and values observed during execution.',
 }
 
 const explainCommandReferenceEn: LearningReference = {
   label: 'PostgreSQL 17 — EXPLAIN command',
   url: 'https://www.postgresql.org/docs/17/sql-explain.html',
-  description: 'Syntax, available options, and precautions when running the command.',
+  description: 'Reference for syntax, options such as ANALYZE and FORMAT, and execution precautions.',
 }
 
 const plannerStatisticsReferenceEn: LearningReference = {
   label: 'PostgreSQL 17 — Statistics Used by the Planner',
   url: 'https://www.postgresql.org/docs/17/planner-stats.html',
-  description: 'Official explanation of the statistics used to estimate row counts.',
+  description: 'Explanation of statistics used in row estimates, including Single-Column Statistics.',
 }
 
 const englishLearningArticles: LearningArticle[] = [
   {
     slug: 'da-consulta-ao-plano',
     title: 'From query to plan',
-    summary: 'Recognize the basic stages a query goes through in PostgreSQL.',
+    summary: 'An initial overview of query stages and the relationship between planning and execution.',
     sections: [
       {
         id: 'visao-geral',
         title: 'Overview',
         paragraphs: [
-          'Before returning a result, PostgreSQL interprets the query, prepares a plan, and runs the operations described by that plan.',
-          'After the query is parsed and rewritten, the planner considers paths that can produce the same result. It estimates their cost and hands a plan to the executor, which walks the tree to retrieve and process rows.',
+          'Before returning a result, PostgreSQL interprets the query, prepares a plan, and executes the operations described in that plan. Planning and execution have different responsibilities along this path.',
+          'After the query is parsed and rewritten, the planner estimates the costs of available paths and chooses a plan. The executor walks that plan to retrieve and process rows.',
         ],
         source: queryPathReferenceEn,
       },
       {
         id: 'termos-principais',
         title: 'Terms to recognize',
-        paragraphs: ['These terms appear frequently when studying the path of a query:'],
+        paragraphs: ['The descriptions below offer an initial introduction to the terms used to explain each stage:'],
         bullets: [
           '<strong>Parser:</strong> checks the syntax and builds a representation of the query.',
           '<strong>Rewrite system:</strong> applies rules before planning.',
@@ -324,19 +323,19 @@ const englishLearningArticles: LearningArticle[] = [
         id: 'caminhos-possiveis',
         title: 'One result can have different paths',
         paragraphs: [
-          'When an index exists, for example, the planner may consider a sequential scan or an index scan. The choice depends on the estimates available for that query.',
-          'The plan shown by <code>EXPLAIN</code> is the selected path, not a list of every alternative considered.',
+          'When an index exists, the planner may consider a sequential scan or an index scan. Its choice depends on the estimated costs of the available paths; the presence of an index alone does not determine its use.',
+          '<code>EXPLAIN</code> shows the chosen plan. Observing the data access operator in an example can help explain how rows reach subsequent operations.',
         ],
         source: queryPathReferenceEn,
       },
       {
         id: 'perguntas-iniciais',
-        title: 'Questions to guide your study',
-        paragraphs: ['You do not need to understand every field when opening a plan for the first time. Start with simple questions:'],
+        title: 'Questions that may help',
+        paragraphs: ['Some questions can support plan reading and suggest points that deserve closer attention:'],
         bullets: [
-          'Which operators appear in the tree?',
-          'Which nodes produce rows for the next nodes?',
-          'Which values are estimates and which were observed?',
+          'What is the planner responsible for, and what is the executor responsible for?',
+          'Which operators access data in the observed plan?',
+          'Why might the chosen path change even when the query seeks the same result?',
         ],
       },
     ],
@@ -345,14 +344,14 @@ const englishLearningArticles: LearningArticle[] = [
   {
     slug: 'como-gerar-e-percorrer-um-plano',
     title: 'How to generate and read a plan',
-    summary: 'Learn the EXPLAIN command and the basic structure of an execution tree.',
+    summary: 'An introduction to EXPLAIN, JSON output, and relationships between plan nodes.',
     sections: [
       {
         id: 'explain-e-analyze',
         title: 'EXPLAIN and EXPLAIN ANALYZE',
         paragraphs: [
-          '<code>EXPLAIN</code> shows the plan created by the planner and the estimated values for its nodes. The query is not run merely to produce this plan.',
-          'The <code>ANALYZE</code> option changes this behavior: the command is run and the output includes measurements such as observed rows and times.',
+          '<code>EXPLAIN</code> shows the plan created by the planner and its estimated values. With the <code>ANALYZE</code> option, the query is also executed and the output includes observed measurements such as rows, times, and loops.',
+          'Comparing both outputs for the same read query in a study environment can clarify the distinction between prediction and execution.',
         ],
         callout: {
           title: 'ANALYZE runs the command',
@@ -365,8 +364,8 @@ const englishLearningArticles: LearningArticle[] = [
         id: 'formato-json',
         title: 'JSON output',
         paragraphs: [
-          'PostgreSQL provides machine-readable formats, including JSON. The command below combines query execution with this output format.',
-          'The JSON hierarchy preserves the relationship between plan nodes and makes programmatic processing easier.',
+          'The <code>FORMAT JSON</code> option produces output that tools can process. The <code>Node Type</code> field identifies the operator, and the <code>Plans</code> list, when present, contains its child nodes.',
+          'The template below combines this format with <code>ANALYZE</code>; <code>SELECT ...</code> represents the read query to be analyzed. The output can be opened in the tool, and the available examples also let you explore the relationship between JSON and the tree without generating your own plan.',
         ],
         code: 'EXPLAIN (ANALYZE, FORMAT JSON)\nSELECT ...;',
         source: explainCommandReferenceEn,
@@ -375,14 +374,14 @@ const englishLearningArticles: LearningArticle[] = [
         id: 'arvore',
         title: 'The structure is a tree',
         paragraphs: [
-          'A plan is made of nodes. Lower nodes usually provide rows to operations above them, such as joins, aggregates, or sorts.',
-          'In the example below, the <code>Seq Scan</code> produces rows for the <code>Sort</code>; the <code>Limit</code> then receives the sorted output.',
+          'A plan consists of nodes connected in a tree. Nodes that access data supply rows to other operations, such as sorts, joins, or aggregates.',
+          'In the diagram below, <code>Seq Scan</code> supplies rows to <code>Sort</code>, and <code>Limit</code> receives the sorted output. Following these relationships can help explain the role of each operation.',
         ],
         code: 'Limit\n└─ Sort\n   └─ Seq Scan',
         bullets: [
-          'First identify the nodes that access data.',
-          'Observe which node receives each operation’s output.',
-          'Consult the operator documentation when its role is still unclear.',
+          'Which nodes access data, and which transform the rows they receive?',
+          'Which operation receives the output of each node?',
+          'How do child nodes in JSON relate to the connections in the tree?',
         ],
         source: usingExplainReferenceEn,
       },
@@ -392,21 +391,20 @@ const englishLearningArticles: LearningArticle[] = [
   {
     slug: 'metricas-essenciais',
     title: 'Essential metrics',
-    summary: 'Recognize the basic fields before going deeper into plan analysis.',
+    summary: 'Concepts and points to consider when interpreting estimates, rows, loops, and times.',
     sections: [
       {
         id: 'campos-principais',
         title: 'Fields to recognize',
         paragraphs: [
-          'EXPLAIN documentation presents planner estimates and, when <code>ANALYZE</code> is used, values observed during execution.',
-          'Comparing these perspectives helps determine whether the planner worked with a forecast close to what actually happened.',
-          'A node estimate assumes that the node will be consumed completely. A <code>LIMIT</code> on a parent node may stop consumption early; in that case, the observed row count may be below the estimate without indicating a prediction error.',
+          'A plan with <code>ANALYZE</code> combines planner estimates with execution measurements. Comparing <code>Plan Rows</code> and <code>Actual Rows</code> for the same node helps show how close the prediction was to what happened.',
+          'This comparison depends on context. The estimate assumes complete consumption of the node, whereas a <code>LIMIT</code> above it may stop consumption early. Basic fields include:',
         ],
         bullets: [
           '<code>Plan Rows</code>: estimated rows produced by the node.',
-          '<code>Actual Rows</code>: rows observed during execution.',
+          '<code>Actual Rows</code>: average rows produced per node execution.',
           '<code>Actual Loops</code>: number of node executions.',
-          '<code>Actual Total Time</code>: time reported for the node.',
+          '<code>Actual Total Time</code>: average time per node execution, in milliseconds.',
         ],
         source: usingExplainReferenceEn,
       },
@@ -414,8 +412,8 @@ const englishLearningArticles: LearningArticle[] = [
         id: 'loops',
         title: 'When a node has several loops',
         paragraphs: [
-          'A node may run more than once. In these cases, the documentation states that actual row and time values are shown as averages per execution.',
-          'To estimate the total associated with the node, multiply per-execution values by <code>Actual Loops</code>. Results are approximate because EXPLAIN reports values with limited precision.',
+          'A node may execute more than once. In that case, actual rows and times are reported as averages per execution. Multiplying by <code>Actual Loops</code> gives an estimate of accumulated values, subject to the precision of the output.',
+          'For example, 2 rows per execution over 10 loops correspond to approximately 20 accumulated rows.',
         ],
         code: 'rows per execution × loops ≈ accumulated rows\ntime per execution × loops ≈ accumulated time',
         callout: {
@@ -429,21 +427,20 @@ const englishLearningArticles: LearningArticle[] = [
         id: 'custo-e-tempo',
         title: 'Cost and time are different measures',
         paragraphs: [
-          '<code>cost</code> values are estimates expressed in planner units. <code>actual time</code> values are execution measurements in milliseconds.',
-          'A node’s time includes work performed by its children. Adding the times of all nodes therefore counts that work more than once.',
-          'Time relative to the root compares the operator’s accumulated time with the root node’s accumulated time: operator time ÷ root time × 100. Since both include their children, this percentage does not represent the operator’s exclusive share of time.',
+          'Costs are estimates in the units used by the planner; actual times are measurements in milliseconds. Therefore, <code>Total Cost</code> and <code>Actual Total Time</code> represent different quantities.',
+          'A node’s time includes work performed by its children, and adding times can count that work more than once. In the tool, time relative to the root also uses times that include children: it helps locate points of interest, but does not represent the operator’s exclusive time.',
         ],
         source: usingExplainReferenceEn,
       },
       {
         id: 'perguntas',
-        title: 'Questions to guide your study',
-        paragraphs: ['Use these questions as a starting point and consult the documentation to interpret the values you find:'],
+        title: 'Questions that may help',
+        paragraphs: ['These questions offer starting points for interpreting measurements, considering the scale of the values and the context of the plan:'],
         bullets: [
-          'Was the estimate close to the observed row count?',
-          'Did the node run more than once?',
-          'Were rows removed by a filter?',
-          'Does the observed value belong only to this node or also include its children?',
+          'Was the estimate close to actual rows per execution? Could a LIMIT affect this interpretation?',
+          'Is the observed value per execution or already accumulated?',
+          'Are there rows removed by a filter, indicated by Rows Removed by Filter?',
+          'Does the time include work performed by other nodes?',
         ],
       },
     ],
@@ -452,14 +449,14 @@ const englishLearningArticles: LearningArticle[] = [
   {
     slug: 'heuristicas-nao-sao-diagnosticos',
     title: 'Heuristics are not diagnoses',
-    summary: 'Use a plan signal as the starting point for an investigation.',
+    summary: 'How plan signals can support an investigation, considering context and the limits of the analysis.',
     sections: [
       {
         id: 'papel-da-heuristica',
         title: 'The role of a heuristic',
         paragraphs: [
-          'A heuristic draws attention to a combination of values in the plan. It helps formulate a question but does not determine the cause or the best change by itself.',
-          'PostgreSQL documentation notes that numbers and strategies may vary with data, statistics, platform, and version.',
+          'A heuristic highlights a combination of values that may deserve attention. That signal helps raise questions, but its cause and the usefulness of a possible change depend on the query, data, and environment.',
+          'The signals below are examples of points to investigate. The tool’s indications can help locate them and raise possible explanations.',
         ],
         bullets: [
           'A difference between estimated and observed rows.',
@@ -470,27 +467,30 @@ const englishLearningArticles: LearningArticle[] = [
       },
       {
         id: 'evidencia-e-hipotese',
-        title: 'Separate evidence from hypothesis',
-        paragraphs: ['First record what is present in the plan. Then formulate a hypothesis that can be compared in a controlled environment.'],
+        title: 'Evidence and hypothesis',
+        paragraphs: [
+          'A difference between estimated and actual rows is an observation from the plan. A possible relationship with statistics is a hypothesis that still depends on other information for evaluation.',
+          'Separating these ideas can help avoid premature conclusions. One way to organize an investigation is to relate the evidence to a possible explanation and a comparison that could evaluate it:',
+        ],
         code: 'Observed evidence → hypothesis → verification',
         bullets: [
-          'Evidence: a value or relationship found in the plan.',
-          'Hypothesis: a possible explanation for that signal.',
-          'Verification: a comparison made before and after a controlled change.',
+          'Evidence: values or relationships observed in the plan.',
+          'Hypothesis: a possible explanation for the signal found.',
+          'Verification: a controlled comparison that could support or weaken the hypothesis.',
         ],
       },
       {
         id: 'antes-de-concluir',
         title: 'Before reaching a conclusion',
         paragraphs: [
-          'When a signal involves estimates, access methods, or specific operators, consult the matching documentation section before drawing a conclusion.',
-          'Estimates depend on available statistics. Even when current, they remain approximations used by the planner before execution.',
+          'The query context matters when evaluating a signal. Even current statistics produce approximations, and an isolated difference does not explain all the observed behavior.',
+          'The questions below can support an investigation and the evaluation of the tool’s suggestions:',
         ],
         bullets: [
-          'Does the query still produce the same result?',
-          'Were the data and comparison parameters kept unchanged?',
-          'Was the documentation for the version in use consulted?',
-          'Were other costs of the change also considered?',
+          'What evidence supports the hypothesis, and which result would make you reconsider it?',
+          'Are the data and parameters comparable? Does the query still produce the same result?',
+          'What does the documentation for the version in use say about this behavior?',
+          'Which other costs could a possible change introduce?',
         ],
         source: plannerStatisticsReferenceEn,
       },

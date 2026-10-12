@@ -150,7 +150,6 @@ const heuristicValidations = computed<HeuristicValidation[]>(() => [
           <li>{{ t('about.limitHeuristics') }}</li>
           <li>{{ t('about.limitExecution') }}</li>
           <li>{{ t('about.limitFormat') }}</li>
-          <li>{{ t('about.limitBrowser') }}</li>
         </ul>
       </section>
 
