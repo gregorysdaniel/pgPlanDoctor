@@ -85,6 +85,28 @@ Para validar o build:
 npm run build
 ```
 
+## Publicar no GitHub Pages
+
+O workflow `.github/workflows/deploy-pages.yml` instala as dependências com `npm ci`, valida o TypeScript, gera o build e publica `dist` quando há um push na `main`. Também pode ser iniciado manualmente pela aba **Actions**.
+
+1. Envie este projeto para um repositório no GitHub, com `package.json` e `.github` na raiz.
+2. No repositório, abra **Settings → Pages → Build and deployment** e selecione **GitHub Actions** em **Source**.
+3. Envie um commit para `main` ou execute **Deploy to GitHub Pages → Run workflow** na aba **Actions**.
+4. Acompanhe os jobs `build` e `deploy`. O endereço publicado aparece em **Settings → Pages** e no ambiente `github-pages`.
+
+O caminho dos arquivos é obtido da configuração do Pages e passado ao Vite no build. Assim, o mesmo workflow atende tanto `https://usuario.github.io/repositorio/` quanto um domínio próprio, sem fixar o nome do repositório em `vite.config.ts`. As rotas usam `#`, permitindo abrir e recarregar páginas internas sem regras de redirecionamento no servidor.
+
+Para configurar os links opcionais de feedback e benchmark no site publicado, crie as variáveis `VITE_FEEDBACK_FORM_URL` e `VITE_BENCHMARK_GITHUB_URL` em **Settings → Secrets and variables → Actions → Variables**. Depois execute novamente o workflow, pois os valores são incorporados ao build.
+
+Para conferir localmente um build no caminho de um repositório:
+
+```bash
+npm run build -- --base /repositorio/
+npm run preview
+```
+
+Abra `http://localhost:4173/repositorio/`.
+
 ## Critérios de validação
 
 1. A entrada e a análise aparecem como momentos separados.
