@@ -200,7 +200,7 @@ const englishGlossaryTerms: GlossaryTerm[] = [
     category: 'planning',
     aliases: ['ANALYZE', 'planner statistics'],
     definition: 'Information about data distribution that helps the planner estimate how many rows each operation will find.',
-    detail: 'The ANALYZE command updates this information. Outdated or insufficient statistics can produce estimates far from actual execution.',
+    detail: 'The ANALYZE command updates this information. Outdated or insufficient statistics can produce estimates that differ substantially from observed row counts.',
   },
   {
     id: 'selectivity',
@@ -214,7 +214,7 @@ const englishGlossaryTerms: GlossaryTerm[] = [
     term: 'Cardinality',
     category: 'planning',
     definition: 'The number of rows an operation is estimated to produce or actually produces.',
-    detail: 'Large cardinality errors can influence scan choices, join types, and operation order.',
+    detail: 'Large differences between estimated and actual row counts can influence scan choices, join types, and operation order.',
   },
   {
     id: 'cost',
@@ -222,14 +222,14 @@ const englishGlossaryTerms: GlossaryTerm[] = [
     category: 'planning',
     aliases: ['startup cost', 'total cost'],
     definition: 'An internal estimate used by the planner to compare possible paths.',
-    detail: 'Cost is not measured in milliseconds. It combines configurable factors such as CPU processing and data-page access.',
+    detail: 'Cost is not measured in milliseconds. It combines configurable factors such as CPU processing and access to data pages.',
   },
   {
     id: 'q-error',
     term: 'Q-error',
     category: 'planning',
     definition: 'A multiplicative measure of the difference between an estimated and an observed quantity.',
-    detail: 'A q-error of 10 means one quantity was approximately ten times above or below the other. It measures distance, not the cause of the error.',
+    detail: 'A q-error of 10 indicates roughly a tenfold discrepancy between the estimated and observed quantities. It measures the size of the discrepancy, not its cause.',
   },
   {
     id: 'executor',
@@ -274,7 +274,7 @@ const englishGlossaryTerms: GlossaryTerm[] = [
     term: 'Index Scan',
     category: 'operators',
     definition: 'An operation that uses an index to find row references and then visits the table.',
-    detail: 'It can reduce examined rows, but scattered table access also has a cost. Compare the plan in the real scenario.',
+    detail: 'It can reduce the number of rows examined, but accessing rows scattered across the table also has a cost. Plans should be compared in the actual workload context.',
   },
   {
     id: 'nested-loop',
@@ -294,7 +294,7 @@ const englishGlossaryTerms: GlossaryTerm[] = [
     id: 'merge-join',
     term: 'Merge Join',
     category: 'operators',
-    definition: 'A join that walks through two row sets ordered by their related keys.',
+    definition: 'A join that walks through two sets of rows sorted by the join keys.',
     detail: 'It can reuse an existing order or require Sort operations before the join.',
   },
   {
@@ -316,7 +316,7 @@ const englishGlossaryTerms: GlossaryTerm[] = [
     term: 'Estimated and actual rows',
     category: 'metrics',
     aliases: ['Plan Rows', 'Actual Rows'],
-    definition: 'Plan Rows is the planner forecast; Actual Rows is the average number of rows produced per node execution.',
+    definition: 'Plan Rows is the planner’s row estimate; Actual Rows is the average number of rows produced per node execution.',
     detail: 'When there is more than one loop, also consider Actual Loops before comparing accumulated values.',
   },
   {
@@ -340,14 +340,14 @@ const englishGlossaryTerms: GlossaryTerm[] = [
     category: 'metrics',
     aliases: ['shared hit', 'shared read', 'temp read', 'temp written'],
     definition: 'Counts of blocks found in memory, read, modified, or used by temporary operations.',
-    detail: 'They help distinguish CPU work from data access, but should be read together with the environment and repeated measurements.',
+    detail: 'They help distinguish CPU work from data access, but should be interpreted in the context of the environment and repeated measurements.',
   },
   {
     id: 'rows-removed-by-filter',
     term: 'Rows Removed by Filter',
     category: 'metrics',
-    definition: 'The average number of examined rows per execution that did not pass the node filter.',
-    detail: 'A high value can indicate a wide scan for a selective result, but it should be evaluated with table size, time, and buffers.',
+    definition: 'The average number of rows examined per execution that did not pass the node’s filter.',
+    detail: 'A high value can indicate a broad scan for a selective result, but should be evaluated alongside table size, time, and buffers.',
   },
 ]
 

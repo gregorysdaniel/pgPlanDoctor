@@ -283,7 +283,7 @@ const usingExplainReferenceEn: LearningReference = {
 const explainCommandReferenceEn: LearningReference = {
   label: 'PostgreSQL 17 — EXPLAIN command',
   url: 'https://www.postgresql.org/docs/17/sql-explain.html',
-  description: 'Reference for syntax, options such as ANALYZE and FORMAT, and execution precautions.',
+  description: 'Reference for syntax, options such as ANALYZE and FORMAT, and precautions when running the command.',
 }
 
 const plannerStatisticsReferenceEn: LearningReference = {
@@ -296,7 +296,7 @@ const englishLearningArticles: LearningArticle[] = [
   {
     slug: 'da-consulta-ao-plano',
     title: 'From query to plan',
-    summary: 'An initial overview of query stages and the relationship between planning and execution.',
+    summary: 'An overview of the stages a query goes through and the relationship between planning and execution.',
     sections: [
       {
         id: 'visao-geral',
@@ -310,7 +310,7 @@ const englishLearningArticles: LearningArticle[] = [
       {
         id: 'termos-principais',
         title: 'Terms to recognize',
-        paragraphs: ['The descriptions below offer an initial introduction to the terms used to explain each stage:'],
+        paragraphs: ['The descriptions below introduce the terms used to explain each stage:'],
         bullets: [
           '<strong>Parser:</strong> checks the syntax and builds a representation of the query.',
           '<strong>Rewrite system:</strong> applies rules before planning.',
@@ -321,7 +321,7 @@ const englishLearningArticles: LearningArticle[] = [
       },
       {
         id: 'caminhos-possiveis',
-        title: 'One result can have different paths',
+        title: 'Different paths can produce the same result',
         paragraphs: [
           'When an index exists, the planner may consider a sequential scan or an index scan. Its choice depends on the estimated costs of the available paths; the presence of an index alone does not determine its use.',
           '<code>EXPLAIN</code> shows the chosen plan. Observing the data access operator in an example can help explain how rows reach subsequent operations.',
@@ -351,11 +351,11 @@ const englishLearningArticles: LearningArticle[] = [
         title: 'EXPLAIN and EXPLAIN ANALYZE',
         paragraphs: [
           '<code>EXPLAIN</code> shows the plan created by the planner and its estimated values. With the <code>ANALYZE</code> option, the query is also executed and the output includes observed measurements such as rows, times, and loops.',
-          'Comparing both outputs for the same read query in a study environment can clarify the distinction between prediction and execution.',
+          'Comparing both outputs for the same SELECT query in a test environment can clarify the distinction between prediction and execution.',
         ],
         callout: {
           title: 'ANALYZE runs the command',
-          text: 'Check the official guidance before using it with commands that change data. Prefer a safe study environment.',
+          text: 'Check the official guidance before using it with commands that change data. A safe test environment is preferable for practice.',
           tone: 'attention',
         },
         source: explainCommandReferenceEn,
@@ -365,7 +365,7 @@ const englishLearningArticles: LearningArticle[] = [
         title: 'JSON output',
         paragraphs: [
           'The <code>FORMAT JSON</code> option produces output that tools can process. The <code>Node Type</code> field identifies the operator, and the <code>Plans</code> list, when present, contains its child nodes.',
-          'The template below combines this format with <code>ANALYZE</code>; <code>SELECT ...</code> represents the read query to be analyzed. The output can be opened in the tool, and the available examples also let you explore the relationship between JSON and the tree without generating your own plan.',
+          'The template below combines this format with <code>ANALYZE</code>; <code>SELECT ...</code> represents the SELECT query to be analyzed. The output can be opened in the tool, and the available examples also let you explore the relationship between JSON and the tree without generating your own plan.',
         ],
         code: 'EXPLAIN (ANALYZE, FORMAT JSON)\nSELECT ...;',
         source: explainCommandReferenceEn,
@@ -398,7 +398,7 @@ const englishLearningArticles: LearningArticle[] = [
         title: 'Fields to recognize',
         paragraphs: [
           'A plan with <code>ANALYZE</code> combines planner estimates with execution measurements. Comparing <code>Plan Rows</code> and <code>Actual Rows</code> for the same node helps show how close the prediction was to what happened.',
-          'This comparison depends on context. The estimate assumes complete consumption of the node, whereas a <code>LIMIT</code> above it may stop consumption early. Basic fields include:',
+          'This comparison depends on context. The estimate assumes that the node runs to completion, whereas a <code>LIMIT</code> above it may stop it early. Basic fields include:',
         ],
         bullets: [
           '<code>Plan Rows</code>: estimated rows produced by the node.',
@@ -435,9 +435,9 @@ const englishLearningArticles: LearningArticle[] = [
       {
         id: 'perguntas',
         title: 'Questions that may help',
-        paragraphs: ['These questions offer starting points for interpreting measurements, considering the scale of the values and the context of the plan:'],
+        paragraphs: ['These questions offer starting points for interpreting measurements, taking into account the scale of the values and the context of the plan:'],
         bullets: [
-          'Was the estimate close to actual rows per execution? Could a LIMIT affect this interpretation?',
+          'Was the estimated row count close to the actual count per execution? Could a LIMIT affect this interpretation?',
           'Is the observed value per execution or already accumulated?',
           'Are there rows removed by a filter, indicated by Rows Removed by Filter?',
           'Does the time include work performed by other nodes?',
@@ -456,7 +456,7 @@ const englishLearningArticles: LearningArticle[] = [
         title: 'The role of a heuristic',
         paragraphs: [
           'A heuristic highlights a combination of values that may deserve attention. That signal helps raise questions, but its cause and the usefulness of a possible change depend on the query, data, and environment.',
-          'The signals below are examples of points to investigate. The tool’s indications can help locate them and raise possible explanations.',
+          'The signals below are examples of points to investigate. The tool’s suggestions can help identify them and explore possible explanations.',
         ],
         bullets: [
           'A difference between estimated and observed rows.',
@@ -469,7 +469,7 @@ const englishLearningArticles: LearningArticle[] = [
         id: 'evidencia-e-hipotese',
         title: 'Evidence and hypothesis',
         paragraphs: [
-          'A difference between estimated and actual rows is an observation from the plan. A possible relationship with statistics is a hypothesis that still depends on other information for evaluation.',
+          'A difference between estimated and actual rows is an observation from the plan. A possible connection to statistics is a hypothesis that still requires other information to be evaluated.',
           'Separating these ideas can help avoid premature conclusions. One way to organize an investigation is to relate the evidence to a possible explanation and a comparison that could evaluate it:',
         ],
         code: 'Observed evidence → hypothesis → verification',
