@@ -4,7 +4,7 @@ Este documento define a direção visual do pgPlanDoctor. Ele substitui integral
 
 ## 1. Fonte de verdade
 
-A interface deve seguir a linguagem já consolidada no cabeçalho do pgPlanDoctor: compacta, plana, técnica e com uso contido da cor primária. O Exercism permanece como referência secundária de clareza didática e organização, não como um modelo a ser reproduzido literalmente.
+A interface deve seguir a linguagem já consolidada no cabeçalho do pgPlanDoctor: compacta, plana, técnica e com uso contido da cor primária. O Exercism permanece como referência secundária de clareza nas explicações e organização, não como um modelo a ser reproduzido literalmente.
 
 Ordem de prioridade para decisões visuais:
 
@@ -21,7 +21,7 @@ Copiar a linguagem visual não significa reutilizar propriedade da marca. Não u
 
 Estes são requisitos do produto e não devem ser modificados para aproximar a aparência da referência:
 
-- aplicação gratuita e didática;
+- aplicação gratuita para análise de planos de execução;
 - entrada de `EXPLAIN (ANALYZE, FORMAT JSON)`;
 - parser recursivo;
 - heurísticas do MVP;
@@ -77,7 +77,7 @@ Rótulos menores do SVG podem usar 8–11 px quando forem complementares e a inf
 - componentes importantes ocupam espaço proporcional à sua função;
 - não centralize uma coluna estreita em um monitor amplo.
 
-### 4.3 Didático sem ser promocional
+### 4.3 Textos objetivos
 
 Cada texto deve cumprir pelo menos uma função:
 
@@ -99,7 +99,7 @@ Não use:
 - slogans sobre eficiência, inteligência ou clareza;
 - parágrafos institucionais sobre o pgPlanDoctor.
 
-Também não use rótulos soltos como `PostgreSQL · EXPLAIN ANALYZE` acima de um título. Um texto sem verbo ou explicação precisa deixar claro qual informação oferece ao aluno.
+Também não use rótulos soltos como `PostgreSQL · EXPLAIN ANALYZE` acima de um título. Um texto sem verbo ou explicação precisa deixar claro qual informação oferece ao usuário.
 
 ### 4.4 Profundidade controlada
 
@@ -277,7 +277,7 @@ Não adicionar:
 O pgPlanDoctor usa **Phosphor Icons** por meio de `@phosphor-icons/vue`. Essa é a única família de ícones da interface.
 
 - importe cada componente pelo nome; não registre a biblioteca inteira globalmente;
-- use `duotone` em conceitos didáticos, avisos e elementos de identidade;
+- use `duotone` em conceitos técnicos, avisos e elementos de identidade;
 - use `bold` em controles e ações pequenas; `regular` pode ser usado em campos de busca e `fill` em ações de execução;
 - mantenha ícones informativos entre 24 e 32 px e ícones de ação entre 16 e 20 px;
 - deixe a cor ser herdada com `currentColor` e use os tokens semânticos existentes;
@@ -445,7 +445,7 @@ A página é secundária e pouco acessada. Texto corrido, seções e uma tabela 
 
 A área `Aprender` ensina a interpretar planos de execução; ela não é um curso geral de banco de dados.
 
-- organize os conteúdos em uma sequência didática única, sem numeração, categorias visuais ou indicação de progresso;
+- organize os conteúdos em uma sequência única, sem numeração, categorias visuais ou indicação de progresso;
 - o índice apresenta título, resumo e ícone de cada conteúdo;
 - artigos usam uma coluna de leitura confortável e um sumário lateral no desktop;
 - cada artigo começa com uma introdução curta e termina com `Conteúdos recomendados`;

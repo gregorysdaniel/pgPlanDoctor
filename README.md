@@ -1,6 +1,6 @@
 # pgPlanDoctor
 
-Aplicação frontend didática para carregar e visualizar um plano de execução do PostgreSQL.
+Aplicação frontend para analisar e visualizar planos de execução do PostgreSQL.
 
 ## Objetivo
 
@@ -11,7 +11,7 @@ Ainda não fazem parte desta etapa:
 - conexão direta com PostgreSQL;
 - backend ou sincronização entre dispositivos.
 
-Os dez planos analisados mais recentemente são mantidos no `localStorage` do navegador. A interface e os conteúdos didáticos estão disponíveis em português e inglês.
+Os dez planos analisados mais recentemente são mantidos no `localStorage` do navegador. A interface e os conteúdos de apoio estão disponíveis em português e inglês.
 
 ## Tecnologias
 
@@ -23,7 +23,7 @@ Os dez planos analisados mais recentemente são mantidos no `localStorage` do na
 | Intl API | Formatação regional de números e datas |
 | D3 Hierarchy | Posicionamento dos nós e ligações |
 | Element Plus | Botões, diálogos, menus, collapses e popovers |
-| Phosphor Icons | Ícones da interface e das explicações didáticas |
+| Phosphor Icons | Ícones da interface e das explicações técnicas |
 | Fonte de sistema, Poppins e JetBrains Mono | Interface, marca e dados técnicos, respectivamente |
 | Vite | Ambiente de desenvolvimento e build |
 
@@ -37,7 +37,7 @@ src/
 ├── views/PlanAnalysisView.vue    # página da análise carregada
 ├── views/LearningArticleView.vue # resolução do conteúdo pela URL
 ├── components/AppHeader.vue     # marca e navegação
-├── components/LearningIndex.vue # índice dos conteúdos didáticos
+├── components/LearningIndex.vue # índice dos conteúdos de apoio
 ├── components/LearningArticle.vue # página reutilizável de artigo
 ├── components/Glossary.vue       # busca e categorias do glossário
 ├── components/ProjectInfo.vue   # projeto, validações e feedback
