@@ -1,0 +1,39 @@
+[
+  {
+    "Plan": {
+      "Node Type": "Nested Loop",
+      "Join Type": "Inner",
+      "Plan Rows": 80,
+      "Actual Startup Time": 0.043,
+      "Actual Total Time": 22.8,
+      "Actual Rows": 80,
+      "Actual Loops": 1,
+      "Plans": [
+        {
+          "Node Type": "Seq Scan",
+          "Relation Name": "customers",
+          "Alias": "customers",
+          "Plan Rows": 80,
+          "Actual Startup Time": 0.012,
+          "Actual Total Time": 1.2,
+          "Actual Rows": 80,
+          "Actual Loops": 1
+        },
+        {
+          "Node Type": "Index Scan",
+          "Relation Name": "orders",
+          "Alias": "orders",
+          "Index Name": "orders_customer_id_idx",
+          "Plan Rows": 1,
+          "Actual Startup Time": 0.09,
+          "Actual Total Time": 0.22,
+          "Actual Rows": 1,
+          "Actual Loops": 80,
+          "Index Cond": "(customer_id = customers.id)"
+        }
+      ]
+    },
+    "Planning Time": 0.214,
+    "Execution Time": 23.017
+  }
+]

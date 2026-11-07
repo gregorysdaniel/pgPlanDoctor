@@ -1,0 +1,102 @@
+# Arquitetura da aplicação
+
+```text
+EXPLAIN JSON → parser → PlanNode → heurísticas
+                              ↓
+                       tela de análise
+                              ↓
+                 D3 calcula a posição dos nós
+```
+
+O Vue Router controla qual página está visível, o histórico de navegação, a posição da rolagem e o título da aba. `App.vue` mantém somente a estrutura compartilhada: cabeçalho, área da rota atual e diálogo do plano original.
+
+```text
+App.vue
+├── AppHeader.vue
+│   └── LanguageSwitcher.vue
+└── RouterView
+    ├── PlanInputView.vue
+    │   └── PlanInput.vue
+    │       ├── PlanJsonEditor.vue
+    │       └── RecentPlanList.vue
+    ├── PlanAnalysisView.vue
+    │   └── PlanAnalysis.vue
+    │       └── PlanTree.vue
+    │           └── PlanNodeDetails.vue
+    ├── LearningIndex.vue
+    ├── Glossary.vue
+    ├── LearningArticleView.vue
+    │   └── LearningArticle.vue
+    └── ProjectInfo.vue
+```
+
+As rotas ficam em `router/index.ts`:
+
+- `#/`: entrada do plano;
+- `#/analise`: visualização e interpretação do plano carregado;
+- `#/aprender`: índice dos conteúdos;
+- `#/aprender/glossario`: glossário pesquisável;
+- `#/aprender/:slug`: conteúdo selecionado;
+- `#/sobre`: informações do projeto e feedback.
+
+O histórico por hash permite abrir e atualizar essas URLs sem exigir que o servidor seja configurado para responder a todas as rotas. Os componentes usam `RouterLink` ou a API do Vue Router e não manipulam `location`, `history` ou o hash diretamente.
+
+## Estado da sessão
+
+`composables/usePlanSession.ts` mantém o JSON informado, o plano convertido e a mensagem de erro enquanto a aplicação está aberta. Isso permite navegar entre entrada e análise sem colocar esses dados na URL e sem atribuir ao `App.vue` a responsabilidade pelo parser.
+
+`PlanInput.vue` reúne o aviso de execução, o editor e o histórico. `PlanJsonEditor.vue` mantém a entrada, a numeração de linhas, o seletor de exemplos e o erro associado ao campo. Linhas longas usam rolagem horizontal; a numeração acompanha a rolagem vertical do textarea. `RecentPlanList.vue` lista os planos salvos e permite reabri-los. Carregar um exemplo preenche e focaliza o campo; a conversão começa ao acionar a análise.
+
+`PlanInputView.vue` converte o JSON e abre a rota de análise somente depois de obter um `PlanNode` válido. A rota `#/analise` também possui uma guarda: quando nenhum plano foi carregado na sessão, o acesso direto volta para a entrada.
+
+O tema escuro único é definido pelos tokens globais em `styles.css`. Os mesmos tokens controlam cores, tipografia, dimensões e estilos dos componentes do Element Plus.
+
+O idioma fica em `i18n/index.ts`. A aplicação aceita `pt-BR` e `en`, usa a preferência persistida ou o idioma do navegador e atualiza o atributo `lang`, os metadados e os formatos de número e data. As URLs e os slugs permanecem estáveis nos dois idiomas.
+
+As regras e o parser produzem os mesmos dados independentemente do idioma. Textos de erro, descrições de operadores e explicações das heurísticas são resolvidos pelas mensagens de localização durante a apresentação; por isso, trocar o idioma atualiza uma análise já aberta sem processar novamente o JSON.
+
+`composables/useRecentPlans.ts` mantém no `localStorage` os dez planos analisados mais recentemente. O JSON original e os metadados usados na lista ficam somente no navegador. Analisar novamente o mesmo JSON atualiza sua data e sua posição, sem criar uma duplicata.
+
+`data/planData.ts` cataloga os exemplos e mantém seus JSONs separados por cenário. Ao carregar um deles, a entrada percorre o mesmo parser usado para um plano fornecido pelo usuário. O D3 não interpreta a saída do PostgreSQL: ele recebe uma árvore pronta e calcula somente as posições dos nós.
+
+## Fluxo do plano
+
+`PlanTree.vue` usa o D3 para distribuir os nós em níveis horizontais. As folhas ficam à esquerda, o nó raiz fica à direita e um nó virtual não interativo explicita o resultado entregue pelo plano.
+
+As setas representam o fluxo dos filhos para os pais e terminam no resultado. As métricas permanecem nos próprios nós para evitar informação duplicada nas ligações.
+
+Os nós começam compactos, com operador, relação, linhas e tempo inclusivo. Clique, Enter ou Espaço abre o nó; o botão no cabeçalho expandido o recolhe. A barra do resumo compara o tempo acumulado (`tempo × loops`) com o tempo do plano raiz. `PlanAnalysis.vue` entrega separadamente os identificadores dos nós marcados pelas heurísticas, mantendo as regras fora do SVG.
+
+`PlanNodeDetails.vue` apresenta o operador expandido como HTML dentro de um `foreignObject` do SVG. A aba Geral compara linhas observadas e estimadas, apresenta tempos e loops, separa totais calculados e dados do planejamento e oferece um link para o artigo Métricas essenciais em outra aba, preservando o contexto da análise. Condições, Buffers e Saída são abas condicionais; todas as expressões permanecem completas e o conteúdo extenso tem rolagem interna. Os buffers usam os contadores originais, sem multiplicação por loops; o parser preserva também os contadores informados como zero.
+
+O nó expandido tem 420 px de largura e altura medida por `ResizeObserver`. Cada coluna da árvore reserva a largura do maior nó daquele nível, e a separação vertical considera as alturas medidas. As conexões usam as bordas reais dos nós. Atualizações de altura preservam a posição do operador selecionado; abas, seleção de texto e rolagem no conteúdo não acionam expansão nem pan/zoom. A expansão transfere o foco ao cabeçalho; recolher devolve o foco ao card compacto. Conteúdo extenso também pode ser rolado por toque. As linhas e os tempos médios, os custos e os buffers seguem a [documentação do PostgreSQL 17](https://www.postgresql.org/docs/17/using-explain.html).
+
+O SVG mantém uma transformação de viewport independente do layout. Roda do mouse e botões controlam o zoom, o arraste do fundo move a árvore e o ajuste à tela recalcula escala e translação. O zoom altera somente a transformação geométrica: o conteúdo dos nós não é trocado nem ocultado de acordo com a escala. O modo de leitura preserva uma escala mínima legível. Ao expandir um nó, sua posição na tela é preservada em vez de reenquadrar toda a árvore.
+
+Quando um nó é selecionado, `PlanTree.vue` o envia para `PlanAnalysis.vue`. O Vue atualiza o destaque e reúne os pontos de atenção correspondentes, quando houver, sem recalcular o parser. O grafo mostra a quantidade de achados de cada nó, nos estados compacto e expandido. À esquerda, o painel alterna entre a lista geral e o detalhe; quando um nó possui vários achados, seus títulos e métricas permanecem disponíveis acima do detalhe para alternar entre eles sem mover a câmera. Interagir novamente com o mesmo nó preserva o achado selecionado. Selecionar outro nó com achados reabre o painel caso esteja recolhido. Cada resumo usa uma métrica calculada pela própria regra, sem criar pontuações artificiais. O painel pode ser recolhido sem alterar a câmera da árvore, e o plano original pode ser consultado em um diálogo sem perder a análise.
+
+## Heurísticas
+
+As seis regras heurísticas ficam em `domain/heuristics.ts` e percorrem a árvore recursivamente. Cada resultado mantém uma referência ao nó que produziu o sinal.
+
+Uma regra não afirma que determinada alteração resolverá o problema. O conteúdo é dividido em evidência, interpretação, próximo passo e forma de validação. Termos técnicos possuem explicação curta e link para a documentação oficial.
+
+## Conteúdos
+
+`content/learningContent.ts` concentra as versões em português e inglês dos materiais introdutórios e suas referências. `LearningIndex.vue` apresenta o índice, enquanto `LearningArticle.vue` é a estrutura reutilizada por cada conteúdo. O mesmo `slug` identifica o artigo nos dois idiomas; valores inexistentes voltam ao índice.
+
+`content/glossaryContent.ts` mantém os identificadores estáveis, categorias, termos, aliases e definições bilíngues do glossário. `Glossary.vue` resolve a busca localmente e organiza os termos por categoria. Heurísticas podem apontar para um identificador do glossário sem duplicar sua definição.
+
+## Informações e feedback
+
+`ProjectInfo.vue` documenta o propósito do pgPlanDoctor e a validação das heurísticas. Os scripts, planos e medições continuam na documentação própria do benchmark.
+
+O feedback é coletado em um [Google Forms externo](https://docs.google.com/forms/d/e/1FAIpQLSeXqZDfLya7yDvoR3p8gYea43z7M2ohOUgiCvCSDI2hL43VxA/viewform). A aplicação não recebe nem armazena as respostas. A documentação completa do benchmark está no repositório [pgPlanDoctor-benchmark](https://github.com/gregorysdaniel/pgPlanDoctor-benchmark). As variáveis opcionais `VITE_FEEDBACK_FORM_URL` e `VITE_BENCHMARK_GITHUB_URL` permitem substituir esses endereços; quando ausentes ou vazias, a aplicação usa os links padrão.
+
+## Limites atuais
+
+- não existe conexão direta com PostgreSQL;
+- não existe backend ou sincronização do histórico entre navegadores e dispositivos;
+- a análise carregada existe somente durante a sessão; apenas os dez planos recentes ficam no armazenamento local;
+- planos muito grandes ainda podem exigir bastante navegação mesmo com pan, zoom e ajuste à tela;
+- apenas o formato JSON possui parser.

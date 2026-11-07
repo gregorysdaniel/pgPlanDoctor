@@ -1,0 +1,20 @@
+# Dependências e arquivos gerados
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Configurações locais
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs
+*.log
+
+# Sistema e editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json

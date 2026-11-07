@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" sizes="256x256" href="/src/pg-plan-doctor-favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="pgPlanDoctor: análise e visualização de planos de execução do PostgreSQL."
+    />
+    <script>
+      ;(() => {
+        try {
+          const storedLocale = localStorage.getItem('pg-plan-doctor-locale')
+          const locale = storedLocale === 'pt-BR' || storedLocale === 'en'
+            ? storedLocale
+            : (navigator.language.toLowerCase().startsWith('pt') ? 'pt-BR' : 'en')
+
+          document.documentElement.lang = locale
+        } catch {}
+      })()
+    </script>
+    <title>pgPlanDoctor</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
